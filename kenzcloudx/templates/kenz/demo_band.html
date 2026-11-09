@@ -1,0 +1,14 @@
+{#- Navy "Request a demo" band. Uses t.demo_band when the page has one, else t.cta (Task 4 pages). -#}
+{%- set lp = "/ar" if lang == "ar" else "" -%}
+{%- set band = t.demo_band or t.cta -%}
+{%- if band %}
+<section class="demo-band" aria-labelledby="demo-band-heading">
+	<div class="container demo-band-inner">
+		<div>
+			<h2 id="demo-band-heading">{{ band.heading }}</h2>
+			<p>{{ band.body }}</p>
+		</div>
+		<a class="btn btn-light" href="{{ lp }}/demo">{{ band.button }}</a>
+	</div>
+</section>
+{%- endif %}

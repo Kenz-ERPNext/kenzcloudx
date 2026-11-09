@@ -1,0 +1,32 @@
+{%- set lp = "/ar" if lang == "ar" else "" -%}
+<a class="skip-link" href="#main">{{ common.skip_to_content }}</a>
+<header class="site-header">
+	<div class="container header-inner">
+		<a class="brand" href="{{ lp or '/' }}" aria-label="{{ common.brand.name }}, {{ common.brand.byline }}">
+			{% include "templates/kenz/logo_mark.html" %}
+			<span class="brand-text" dir="ltr">
+				<span class="brand-name">KENZ <span>CLOUDX</span></span>
+				<span class="brand-by">by Kenz Technology</span>
+			</span>
+		</a>
+		<div class="site-nav" id="site-nav">
+			<nav aria-label="{{ common.menu }}">
+				<ul class="nav-links">
+					{%- for stem in ("erpnext", "zatca", "plans", "about") %}
+					{%- set href = lp ~ "/" ~ stem %}
+					<li><a href="{{ href }}"{% if page_url == href %} aria-current="page"{% endif %}>{{ common.nav[stem] }}</a></li>
+					{%- endfor %}
+				</ul>
+			</nav>
+			<div class="nav-actions">
+				<a class="nav-login" href="/login">{{ common.customer_login }}</a>
+				<a class="btn btn-primary" href="{{ lp }}/demo">{{ common.cta_demo }}</a>
+			</div>
+		</div>
+		<a class="lang-toggle" href="{{ alt_url }}" hreflang="{{ alt_lang }}" lang="{{ alt_lang }}">{{ common.lang_toggle }}</a>
+		<button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+			<svg viewBox="0 0 20 14" width="20" height="14" aria-hidden="true" focusable="false"><path d="M0 1h20M0 7h20M0 13h20" stroke="currentColor" stroke-width="2"/></svg>
+			<span class="visually-hidden">{{ common.menu }}</span>
+		</button>
+	</div>
+</header>

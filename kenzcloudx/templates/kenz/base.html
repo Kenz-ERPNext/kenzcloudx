@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+{#- Standalone document for every public KenzCloudX page. Never extends templates/web.html.
+    Note: the website renderer overwrites context.canonical with its own URL, so the
+    canonical link is taken from the hreflang entry for the current language. -#}
+{%- set _urls = dict(hreflang) -%}
+{%- set _canonical = _urls[lang] -%}
+{%- set _asset = "/assets/kenzcloudx" %}
+<html lang="{{ lang }}" dir="{{ dir }}">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{{ t.meta.title }}</title>
+	<meta name="description" content="{{ t.meta.description }}">
+	<link rel="canonical" href="{{ _canonical }}">
+	{%- for code, url in hreflang %}
+	<link rel="alternate" hreflang="{{ code }}" href="{{ url }}">
+	{%- endfor %}
+	<meta property="og:type" content="website">
+	<meta property="og:site_name" content="KenzCloudX">
+	<meta property="og:title" content="{{ t.meta.title }}">
+	<meta property="og:description" content="{{ t.meta.description }}">
+	<meta property="og:url" content="{{ _canonical }}">
+	<meta property="og:locale" content="{{ 'ar_SA' if lang == 'ar' else 'en_US' }}">
+	<meta property="og:image" content="https://kenzcloudx.com{{ _asset }}/images/og-{{ lang }}.png">
+	<meta property="og:image:width" content="1200">
+	<meta property="og:image:height" content="630">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="theme-color" content="#E3F3EF">
+	<link rel="icon" href="{{ _asset }}/images/logo-mark.svg" type="image/svg+xml">
+	<link rel="preload" href="{{ _asset }}/fonts/{{ 'ibm-plex-sans-arabic-arabic-400-normal.woff2' if lang == 'ar' else 'ibm-plex-sans-latin-400-normal.woff2' }}" as="font" type="font/woff2" crossorigin>
+	<link rel="stylesheet" href="{{ _asset }}/css/kenz.css?v={{ build_version or '' }}">
+	<script>document.documentElement.classList.add("js")</script>
+	{%- block head_extra %}{% endblock %}
+</head>
+<body>
+	{% include "templates/kenz/header.html" %}
+	<main id="main">
+		{%- block body %}{% endblock %}
+	</main>
+	{%- block demo_band %}{% include "templates/kenz/demo_band.html" %}{% endblock %}
+	{% include "templates/kenz/footer.html" %}
+	{% include "templates/kenz/whatsapp.html" %}
+	{%- block scripts %}
+	<script>
+		(function () {
+			var b = document.querySelector(".nav-toggle"), h = document.querySelector(".site-header");
+			if (!b || !h) return;
+			b.addEventListener("click", function () {
+				var open = h.classList.toggle("is-open");
+				b.setAttribute("aria-expanded", open ? "true" : "false");
+			});
+		})();
+	</script>
+	{%- endblock %}
+</body>
+</html>

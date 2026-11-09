@@ -1,0 +1,71 @@
+{%- set lp = "/ar" if lang == "ar" else "" -%}
+{%- set h = t.hero -%}
+<section class="hero">
+	<div class="container hero-grid">
+		<div class="hero-copy">
+			<p class="tag">{{ h.tag }}</p>
+			<h1>{{ h.h1 }}</h1>
+			<p class="lead">{{ h.subline }}</p>
+			<div class="btn-row">
+				<a class="btn btn-primary" href="{{ lp }}/demo">{{ h.cta_primary }}</a>
+				<a class="btn btn-outline" href="{{ lp }}/plans">{{ h.cta_secondary }}</a>
+			</div>
+		</div>
+		<figure class="invoice-card zatca-invoice" role="img" aria-label="{{ h.invoice_alt }}">
+			{% include "kenzcloudx/public/images/zatca-invoice.svg" %}
+		</figure>
+	</div>
+	<div class="container">
+		<dl class="proof">
+			{%- if settings.stat_live_sites %}
+			<div class="proof-item">
+				<dt>{{ t.proof.live_sites_label }}</dt>
+				<dd>{{ settings.stat_live_sites }}</dd>
+			</div>
+			{%- endif %}
+			{%- if settings.stat_zatca_customers %}
+			<div class="proof-item">
+				<dt>{{ t.proof.zatca_customers_label }}</dt>
+				<dd>{{ settings.stat_zatca_customers }}+</dd>
+			</div>
+			{%- endif %}
+			<div class="proof-item">
+				<dt>{{ t.proof.backups_label }}</dt>
+				<dd>{{ t.proof.backups_value }}</dd>
+			</div>
+		</dl>
+	</div>
+</section>
+
+<section class="section what-we-do" aria-labelledby="what-we-do-heading">
+	<div class="container split">
+		<header class="section-head">
+			<h2 id="what-we-do-heading">{{ t.what_we_do.heading }}</h2>
+			<p class="lead">{{ t.what_we_do.intro }}</p>
+		</header>
+		<ol class="numbered-blocks">
+			{%- for item in t.what_we_do["items"] %}
+			<li class="numbered-block" id="{{ item.key }}">
+				<span class="numeral" aria-hidden="true">{{ "%02d" % loop.index }}</span>
+				<h3>{{ item.title }}</h3>
+				<p>{{ item.body }}</p>
+			</li>
+			{%- endfor %}
+		</ol>
+	</div>
+</section>
+
+<section class="section section-mint how-it-works" aria-labelledby="how-heading">
+	<div class="container">
+		<h2 id="how-heading">{{ t.how_it_works.heading }}</h2>
+		<ol class="steps">
+			{%- for step in t.how_it_works.steps %}
+			<li class="step">
+				<span class="step-dot" aria-hidden="true">{{ loop.index }}</span>
+				<h3>{{ step.title }}</h3>
+				<p>{{ step.body }}</p>
+			</li>
+			{%- endfor %}
+		</ol>
+	</div>
+</section>
