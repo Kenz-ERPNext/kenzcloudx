@@ -1,0 +1,96 @@
+{
+ "actions": [],
+ "creation": "2026-11-09 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "whatsapp_number",
+  "phone",
+  "email",
+  "office_address_en",
+  "office_address_ar",
+  "cr_number",
+  "vat_number",
+  "stat_live_sites",
+  "stat_zatca_customers",
+  "notify_emails"
+ ],
+ "fields": [
+  {
+   "fieldname": "whatsapp_number",
+   "fieldtype": "Data",
+   "label": "WhatsApp Number"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "Phone"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email"
+  },
+  {
+   "fieldname": "office_address_en",
+   "fieldtype": "Small Text",
+   "label": "Office Address (English)"
+  },
+  {
+   "fieldname": "office_address_ar",
+   "fieldtype": "Small Text",
+   "label": "Office Address (Arabic)"
+  },
+  {
+   "fieldname": "cr_number",
+   "fieldtype": "Data",
+   "label": "CR Number"
+  },
+  {
+   "fieldname": "vat_number",
+   "fieldtype": "Data",
+   "label": "VAT Number"
+  },
+  {
+   "fieldname": "stat_live_sites",
+   "fieldtype": "Int",
+   "label": "Live Sites Stat",
+   "default": "87"
+  },
+  {
+   "fieldname": "stat_zatca_customers",
+   "fieldtype": "Int",
+   "label": "ZATCA Customers Stat",
+   "default": "20"
+  },
+  {
+   "fieldname": "notify_emails",
+   "fieldtype": "Small Text",
+   "label": "Notify Emails",
+   "description": "One email per line"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-11-09 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Kenzcloudx",
+ "name": "KenzCloudX Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
