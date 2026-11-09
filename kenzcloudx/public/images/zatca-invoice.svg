@@ -21,7 +21,7 @@
 <path d="M28 278H452" stroke="#2D4373"/>
 <text x="28" y="304" font-size="16" font-weight="700" fill="#2D4373">Total (SAR) · الإجمالي</text>
 <text x="452" y="304" font-size="16" font-weight="700" fill="#2D4373" text-anchor="end">7,314.00</text>
-<rect x="28" y="328" width="150" height="28" rx="4" fill="#DFF3EA"/>
+<rect x="28" y="328" width="164" height="28" rx="4" fill="#DFF3EA"/>
 <path d="M40 342l5 5 9-10" fill="none" stroke="#1D7A5C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="62" y="347" font-size="13" font-weight="600" fill="#1D7A5C">ZATCA: Accepted</text>
+<text x="62" y="347" font-size="13" font-weight="600" fill="#1D7A5C">Cleared by ZATCA</text>
 </svg>

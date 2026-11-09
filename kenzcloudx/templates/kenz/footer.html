@@ -3,60 +3,61 @@
 <footer class="site-footer">
 	<div class="container footer-grid">
 		<div class="footer-brand">
-			<a class="brand brand-on-dark" href="{{ lp or '/' }}" aria-label="{{ common.brand.name }}, {{ common.brand.byline }}">
+			<a class="brand brand-on-dark" href="{{ (lp or '/')|e }}" aria-label="{{ common.brand.name|e }}, {{ common.brand.byline|e }}">
 				{% include "templates/kenz/logo_mark.html" %}
 				<span class="brand-text" dir="ltr">
 					<span class="brand-name">KENZ <span>CLOUDX</span></span>
 					<span class="brand-by">by Kenz Technology</span>
 				</span>
 			</a>
-			<p>{{ f.tagline }}</p>
+			<p>{{ f.tagline|e }}</p>
 		</div>
 		<nav class="footer-col" aria-labelledby="footer-pages">
-			<h2 id="footer-pages">{{ f.pages_heading }}</h2>
+			<h2 id="footer-pages">{{ f.pages_heading|e }}</h2>
 			<ul>
-				<li><a href="{{ lp or '/' }}">{{ common.nav.home }}</a></li>
+				<li><a href="{{ (lp or '/')|e }}">{{ common.nav.home|e }}</a></li>
 				{%- for stem in ("erpnext", "zatca", "plans", "about", "demo") %}
-				<li><a href="{{ lp }}/{{ stem }}">{{ common.nav[stem] }}</a></li>
+				<li><a href="{{ lp|e }}/{{ stem|e }}">{{ common.nav[stem]|e }}</a></li>
 				{%- endfor %}
 			</ul>
 		</nav>
-		{%- set wa_digits = (settings.whatsapp_number or "") | select("in", "0123456789") | join %}
+		{#- settings values are stripped (blank -> None) in build_page_context; wa_number is normalised there too. -#}
 		{%- set address = settings.office_address_ar if lang == "ar" else settings.office_address_en %}
-		{%- if settings.phone or settings.email or wa_digits or address %}
+		{%- set tel = (settings.phone or "") | replace(" ", "") %}
+		{%- if tel or settings.email or wa_number or address %}
 		<div class="footer-col">
-			<h2>{{ f.contact_heading }}</h2>
+			<h2 id="footer-contact">{{ f.contact_heading|e }}</h2>
 			<ul>
-				{%- if settings.phone %}
-				<li><span class="footer-label">{{ f.phone_label }}</span> <a href="tel:{{ settings.phone | replace(' ', '') }}" dir="ltr">{{ settings.phone }}</a></li>
+				{%- if tel %}
+				<li><span class="footer-label">{{ f.phone_label|e }}</span> <a href="tel:{{ tel|e }}" dir="ltr">{{ settings.phone|e }}</a></li>
 				{%- endif %}
 				{%- if settings.email %}
-				<li><span class="footer-label">{{ f.email_label }}</span> <a href="mailto:{{ settings.email }}" dir="ltr">{{ settings.email }}</a></li>
+				<li><span class="footer-label">{{ f.email_label|e }}</span> <a href="mailto:{{ settings.email|e }}" dir="ltr">{{ settings.email|e }}</a></li>
 				{%- endif %}
-				{%- if wa_digits %}
-				<li><a href="https://wa.me/{{ wa_digits }}" target="_blank" rel="noopener">{{ common.whatsapp_label }}</a></li>
+				{%- if wa_number %}
+				<li><a href="https://wa.me/{{ wa_number|e }}" target="_blank" rel="noopener">{{ common.whatsapp_label|e }}</a></li>
 				{%- endif %}
 				{%- if address %}
-				<li class="footer-address">{{ address }}</li>
+				<li class="footer-address">{{ address|e }}</li>
 				{%- endif %}
 			</ul>
 		</div>
 		{%- endif %}
 		<nav class="footer-col" aria-labelledby="footer-legal">
-			<h2 id="footer-legal">{{ f.legal_heading }}</h2>
+			<h2 id="footer-legal">{{ f.legal_heading|e }}</h2>
 			<ul>
-				<li><a href="{{ lp }}/privacy">{{ f.privacy }}</a></li>
-				<li><a href="{{ lp }}/terms">{{ f.terms }}</a></li>
+				<li><a href="{{ lp|e }}/privacy">{{ f.privacy|e }}</a></li>
+				<li><a href="{{ lp|e }}/terms">{{ f.terms|e }}</a></li>
 			</ul>
 		</nav>
 	</div>
 	<div class="container">
 		<div class="footer-bottom">
-		<p>{{ f.copyright }}</p>
+		<p>{{ f.copyright|e }}</p>
 		{%- if settings.cr_number or settings.vat_number %}
 		<p class="footer-reg">
-			{%- if settings.cr_number %}<span>{{ f.cr_label }} <span dir="ltr">{{ settings.cr_number }}</span></span>{% endif %}
-			{%- if settings.vat_number %}<span>{{ f.vat_label }} <span dir="ltr">{{ settings.vat_number }}</span></span>{% endif %}
+			{%- if settings.cr_number %}<span>{{ f.cr_label|e }} <span dir="ltr">{{ settings.cr_number|e }}</span></span>{% endif %}
+			{%- if settings.vat_number %}<span>{{ f.vat_label|e }} <span dir="ltr">{{ settings.vat_number|e }}</span></span>{% endif %}
 		</p>
 		{%- endif %}
 		</div>

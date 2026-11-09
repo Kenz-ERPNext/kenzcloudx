@@ -1,5 +1,6 @@
 import json
 import os
+import re
 
 import frappe
 
@@ -19,6 +20,8 @@ PUBLIC_SETTINGS_FIELDS: tuple[str, ...] = (
 	"stat_live_sites",
 	"stat_zatca_customers",
 )
+
+_DIGITS = str.maketrans("٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹", "01234567890123456789")
 
 _CONTENT_DIR = os.path.join(os.path.dirname(__file__), "content")
 _cache: dict[str, dict] = {}
@@ -51,6 +54,30 @@ def alt_url(stem: str, lang: str) -> str:
 	return page_url(stem, _other(lang))
 
 
+def whatsapp_number(raw) -> str | None:
+	"""Normalise a phone number for https://wa.me/<digits>.
+
+	Accepts Arabic-Indic digits, spaces and punctuation. Saudi local forms (05XXXXXXXX, 5XXXXXXXX)
+	become 9665XXXXXXXX; a 00 prefix is dropped. Returns None when no valid number remains.
+	"""
+	digits = re.sub(r"\D", "", str(raw or "").translate(_DIGITS))
+	if digits.startswith("00"):
+		digits = digits[2:]
+	if re.fullmatch(r"05\d{8}", digits):
+		digits = "966" + digits[1:]
+	elif re.fullmatch(r"5\d{8}", digits):
+		digits = "966" + digits
+	if digits.startswith("966") and not re.fullmatch(r"966\d{9}", digits):
+		return None
+	return digits if re.fullmatch(r"[1-9]\d{7,14}", digits) else None
+
+
+def _clean(value):
+	if isinstance(value, str):
+		return value.strip() or None
+	return value
+
+
 def build_page_context(context, stem: str, lang: str) -> None:
 	if lang not in LANGS:
 		raise ValueError(f"Unsupported language: {lang!r}")
@@ -73,7 +100,8 @@ def build_page_context(context, stem: str, lang: str) -> None:
 		("x-default", BASE_URL + page_url(stem, "en")),
 	]
 	settings = frappe.get_cached_doc("KenzCloudX Settings")
-	context.settings = {f: settings.get(f) for f in PUBLIC_SETTINGS_FIELDS}
+	context.settings = {f: _clean(settings.get(f)) for f in PUBLIC_SETTINGS_FIELDS}
+	context.wa_number = whatsapp_number(context.settings["whatsapp_number"])
 	context.title = t["meta"]["title"]
 	context.description = t["meta"]["description"]
 	context.no_cache = 0

@@ -5,30 +5,30 @@
 {%- set _urls = dict(hreflang) -%}
 {%- set _canonical = _urls[lang] -%}
 {%- set _asset = "/assets/kenzcloudx" %}
-<html lang="{{ lang }}" dir="{{ dir }}">
+<html lang="{{ lang|e }}" dir="{{ dir|e }}">
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>{{ t.meta.title }}</title>
-	<meta name="description" content="{{ t.meta.description }}">
-	<link rel="canonical" href="{{ _canonical }}">
+	<title>{{ t.meta.title|e }}</title>
+	<meta name="description" content="{{ t.meta.description|e }}">
+	<link rel="canonical" href="{{ _canonical|e }}">
 	{%- for code, url in hreflang %}
-	<link rel="alternate" hreflang="{{ code }}" href="{{ url }}">
+	<link rel="alternate" hreflang="{{ code|e }}" href="{{ url|e }}">
 	{%- endfor %}
 	<meta property="og:type" content="website">
 	<meta property="og:site_name" content="KenzCloudX">
-	<meta property="og:title" content="{{ t.meta.title }}">
-	<meta property="og:description" content="{{ t.meta.description }}">
-	<meta property="og:url" content="{{ _canonical }}">
-	<meta property="og:locale" content="{{ 'ar_SA' if lang == 'ar' else 'en_US' }}">
-	<meta property="og:image" content="https://kenzcloudx.com{{ _asset }}/images/og-{{ lang }}.png">
+	<meta property="og:title" content="{{ t.meta.title|e }}">
+	<meta property="og:description" content="{{ t.meta.description|e }}">
+	<meta property="og:url" content="{{ _canonical|e }}">
+	<meta property="og:locale" content="{{ ('ar_SA' if lang == 'ar' else 'en_US')|e }}">
+	<meta property="og:image" content="https://kenzcloudx.com{{ _asset|e }}/images/og-{{ lang|e }}.png">
 	<meta property="og:image:width" content="1200">
 	<meta property="og:image:height" content="630">
 	<meta name="twitter:card" content="summary_large_image">
 	<meta name="theme-color" content="#E3F3EF">
-	<link rel="icon" href="{{ _asset }}/images/logo-mark.svg" type="image/svg+xml">
-	<link rel="preload" href="{{ _asset }}/fonts/{{ 'ibm-plex-sans-arabic-arabic-400-normal.woff2' if lang == 'ar' else 'ibm-plex-sans-latin-400-normal.woff2' }}" as="font" type="font/woff2" crossorigin>
-	<link rel="stylesheet" href="{{ _asset }}/css/kenz.css?v={{ build_version or '' }}">
+	<link rel="icon" href="{{ _asset|e }}/images/logo-mark.svg" type="image/svg+xml">
+	<link rel="preload" href="{{ _asset|e }}/fonts/{{ ('ibm-plex-sans-arabic-arabic-400-normal.woff2' if lang == 'ar' else 'ibm-plex-sans-latin-400-normal.woff2')|e }}" as="font" type="font/woff2" crossorigin>
+	<link rel="stylesheet" href="{{ _asset|e }}/css/kenz.css?v={{ (build_version or '')|e }}">
 	<script>document.documentElement.classList.add("js")</script>
 	{%- block head_extra %}{% endblock %}
 </head>
@@ -45,9 +45,16 @@
 		(function () {
 			var b = document.querySelector(".nav-toggle"), h = document.querySelector(".site-header");
 			if (!b || !h) return;
-			b.addEventListener("click", function () {
-				var open = h.classList.toggle("is-open");
+			function setOpen(open) {
+				h.classList.toggle("is-open", open);
 				b.setAttribute("aria-expanded", open ? "true" : "false");
+			}
+			b.addEventListener("click", function () { setOpen(!h.classList.contains("is-open")); });
+			document.addEventListener("keydown", function (e) {
+				if (e.key === "Escape" && h.classList.contains("is-open")) { setOpen(false); b.focus(); }
+			});
+			h.querySelector(".site-nav").addEventListener("click", function (e) {
+				if (e.target.closest("a")) setOpen(false);
 			});
 		})();
 	</script>

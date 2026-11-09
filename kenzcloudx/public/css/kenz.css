@@ -58,7 +58,9 @@ h3 { font-size: 1.1875rem; line-height: 1.35; font-weight: 600; }
 p { margin: 0; }
 a { color: var(--navy); text-underline-offset: 0.2em; }
 img, svg { max-inline-size: 100%; }
-:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }
+/* focus ring: navy on light surfaces (>= 8:1), light teal on navy surfaces (6.4:1) */
+:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; }
+.demo-band :focus-visible, .site-footer :focus-visible { outline-color: var(--teal-on-navy); }
 
 .container {
 	inline-size: 100%;
@@ -234,7 +236,7 @@ img, svg { max-inline-size: 100%; }
 	border: 1.5px solid var(--navy); background: var(--white);
 	font-weight: 600; color: var(--navy); font-variant-numeric: tabular-nums;
 }
-.step:last-child .step-dot { background: var(--teal); border-color: var(--teal); color: var(--navy); }
+.step:last-child .step-dot { background: var(--teal-text); border-color: var(--teal-text); color: var(--white); } /* 5.8:1 */
 .step::before {
 	content: ""; position: absolute;
 	inset-inline-start: calc(1.25rem - 0.5px); inset-block: 2.5rem -2rem;
@@ -285,11 +287,11 @@ img, svg { max-inline-size: 100%; }
 	position: fixed; inset-block-end: 1rem; inset-inline-end: 1rem; z-index: 20;
 	display: inline-flex; align-items: center; gap: 0.5rem;
 	padding: 0.7rem; border-radius: 999px;
-	background: var(--teal); color: var(--white); text-decoration: none;
+	background: var(--teal-text); color: var(--white); text-decoration: none; /* icon 5.8:1 */
 	font-size: 0.875rem; font-weight: 600;
 	box-shadow: 0 6px 18px -8px rgba(30, 43, 69, 0.55);
 }
-.whatsapp:hover { background: #3F9886; }
+.whatsapp:hover { background: var(--navy); }
 .whatsapp-label { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

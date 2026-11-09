@@ -44,7 +44,7 @@
 			"subline": "We set up your ERPNext, connect it to ZATCA, move your data, and keep it running. Daily backups, Arabic invoices, one monthly bill.",
 			"cta_primary": "Request a demo",
 			"cta_secondary": "See plans",
-			"invoice_alt": "Sample tax invoice in Arabic and English: two line items, VAT 15%, total in SAR, ZATCA QR code, status Accepted by ZATCA."
+			"invoice_alt": "Sample tax invoice in Arabic and English: two line items, VAT 15%, total in SAR, ZATCA QR code, status: cleared by ZATCA."
 		},
 		"proof": {
 			"live_sites_label": "live ERPNext sites",

@@ -122,3 +122,28 @@ class TestPages(FrappeTestCase):
 			self.assertIn('href="/ar/privacy"', h)
 		finally:
 			set_settings(**{f: old.get(f) or "" for f in fields})
+
+	def test_footer_hides_contact_when_values_are_blank(self):
+		fields = ("phone", "email", "whatsapp_number", "office_address_en", "office_address_ar")
+		old = frappe.get_single(SETTINGS)
+		try:
+			set_settings(**{f: "   " for f in fields})
+			for p in ("/", "/ar"):
+				_, h = html(p)
+				self.assertNotIn('id="footer-contact"', h, p)
+				self.assertNotIn("wa.me", h, p)
+				self.assertNotIn('href="tel:', h, p)
+		finally:
+			set_settings(**{f: old.get(f) or "" for f in fields})
+
+	def test_settings_values_are_escaped(self):
+		payload = '"<b>x</b>'
+		fields = ("phone", "email", "office_address_en", "cr_number", "vat_number")
+		old = frappe.get_single(SETTINGS)
+		try:
+			set_settings(**{f: payload for f in fields})
+			_, h = html("/")
+			self.assertNotIn("<b>x</b>", h)
+			self.assertIn("&#34;&lt;b&gt;x&lt;/b&gt;", h)
+		finally:
+			set_settings(**{f: old.get(f) or "" for f in fields})

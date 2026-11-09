@@ -5,10 +5,10 @@
 <section class="demo-band" aria-labelledby="demo-band-heading">
 	<div class="container demo-band-inner">
 		<div>
-			<h2 id="demo-band-heading">{{ band.heading }}</h2>
-			<p>{{ band.body }}</p>
+			<h2 id="demo-band-heading">{{ band.heading|e }}</h2>
+			<p>{{ band.body|e }}</p>
 		</div>
-		<a class="btn btn-light" href="{{ lp }}/demo">{{ band.button }}</a>
+		<a class="btn btn-light" href="{{ lp|e }}/demo">{{ band.button|e }}</a>
 	</div>
 </section>
 {%- endif %}

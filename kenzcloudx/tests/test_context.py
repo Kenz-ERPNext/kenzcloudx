@@ -128,3 +128,50 @@ class TestContext(FrappeTestCase):
 			raw = json.dumps(load_content(lang), ensure_ascii=False).lower()
 			for w in BANNED:
 				self.assertNotIn(w, raw, (lang, w))
+
+
+class TestWhatsAppNumber(FrappeTestCase):
+	def test_normalise_whatsapp_number(self):
+		from kenzcloudx.website.context import whatsapp_number
+
+		cases = {
+			"+966 55 123 4567": "966551234567",
+			"0551234567": "966551234567",
+			"٠٥٥١٢٣٤٥٦٧": "966551234567",
+			"۰۵۵۱۲۳۴۵۶۷": "966551234567",
+			"00966551234567": "966551234567",
+			"551234567": "966551234567",
+			"+44 20 7946 0958": "442079460958",
+			"": None,
+			None: None,
+			"   ": None,
+			"abc": None,
+			"12": None,
+			"0123": None,
+		}
+		for raw, expected in cases.items():
+			self.assertEqual(whatsapp_number(raw), expected, raw)
+
+	def test_context_strips_settings_and_sets_wa_number(self):
+		ctx = frappe._dict()
+		with patch_settings(phone="  ", email=" a@b.co ", whatsapp_number="0551234567"):
+			build_page_context(ctx, "", "en")
+		self.assertIsNone(ctx.settings["phone"])
+		self.assertEqual(ctx.settings["email"], "a@b.co")
+		self.assertEqual(ctx.wa_number, "966551234567")
+
+
+class patch_settings:
+	"""Temporarily set KenzCloudX Settings fields (rolled back by the test transaction)."""
+
+	def __init__(self, **values):
+		self.values = values
+
+	def __enter__(self):
+		for k, v in self.values.items():
+			frappe.db.set_single_value("KenzCloudX Settings", k, v)
+		frappe.clear_document_cache("KenzCloudX Settings", "KenzCloudX Settings")
+
+	def __exit__(self, *exc):
+		frappe.db.rollback()
+		frappe.clear_document_cache("KenzCloudX Settings", "KenzCloudX Settings")
