@@ -8,12 +8,27 @@ PLAN_KEYS: tuple[str, ...] = ("starter", "business", "enterprise")
 LANGS: tuple[str, ...] = ("en", "ar")
 BASE_URL = "https://kenzcloudx.com"
 
+PUBLIC_SETTINGS_FIELDS: tuple[str, ...] = (
+	"whatsapp_number",
+	"phone",
+	"email",
+	"office_address_en",
+	"office_address_ar",
+	"cr_number",
+	"vat_number",
+	"stat_live_sites",
+	"stat_zatca_customers",
+)
+
 _CONTENT_DIR = os.path.join(os.path.dirname(__file__), "content")
 _cache: dict[str, dict] = {}
 
 
 def load_content(lang: str) -> dict:
-	"""Return the content dict for `lang`, read once per process."""
+	"""Return the content dict for `lang`, read once per process.
+
+	The returned dict is shared and cached: treat it as read-only.
+	"""
 	if lang not in LANGS:
 		raise ValueError(f"Unsupported language: {lang!r}")
 	if lang not in _cache:
@@ -37,6 +52,10 @@ def alt_url(stem: str, lang: str) -> str:
 
 
 def build_page_context(context, stem: str, lang: str) -> None:
+	if lang not in LANGS:
+		raise ValueError(f"Unsupported language: {lang!r}")
+	if stem not in PAGES:
+		raise ValueError(f"Unknown page stem: {stem!r}")
 	content = load_content(lang)
 	t = content[stem or "home"]
 
@@ -53,7 +72,8 @@ def build_page_context(context, stem: str, lang: str) -> None:
 		("ar", BASE_URL + page_url(stem, "ar")),
 		("x-default", BASE_URL + page_url(stem, "en")),
 	]
-	context.settings = frappe.get_cached_doc("KenzCloudX Settings").as_dict()
+	settings = frappe.get_cached_doc("KenzCloudX Settings")
+	context.settings = {f: settings.get(f) for f in PUBLIC_SETTINGS_FIELDS}
 	context.title = t["meta"]["title"]
 	context.description = t["meta"]["description"]
 	context.no_cache = 0

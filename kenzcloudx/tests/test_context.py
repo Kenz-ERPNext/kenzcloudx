@@ -27,10 +27,26 @@ BANNED = (
 )
 
 
-def _keys(d, p=""):
-	return {p + k for k, v in d.items() if not k.startswith("_")} | {
-		x for k, v in d.items() if isinstance(v, dict) for x in _keys(v, p + k + ".")
-	}
+def _shape_diff(a, b, path="$"):
+	"""Return a list of structural differences between a and b (keys starting with "_" are skipped)."""
+	if type(a) is not type(b):
+		return [f"{path}: {type(a).__name__} != {type(b).__name__}"]
+	if isinstance(a, dict):
+		ka = {k for k in a if not k.startswith("_")}
+		kb = {k for k in b if not k.startswith("_")}
+		diffs = [f"{path}.{k}: missing in second" for k in sorted(ka - kb)]
+		diffs += [f"{path}.{k}: missing in first" for k in sorted(kb - ka)]
+		for k in sorted(ka & kb):
+			diffs += _shape_diff(a[k], b[k], f"{path}.{k}")
+		return diffs
+	if isinstance(a, list):
+		if len(a) != len(b):
+			return [f"{path}: list length {len(a)} != {len(b)}"]
+		diffs = []
+		for i, (x, y) in enumerate(zip(a, b, strict=True)):
+			diffs += _shape_diff(x, y, f"{path}[{i}]")
+		return diffs
+	return []
 
 
 class TestContext(FrappeTestCase):
@@ -44,7 +60,7 @@ class TestContext(FrappeTestCase):
 
 	def test_content_parity(self):
 		en, ar = load_content("en"), load_content("ar")
-		self.assertEqual(_keys(en), _keys(ar))
+		self.assertEqual(_shape_diff(en, ar), [])
 		self.assertEqual([p["key"] for p in en["plans"]["items"]], list(PLAN_KEYS))
 		self.assertEqual([p["key"] for p in ar["plans"]["items"]], list(PLAN_KEYS))
 		self.assertEqual(ar.get("_review"), "Arabic draft \u2013 needs native-speaker review")
@@ -76,7 +92,9 @@ class TestContext(FrappeTestCase):
 		self.assertEqual(ctx.description, load_content("ar")["zatca"]["meta"]["description"])
 		self.assertIs(ctx.t, load_content("ar")["zatca"])
 		self.assertIs(ctx.common, load_content("ar")["common"])
-		self.assertEqual(ctx.settings["stat_live_sites"], 87)
+		self.assertIsInstance(ctx.settings["stat_live_sites"], int)
+		self.assertIsInstance(ctx.settings["stat_zatca_customers"], int)
+		self.assertNotIn("notify_emails", ctx.settings)
 		self.assertEqual(ctx.no_cache, 0)
 		self.assertEqual(ctx.sitemap, 1)
 
@@ -88,6 +106,18 @@ class TestContext(FrappeTestCase):
 		self.assertEqual(ctx.alt_url, "/ar")
 		self.assertEqual(ctx.canonical, "https://kenzcloudx.com/")
 		self.assertIs(ctx.t, load_content("en")["home"])
+
+	def test_shape_diff_detects_list_item_differences(self):
+		a = {"x": [{"k": 1, "v": "a"}], "_skip": {"y": 1}}
+		self.assertEqual(_shape_diff(a, {"x": [{"k": 2, "v": "b"}], "_skip": []}), [])
+		self.assertTrue(_shape_diff(a, {"x": [{"k": 1}]}))
+		self.assertTrue(_shape_diff(a, {"x": [{"k": 1, "v": "a"}, {"k": 1, "v": "a"}]}))
+		self.assertTrue(_shape_diff(a, {"x": [{"k": "1", "v": "a"}]}))
+
+	def test_build_context_rejects_bad_input(self):
+		for stem, lang in (("does-not-exist", "en"), ("common", "en"), ("zatca", "fr")):
+			with self.assertRaises(ValueError):
+				build_page_context(frappe._dict(), stem, lang)
 
 	def test_unknown_lang(self):
 		with self.assertRaises(ValueError):

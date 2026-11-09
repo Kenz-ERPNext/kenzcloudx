@@ -174,8 +174,8 @@
 			"heading": "What Phase 2 means",
 			"body": "In Phase 2 (the integration phase), your invoicing system must send every e-invoice to ZATCA. ZATCA tells each business when its wave starts, with at least six months' notice.",
 			"points": [
-				"Invoices are created as structured XML and stamped by your system.",
-				"Standard tax invoices (B2B) must be cleared by ZATCA before you send them to the buyer.",
+				"Invoices are generated as structured XML and signed by your system.",
+				"Standard tax invoices (B2B) are cleared and stamped by ZATCA before they go to the buyer.",
 				"Simplified tax invoices (B2C) are reported to ZATCA within 24 hours.",
 				"Credit and debit notes follow the same rules as the invoice they correct.",
 				"Invoices must show a QR code and include Arabic text."
