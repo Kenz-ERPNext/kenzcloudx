@@ -1,0 +1,430 @@
+{
+	"common": {
+		"brand": {
+			"name": "KENZ CLOUDX",
+			"byline": "by Kenz Technology"
+		},
+		"nav": {
+			"home": "Home",
+			"erpnext": "ERPNext",
+			"zatca": "ZATCA",
+			"plans": "Plans",
+			"about": "About",
+			"demo": "Request a demo"
+		},
+		"cta_demo": "Request a demo",
+		"cta_quote": "Request a quote",
+		"customer_login": "Customer login",
+		"lang_toggle": "العربية",
+		"whatsapp_label": "Chat on WhatsApp",
+		"footer": {
+			"tagline": "ERPNext hosting, ZATCA e-invoicing and support for businesses in Saudi Arabia.",
+			"pages_heading": "Pages",
+			"contact_heading": "Contact",
+			"legal_heading": "Legal",
+			"privacy": "Privacy policy",
+			"terms": "Terms of service",
+			"phone_label": "Phone",
+			"email_label": "Email",
+			"cr_label": "CR No.",
+			"vat_label": "VAT No.",
+			"copyright": "© Kenz Technology. All rights reserved."
+		}
+	},
+	"home": {
+		"meta": {
+			"title": "KenzCloudX – ERPNext hosting and ZATCA e-invoicing in Saudi Arabia",
+			"description": "We set up and run ERPNext for Saudi businesses: ZATCA Phase 2 e-invoicing, data migration, daily backups and support in Arabic and English."
+		},
+		"hero": {
+			"tag": "ZATCA Phase 2 · Integrated",
+			"h1": "ERPNext for Saudi businesses, hosted and run by people you can call.",
+			"subline": "We set up your ERPNext, connect it to ZATCA, move your data, and keep it running. Daily backups, Arabic invoices, one monthly bill.",
+			"cta_primary": "Request a demo",
+			"cta_secondary": "How ZATCA works"
+		},
+		"proof": {
+			"live_sites_label": "live ERPNext sites",
+			"zatca_customers_label": "customers on ZATCA Phase 2",
+			"backups_label": "daily off-site backups",
+			"support_label": "support in Arabic and English"
+		},
+		"what_we_do": {
+			"heading": "What we do",
+			"intro": "You run your business. We look after the system.",
+			"items": [
+				{
+					"key": "setup",
+					"title": "Set-up",
+					"body": "We create your company, chart of accounts, VAT settings, users and print formats. Your tax invoices come out in Arabic and English from day one."
+				},
+				{
+					"key": "zatca",
+					"title": "ZATCA onboarding",
+					"body": "We register your system with ZATCA, install the certificates and test the first invoices with you. B2B invoices are cleared, B2C invoices are reported."
+				},
+				{
+					"key": "migration",
+					"title": "Data migration",
+					"body": "We move your customers, suppliers, items, opening balances and open invoices from spreadsheets or your old system, and check the totals with you."
+				},
+				{
+					"key": "support",
+					"title": "Support",
+					"body": "Call us or message us on WhatsApp, in Arabic or English. We handle updates, backups and monitoring so you do not have to."
+				}
+			]
+		},
+		"how_it_works": {
+			"heading": "How it works",
+			"steps": [
+				{
+					"title": "Demo",
+					"body": "A short call where we show ERPNext with your kind of transactions and answer your questions."
+				},
+				{
+					"title": "Set-up",
+					"body": "We configure the system, move your data and connect it to ZATCA."
+				},
+				{
+					"title": "Training",
+					"body": "We train your team on the screens they will use every day, in Arabic or English."
+				},
+				{
+					"title": "Live",
+					"body": "You start issuing real invoices. We stay on call and keep the system backed up and updated."
+				}
+			]
+		},
+		"demo_band": {
+			"heading": "See it with your own data",
+			"body": "Book a demo. We will show you invoicing, VAT returns and stock for a business like yours, and give you a quote after the call.",
+			"button": "Request a demo"
+		}
+	},
+	"erpnext": {
+		"meta": {
+			"title": "ERPNext for Saudi businesses – KenzCloudX",
+			"description": "Accounting, inventory, sales, purchasing, HR and payroll, and point of sale in one system, set up for Saudi VAT and ZATCA e-invoicing."
+		},
+		"hero": {
+			"h1": "One system for your accounts, stock and sales",
+			"intro": "ERPNext is open-source business software used by companies around the world. We set it up for Saudi VAT, ZATCA e-invoicing and Arabic documents, then host and maintain it for you."
+		},
+		"modules": {
+			"heading": "What is included",
+			"items": [
+				{
+					"key": "accounting",
+					"title": "Accounting",
+					"body": "Chart of accounts, journal entries, bank reconciliation, VAT reports and financial statements. Multi-company and multi-currency."
+				},
+				{
+					"key": "inventory",
+					"title": "Inventory",
+					"body": "Items, warehouses, stock transfers, batch and serial numbers, and reorder levels. Stock value posts to your accounts automatically."
+				},
+				{
+					"key": "sales",
+					"title": "Sales",
+					"body": "Quotations, sales orders, delivery notes and tax invoices in Arabic and English, with customer balances you can check at any time."
+				},
+				{
+					"key": "purchasing",
+					"title": "Purchasing",
+					"body": "Purchase requests, supplier quotations, purchase orders and supplier invoices, matched against what you actually received."
+				},
+				{
+					"key": "hr_payroll",
+					"title": "HR and payroll",
+					"body": "Employee records, leave, attendance and monthly payroll, with salary slips and the accounting entries created for you."
+				},
+				{
+					"key": "pos",
+					"title": "Point of sale",
+					"body": "A point-of-sale screen for shops and counters. Simplified tax invoices carry the ZATCA QR code and are reported automatically."
+				}
+			]
+		},
+		"hosting": {
+			"heading": "What we look after",
+			"points": [
+				"Hosting, security updates and ERPNext version upgrades",
+				"Daily off-site backups",
+				"Monitoring, so we often see a problem before you do",
+				"Support from people who know your set-up"
+			]
+		},
+		"cta": {
+			"heading": "Want to see the modules you need?",
+			"body": "Tell us what your business does and we will show you the parts that matter to you.",
+			"button": "Request a demo"
+		}
+	},
+	"zatca": {
+		"meta": {
+			"title": "ZATCA Phase 2 e-invoicing with ERPNext – KenzCloudX",
+			"description": "What ZATCA Phase 2 requires, how we onboard your ERPNext (CSID, certificates, QR code, clearance and reporting), and answers to common questions."
+		},
+		"hero": {
+			"h1": "ZATCA Phase 2, handled for you",
+			"intro": "We connect your ERPNext to the ZATCA Fatoora platform and make sure every invoice is cleared or reported correctly."
+		},
+		"phase2": {
+			"heading": "What Phase 2 means",
+			"body": "In Phase 2 (the integration phase), your invoicing system must send every e-invoice to ZATCA. ZATCA tells each business when its wave starts, with at least six months' notice.",
+			"points": [
+				"Invoices are created as structured XML and stamped by your system.",
+				"Standard tax invoices (B2B) must be cleared by ZATCA before you send them to the buyer.",
+				"Simplified tax invoices (B2C) are reported to ZATCA within 24 hours.",
+				"Credit and debit notes follow the same rules as the invoice they correct.",
+				"Invoices must show a QR code and include Arabic text."
+			]
+		},
+		"onboarding": {
+			"heading": "How onboarding works",
+			"intro": "Most of this happens on our side. We need your VAT number, a one-time password from the Fatoora portal and an hour of your time to test.",
+			"steps": [
+				{
+					"title": "Generate the request",
+					"body": "We create a certificate signing request for each invoicing unit, using your VAT number and company details."
+				},
+				{
+					"title": "Get the CSID",
+					"body": "You log in to the Fatoora portal and give us a one-time password. We use it to obtain the Cryptographic Stamp Identifier (CSID) for your system."
+				},
+				{
+					"title": "Install the certificates",
+					"body": "We install the compliance certificate, run the ZATCA compliance checks, then switch to the production certificate."
+				},
+				{
+					"title": "QR code on every invoice",
+					"body": "Your print formats are updated so each invoice carries the Phase 2 QR code with the seller, VAT and stamp details."
+				},
+				{
+					"title": "Clearance and reporting",
+					"body": "From go-live, B2B invoices are sent for clearance and B2C invoices are reported automatically. Rejected invoices are flagged so they can be fixed and sent again."
+				}
+			]
+		},
+		"faq": {
+			"heading": "Common questions",
+			"items": [
+				{
+					"q": "When does Phase 2 apply to my business?",
+					"a": "ZATCA notifies businesses by wave, based on revenue, at least six months before their date. If you have received the notice, send it to us and we will plan around it."
+				},
+				{
+					"q": "Do I need new hardware?",
+					"a": "No. Your ERPNext runs on our servers and talks to ZATCA directly. You only need a browser and, for point of sale, a receipt printer."
+				},
+				{
+					"q": "What happens if an invoice is rejected?",
+					"a": "The invoice is marked in ERPNext with the reason ZATCA gave. Most rejections are data errors, such as a missing buyer VAT number, and can be corrected and sent again."
+				},
+				{
+					"q": "Can I keep my existing invoice numbers?",
+					"a": "Yes. We continue your numbering series so there is no gap between your old system and ERPNext."
+				},
+				{
+					"q": "Will my invoices be in Arabic?",
+					"a": "Yes. Tax invoices are printed in Arabic and English side by side, as most Saudi businesses use."
+				}
+			]
+		},
+		"cta": {
+			"heading": "Got your ZATCA wave notice?",
+			"body": "Send it to us. We will tell you what needs to be ready and by when.",
+			"button": "Request a demo"
+		}
+	},
+	"plans": {
+		"meta": {
+			"title": "Plans – KenzCloudX",
+			"description": "Three ERPNext hosting and support plans for Saudi businesses. Every plan includes ZATCA Phase 2 e-invoicing and daily backups. Ask us for a quote."
+		},
+		"hero": {
+			"h1": "Plans",
+			"intro": "Every plan includes hosting, ZATCA Phase 2 e-invoicing, daily off-site backups and support. We quote after a short call, based on your number of users and what you need set up."
+		},
+		"items": [
+			{
+				"_placeholder": true,
+				"key": "starter",
+				"name": "Starter",
+				"tagline": "[PLACEHOLDER] For small businesses with one company and a few users.",
+				"features": [
+					"Accounting, sales, purchasing and inventory",
+					"ZATCA Phase 2 clearance and reporting",
+					"Arabic and English tax invoices",
+					"Daily off-site backups",
+					"Support by phone and WhatsApp during business hours"
+				]
+			},
+			{
+				"_placeholder": true,
+				"key": "business",
+				"name": "Business",
+				"tagline": "[PLACEHOLDER] For growing businesses with more users, branches or warehouses.",
+				"features": [
+					"Everything in Starter",
+					"HR and payroll",
+					"Point of sale for shops and counters",
+					"Data migration from your old system",
+					"Training for your team"
+				]
+			},
+			{
+				"_placeholder": true,
+				"key": "enterprise",
+				"name": "Enterprise",
+				"tagline": "[PLACEHOLDER] For groups with several companies or custom requirements.",
+				"features": [
+					"Everything in Business",
+					"Multiple companies and branches",
+					"Custom reports and print formats",
+					"Integrations with your other systems",
+					"Priority support"
+				]
+			}
+		],
+		"note": "We do not publish prices because set-up work differs between businesses. Request a quote and we will reply with a monthly price for your set-up.",
+		"button": "Request a quote"
+	},
+	"about": {
+		"meta": {
+			"title": "About Kenz Technology – KenzCloudX",
+			"description": "KenzCloudX is run by Kenz Technology, a Saudi-registered company that hosts and supports ERPNext for businesses in the Kingdom."
+		},
+		"hero": {
+			"h1": "About us",
+			"intro": "KenzCloudX is a service of Kenz Technology, a company registered in Saudi Arabia. We host, set up and support ERPNext for Saudi businesses, many of them already on ZATCA Phase 2."
+		},
+		"company": {
+			"heading": "Kenz Technology",
+			"body": "Kenz Technology is a Saudi-registered company that implements and supports ERPNext. KenzCloudX is our hosted service: we keep the servers, backups, updates and ZATCA connection in order, so your team can get on with the work."
+		},
+		"team": {
+			"heading": "Our team",
+			"body": "[PLACEHOLDER] Our team includes accountants and engineers who work with ERPNext every day. Names and photos to be added."
+		},
+		"contact": {
+			"heading": "Contact us",
+			"phone_label": "Phone",
+			"whatsapp_label": "WhatsApp",
+			"email_label": "Email",
+			"address_label": "Office",
+			"cr_label": "Commercial registration",
+			"vat_label": "VAT number"
+		}
+	},
+	"demo": {
+		"meta": {
+			"title": "Request a demo – KenzCloudX",
+			"description": "Book a demo of ERPNext with ZATCA Phase 2 e-invoicing. We will call you, show the system and send a quote."
+		},
+		"hero": {
+			"h1": "Request a demo",
+			"intro": "Tell us a little about your business. We will call you to arrange a time that suits you."
+		},
+		"form": {
+			"full_name": "Full name",
+			"company": "Company name",
+			"phone": "Mobile number",
+			"phone_hint": "Saudi mobile, for example 05XXXXXXXX",
+			"email": "Work email",
+			"users": "Number of users",
+			"zatca_required": "Do you need ZATCA Phase 2 e-invoicing?",
+			"zatca_yes": "Yes",
+			"zatca_no": "No",
+			"plan": "Plan you are interested in",
+			"plan_none": "Not sure yet",
+			"message": "Anything else we should know?",
+			"message_hint": "For example: your current system, number of branches, or your ZATCA wave date.",
+			"required_note": "Fields marked * are required.",
+			"privacy_note": "We use your details only to contact you about this request.",
+			"submit": "Send request",
+			"sending": "Sending…"
+		},
+		"errors": {
+			"required": "Please fill in this field.",
+			"email": "Please enter a valid email address.",
+			"phone": "Please enter a Saudi mobile number, for example 0551234567.",
+			"users": "Please enter a number of users of 1 or more.",
+			"rate_limited": "We have received several requests from you. Please try again in an hour, or contact us on WhatsApp.",
+			"generic": "Something went wrong and your request was not sent. Please try again, or contact us on WhatsApp."
+		},
+		"thanks": {
+			"heading": "Thank you. We have your request.",
+			"body": "We will call you soon to arrange the demo. If it is urgent, message us on WhatsApp."
+		}
+	},
+	"privacy": {
+		"meta": {
+			"title": "Privacy policy – KenzCloudX",
+			"description": "How Kenz Technology collects, uses and protects personal data on the KenzCloudX website and service."
+		},
+		"hero": {
+			"h1": "Privacy policy",
+			"updated": "[PLACEHOLDER] Last updated: date to be confirmed"
+		},
+		"sections": [
+			{
+				"heading": "Who we are",
+				"body": "[PLACEHOLDER] KenzCloudX is a service of Kenz Technology, registered in Saudi Arabia. Legal name, CR number and address to be confirmed."
+			},
+			{
+				"heading": "What we collect",
+				"body": "[PLACEHOLDER] When you request a demo or quote we collect your name, company, mobile number, email and the details you give us in the form."
+			},
+			{
+				"heading": "How we use it",
+				"body": "[PLACEHOLDER] We use these details only to reply to your request and, if you become a customer, to provide the service. We do not sell your data."
+			},
+			{
+				"heading": "Customer data in ERPNext",
+				"body": "[PLACEHOLDER] Data you enter in your ERPNext system belongs to you. Hosting location, retention and backup terms to be confirmed."
+			},
+			{
+				"heading": "Your rights and contact",
+				"body": "[PLACEHOLDER] Text to be reviewed against the Saudi Personal Data Protection Law. Contact details for privacy requests to be added."
+			}
+		]
+	},
+	"terms": {
+		"meta": {
+			"title": "Terms of service – KenzCloudX",
+			"description": "The terms that apply to the KenzCloudX website and ERPNext hosting service provided by Kenz Technology."
+		},
+		"hero": {
+			"h1": "Terms of service",
+			"updated": "[PLACEHOLDER] Last updated: date to be confirmed"
+		},
+		"sections": [
+			{
+				"heading": "The service",
+				"body": "[PLACEHOLDER] Description of the hosting, set-up and support services provided by Kenz Technology."
+			},
+			{
+				"heading": "Your account and data",
+				"body": "[PLACEHOLDER] Customer responsibilities, ownership of data and access to your ERPNext system."
+			},
+			{
+				"heading": "Fees and payment",
+				"body": "[PLACEHOLDER] Monthly billing, payment terms and VAT."
+			},
+			{
+				"heading": "Availability and backups",
+				"body": "[PLACEHOLDER] Service availability, maintenance windows and backup commitments."
+			},
+			{
+				"heading": "Ending the service",
+				"body": "[PLACEHOLDER] Notice period and how you receive a full copy of your data."
+			},
+			{
+				"heading": "Governing law",
+				"body": "[PLACEHOLDER] These terms are governed by the laws of the Kingdom of Saudi Arabia. Final text to be reviewed by a lawyer."
+			}
+		]
+	}
+}
