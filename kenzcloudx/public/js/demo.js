@@ -31,7 +31,10 @@
 		},
 		email: function (v) {
 			if (!v) return msg.msgRequired;
-			return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? "" : msg.msgEmail;
+			// same allowlist as the server (kenzcloudx.api.demo._EMAIL)
+			var ok = v.length <= 140 && /^[\x00-\x7f]*$/.test(v) &&
+				/^[a-z0-9](?:[a-z0-9._%+-]*[a-z0-9_+-])?@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,63}$/.test(v.toLowerCase());
+			return ok ? "" : msg.msgEmail;
 		},
 		users: function (v) {
 			v = ascii(v);

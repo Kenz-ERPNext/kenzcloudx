@@ -19,8 +19,13 @@ _PHONE_JUNK = re.compile(r"[\s\-\u2010-\u2015()\[\]{}\u200e\u200f\u202a-\u202e\u
 # ASCII digits only ([0-9], not \d, which also matches fullwidth or Devanagari digits).
 # A trunk 0 is allowed after the country code: +966 05XXXXXXXX is a common way to write it.
 _KSA_MOBILE = re.compile(r"(?:\+966|00966|966)?0?(5[0-9]{8})")
-# a single bare address: no display name, no lists, no quotes or spaces
-_BARE_EMAIL = re.compile(r'[^@\s<>",;]+@[^@\s<>",;]+\.[^@\s<>",;]+')
+# A strict ASCII allowlist for one plain address (checked after lowercasing). IDN domains are
+# accepted in their punycode form (xn--...).
+_EMAIL = re.compile(
+	r"[a-z0-9](?:[a-z0-9._%+-]*[a-z0-9_+-])?@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,63}"
+)
+# Lead.email_id is a 140-character column: longer addresses are refused, never truncated
+MAX_EMAIL = 140
 _USERS = re.compile(r"[0-9]{1,6}")
 DASH = "\u2013"  # en dash, for the email subject and ToDo summary
 
@@ -55,10 +60,23 @@ def _users(value, lang: str) -> int | None:
 	return int(value)
 
 
-def _is_bare_email(email: str) -> bool:
-	"""True only for one plain address. validate_email_address alone also accepts display-name
-	forms ("x <a@b.sa>") and comma lists and returns the extracted address, not the input."""
-	return bool(_BARE_EMAIL.fullmatch(email)) and validate_email_address(email) == email
+def _clean_email(raw, lang: str) -> str:
+	"""Return the address trimmed and lowercased, or fail with the `email` error.
+
+	Only surrounding whitespace is removed (nothing is cut or rewritten). The value must be ASCII
+	before lowercasing (e.g. the Kelvin sign would otherwise become "k") and must fullmatch the
+	allowlist. validate_email_address must return it unchanged: on its own it accepts display-name
+	forms and lists and returns the extracted address, not the input.
+	"""
+	email = str(raw or "").strip()
+	if not email:
+		_fail(lang, "required")
+	if len(email) > MAX_EMAIL or not email.isascii():
+		_fail(lang, "email")
+	email = email.lower()
+	if not _EMAIL.fullmatch(email) or validate_email_address(email) != email:
+		_fail(lang, "email")
+	return email
 
 
 @frappe.whitelist(allow_guest=True, methods=["POST"])
@@ -82,21 +100,21 @@ def submit_demo_request(
 	data = frappe._dict(
 		full_name=_line(full_name),
 		company=_line(company),
-		email=_line(email).lower(),
 		raw_phone=_line(phone),
 		message=str(message or "").strip()[:MAX_MESSAGE],
 		lang=lang,
 		plan=plan if plan in PLAN_KEYS else None,
 		zatca_required=1 if cint(zatca_required) else 0,
 	)
-	for field in ("full_name", "company", "raw_phone", "email"):
+	for field in ("full_name", "company", "raw_phone"):
 		if not data[field]:
 			_fail(lang, "required")
+	if not str(email or "").strip():
+		_fail(lang, "required")
 	data.phone = normalize_ksa_phone(data.raw_phone)
 	if not data.phone:
 		_fail(lang, "phone")
-	if not _is_bare_email(data.email):
-		_fail(lang, "email")
+	data.email = _clean_email(email, lang)
 	data.users = _users(users, lang)
 
 	lead_name = _existing_lead(data.email)
@@ -116,8 +134,13 @@ def submit_demo_request(
 
 
 def _create_lead_or_find(data) -> tuple[str, bool]:
-	"""Create the Lead and return (name, True); or, if a Lead with this email appeared meanwhile
-	(two first submissions at once fail ERPNext's unique-email check), return (its name, False).
+	"""Create the Lead and return (name, True); or, if the insert fails because a Lead with this
+	email was committed after our lookup, return (its name, False) so the caller comments on it.
+
+	Limit: ERPNext's unique-email rule is an application-level SELECT in Lead.validate, not a
+	database unique index. Two truly concurrent first submissions (neither committed yet) can both
+	pass it and create two Leads. This code only covers a Lead committed between our lookup and
+	our insert; the 5-per-hour rate limit makes the concurrent case unlikely. No locking is added.
 
 	ERPNext's own message is never shown: it is English and names the existing Lead.
 	"""
@@ -134,7 +157,13 @@ def _create_lead_or_find(data) -> tuple[str, bool]:
 		existing = _existing_lead(data.email)
 		if existing:
 			return existing, False
-		frappe.log_error(title="KenzCloudX demo request: Lead insert failed")
+		# The request is rolled back after we raise. defer_insert queues the log in Redis; the
+		# scheduler's deferred_insert.save_to_db writes it (every 15 minutes), outside our transaction.
+		frappe.log_error(
+			title="KenzCloudX demo request: Lead insert failed",
+			message=frappe.get_traceback(with_context=True),
+			defer_insert=True,
+		)
 		_fail(data.lang, "generic")
 
 

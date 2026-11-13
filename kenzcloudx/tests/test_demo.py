@@ -383,6 +383,53 @@ class TestFixRound1(FrappeTestCase):
 			self.assertEqual(str(cm.exception), ERR_EN["email"], bad)
 		self.assertFalse(frappe.db.exists("Lead", {"email_id": ["like", "%a@x.sa%"]}))
 
+	def test_email_allowlist_rejects_probes(self):
+		probes = (
+			"a@x.sa'onmouseover='alert`1`",
+			"a`b@x.sa",
+			"a&b@x.sa",
+			"a@x.sa&#x3c",
+			"a@x.sa\u202e",
+			"a@x.sa\u200b",
+			"a@x.s\u0430",  # Cyrillic a
+			"a@x.sa.",
+			"a@x.sa\\x",
+			"a@x.sa/../",
+			"a@x.sa?x=1",
+			"a@x.sa{{7*7}}",
+			"a@x.sa%0a",
+			"a@x.sa'",
+			"\u212aa@x.sa",  # Kelvin sign lowercases to an ASCII k
+			".a@x.sa",
+			"a.@x.sa",
+			"a@-x.sa",
+			"a@x.s",
+		)
+		for bad in probes:
+			with self.assertRaises(frappe.ValidationError, msg=repr(bad)) as cm:
+				submit(email=bad)
+			self.assertEqual(str(cm.exception), ERR_EN["email"], repr(bad))
+		self.assertEqual(frappe.db.count("Lead", {"email_id": ["like", "a%@x.%"]}), 0)
+
+	def test_email_allowlist_accepts_real_addresses(self):
+		for good in ("ali.hassan+erp@nesco.com.sa", "a_b@x-y.sa", "a@xn--mgbh0fb.sa", " UPPER@Nesco.SA "):
+			submit(email=good)
+			stored = good.strip().lower()
+			self.assertEqual(frappe.db.get_value("Lead", {"email_id": stored}, "email_id"), stored, good)
+
+	def test_long_email_rejected_not_truncated(self):
+		# Lead.email_id holds 140 characters: longer addresses are refused, never cut short
+		domain = "@" + "d" * 60 + ".sa"
+		fits = "a" * (140 - len(domain)) + domain
+		too_long = "a" * (141 - len(domain)) + domain
+		for bad in (too_long, "a" * 250 + "@x.sa"):
+			with self.assertRaises(frappe.ValidationError) as cm:
+				submit(email=bad)
+			self.assertEqual(str(cm.exception), ERR_EN["email"])
+		self.assertFalse(frappe.db.exists("Lead", {"email_id": too_long[:140]}))
+		submit(email=fits)
+		self.assertEqual(frappe.db.get_value("Lead", {"email_id": fits}, "email_id"), fits)
+
 	def test_valid_email_stored_bare_and_lowercase(self):
 		submit(email="  Bare.Address+demo@Nesco.SA ")
 		self.assertEqual(
@@ -511,20 +558,34 @@ class TestFixRound1(FrappeTestCase):
 			with self.assertRaises(frappe.ValidationError) as cm:
 				submit(email="race2@x.sa", lang="ar")
 		log.assert_called_once()
+		self.assertTrue(log.call_args.kwargs.get("defer_insert"))
+		self.assertIn("DuplicateEntryError", log.call_args.kwargs.get("message", ""))
 		self.assertEqual(str(cm.exception), ERR_AR["generic"])
 		self.assertNotIn(lead, str(cm.exception))
 		messages = [m.get("message", "") for m in frappe.local.message_log]
 		self.assertEqual(messages, [ERR_AR["generic"]])
 		self.assertEqual(frappe.db.count("Lead", {"email_id": "race2@x.sa"}), 1)
 
-	# 6. no invisible bidi controls in source
+	# 6. no invisible bidi controls in source (fix round 2: every source file of the app)
 	def test_no_invisible_bidi_characters_in_source(self):
+		import os
 		import re
 
-		for parts in (("public", "js", "demo.js"), ("api", "demo.py")):
-			with open(frappe.get_app_path("kenzcloudx", *parts), encoding="utf-8") as f:
-				src = f.read()
-			self.assertIsNone(re.search("[‎‏‪-‮⁦-⁩]", src), parts)
+		bidi = re.compile("[\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]")
+		root = frappe.get_app_path("kenzcloudx")
+		scanned = []
+		for folder, dirs, files in os.walk(root):
+			dirs[:] = [d for d in dirs if d not in ("fonts", "images", "__pycache__", "node_modules")]
+			for name in files:
+				if name.endswith((".py", ".js", ".html", ".json")):
+					path = os.path.join(folder, name)
+					scanned.append(path)
+					with open(path, encoding="utf-8") as f:
+						match = bidi.search(f.read())
+					self.assertIsNone(match, os.path.relpath(path, root))
+		names = {os.path.relpath(p, root) for p in scanned}
+		for expected in ("public/js/demo.js", "api/demo.py", "tests/test_demo.py", "website/content/ar.json"):
+			self.assertIn(expected, names)
 
 	# 7. browser validation still works without JS
 	def test_form_has_no_novalidate_attribute(self):
@@ -608,6 +669,39 @@ class TestDemoHTTP(FrappeTestCase):
 		self.assertEqual(messages, [ERR_AR["email"]])
 
 	# Review Focus 3 (rate limit)
+	def test_generic_failure_is_logged_through_http(self):
+		"""The request is rolled back, but the Error Log must still be written (defer_insert)."""
+		from frappe.deferred_insert import save_to_db
+
+		from kenzcloudx.api import demo
+
+		title = "KenzCloudX demo request: Lead insert failed"
+		before = set(frappe.get_all("Error Log", filters={"method": title}, pluck="name"))
+
+		def fail_insert(data):
+			frappe.throw("simulated ERPNext validation failure", frappe.ValidationError)
+
+		with patch.object(demo, "_create_lead", side_effect=fail_insert):
+			r = self.post(lang="ar")
+		self.assertEqual(r.status_code, 417)
+		messages = [json.loads(m)["message"] for m in json.loads(r.json["_server_messages"])]
+		self.assertEqual(messages, [ERR_AR["generic"]])
+
+		save_to_db()  # what the scheduler does every 15 minutes
+		frappe.db.commit()
+		new = frappe.get_all(
+			"Error Log",
+			filters={"method": title, "name": ["not in", list(before) or [""]]},
+			fields=["name", "error"],
+		)
+		try:
+			self.assertEqual(len(new), 1)
+			self.assertIn("simulated ERPNext validation failure", new[0].error)
+		finally:
+			# a plain delete: delete_doc would leave a Deleted Document and a "Deleted" comment
+			frappe.db.delete("Error Log", {"name": ["in", [row.name for row in new] or [""]]})
+			frappe.db.commit()
+
 	def test_rate_limit(self):
 		codes = [self.post(website="bot").status_code for _ in range(6)]
 		self.assertEqual(codes, [200, 200, 200, 200, 200, 429])
