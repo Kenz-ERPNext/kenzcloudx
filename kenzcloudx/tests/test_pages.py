@@ -9,18 +9,30 @@ SETTINGS = "KenzCloudX Settings"
 ROUTES = ["/", "/erpnext", "/zatca", "/plans", "/about", "/demo", "/privacy", "/terms"]
 
 
-def html(path):
-	"""Render `path` as Guest through the normal website pipeline; return (status_code, html)."""
+def response(path):
+	"""Render `path` as Guest through the normal website pipeline and return the Response.
+
+	`path` may carry a query string (`/demo?plan=business`): it is visible to get_context via
+	frappe.form_dict and frappe.local.request.args, as in a real request.
+	"""
 	user = frappe.session.user
 	request = getattr(frappe.local, "request", None)
+	form_dict = frappe.local.form_dict
 	frappe.set_user("Guest")
 	set_request(method="GET", path=path)
+	frappe.local.form_dict = frappe._dict(frappe.local.request.args.to_dict())
 	try:
-		r = get_response(path)
-		return r.status_code, r.get_data(as_text=True)
+		return get_response(frappe.local.request.path)
 	finally:
 		frappe.local.request = request
+		frappe.local.form_dict = form_dict
 		frappe.set_user(user)
+
+
+def html(path):
+	"""Render `path` as Guest; return (status_code, html)."""
+	r = response(path)
+	return r.status_code, r.get_data(as_text=True)
 
 
 def set_settings(**values):
@@ -273,3 +285,45 @@ class TestPages(FrappeTestCase):
 			self.assertNotIn("Riyadh office", about)
 		finally:
 			set_settings(**{f: old.get(f) or "" for f in fields})
+
+	# ---------- Task 5 carry-over fixes ----------
+
+	def test_stock_contact_page_redirects_to_about(self):
+		for src, target in (("/contact", "/about"), ("/ar/contact", "/ar/about")):
+			frappe.cache.hdel("website_redirects", src.strip("/"))
+			r = response(src)
+			self.assertEqual(r.status_code, 301, src)
+			self.assertTrue(r.headers["Location"].endswith(target), (src, r.headers["Location"]))
+
+	def test_sitemap_has_no_stock_contact_page(self):
+		frappe.cache.delete_value("website_pages")
+		_, h = html("/sitemap.xml")
+		self.assertNotIn("/contact</loc>", h)
+		self.assertIn("/about</loc>", h)
+
+	def test_about_tel_href_digits_only_and_whatsapp_spaced(self):
+		fields = ("phone", "whatsapp_number")
+		old = frappe.get_single(SETTINGS)
+		try:
+			set_settings(phone="+966 (11) 000-0000", whatsapp_number="0551234567")
+			for p in ("/about", "/ar/about"):
+				_, h = html(p)
+				self.assertIn('href="tel:+966110000000"', h, p)
+				self.assertNotIn('href="tel:+966(11)', h, p)
+				self.assertIn('href="https://wa.me/966551234567"', h, p)
+				self.assertIn(">+966 55 123 4567</a>", h, p)
+		finally:
+			set_settings(**{f: old.get(f) or "" for f in fields})
+
+	def test_zatca_phase_2_heading_does_not_break(self):
+		_, h = html("/zatca")
+		self.assertIn("What Phase\u00a02 means", h)
+		_, h = html("/ar/zatca")
+		self.assertIn("ماذا تعني المرحلة\u00a0الثانية", h)  # noqa: RUF001
+
+	def test_erpnext_module_ids_prefixed(self):
+		_, h = html("/erpnext")
+		ids = re.findall(r'<li class="numbered-block" id="([^"]+)"', h)
+		self.assertEqual(len(ids), 6)
+		for i in ids:
+			self.assertTrue(i.startswith("module-"), i)

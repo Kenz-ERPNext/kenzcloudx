@@ -72,6 +72,20 @@ def whatsapp_number(raw) -> str | None:
 	return digits if re.fullmatch(r"[1-9]\d{7,14}", digits) else None
 
 
+def tel_href(raw) -> str | None:
+	"""Phone number for a tel: link: only "+" and ASCII digits (Arabic-Indic digits converted)."""
+	value = re.sub(r"[^\d+]", "", str(raw or "").translate(_DIGITS))
+	return value if re.search(r"\d", value) else None
+
+
+def whatsapp_display(wa_number) -> str | None:
+	"""Show a normalised WhatsApp number like the phone: 966551234567 -> +966 55 123 4567."""
+	if not wa_number:
+		return None
+	m = re.fullmatch(r"966(5\d)(\d{3})(\d{4})", wa_number)
+	return f"+966 {m[1]} {m[2]} {m[3]}" if m else f"+{wa_number}"
+
+
 def _clean(value):
 	if isinstance(value, str):
 		return value.strip() or None
@@ -89,6 +103,8 @@ def _base_context(context, lang: str, t: dict) -> None:
 	settings = frappe.get_cached_doc("KenzCloudX Settings")
 	context.settings = {f: _clean(settings.get(f)) for f in PUBLIC_SETTINGS_FIELDS}
 	context.wa_number = whatsapp_number(context.settings["whatsapp_number"])
+	context.wa_display = whatsapp_display(context.wa_number)
+	context.tel = tel_href(context.settings["phone"])
 	context.title = t["meta"]["title"]
 	context.description = t["meta"]["description"]
 
@@ -109,6 +125,22 @@ def build_page_context(context, stem: str, lang: str) -> None:
 	]
 	context.no_cache = 0
 	context.sitemap = 1
+
+
+def build_demo_context(context, lang: str) -> None:
+	"""The demo page: pre-select ?plan= only when it is a known plan key; never cache the page.
+
+	The website page cache is keyed by path, so a cached /demo would carry one visitor's plan.
+	"""
+	build_page_context(context, "demo", lang)
+	plan = frappe.form_dict.get("plan")
+	context.selected_plan = plan if plan in PLAN_KEYS else None
+	context.plan_options = [(p["key"], p["name"]) for p in load_content(lang)["plans"]["items"]]
+	context.no_cache = 1
+	# A signed-in visitor (e.g. staff trying the form) must send their CSRF token; guests have none.
+	from frappe.sessions import get_csrf_token
+
+	context.csrf_token = get_csrf_token() if frappe.session.user != "Guest" else ""
 
 
 def build_not_found_context(context, lang: str) -> None:

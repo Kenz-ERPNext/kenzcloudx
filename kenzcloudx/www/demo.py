@@ -1,7 +1,7 @@
-from kenzcloudx.website.context import build_page_context
+from kenzcloudx.website.context import build_demo_context
 
 sitemap = 1
 
 
 def get_context(context):
-	build_page_context(context, "demo", "en")
+	build_demo_context(context, "en")

@@ -21,9 +21,8 @@
 				{%- endfor %}
 			</ul>
 		</nav>
-		{#- settings values are stripped (blank -> None) in build_page_context; wa_number is normalised there too. -#}
+		{#- settings values are stripped (blank -> None) in build_page_context; tel and wa_number are normalised there too. -#}
 		{%- set address = settings.office_address_ar if lang == "ar" else settings.office_address_en %}
-		{%- set tel = (settings.phone or "") | replace(" ", "") %}
 		{%- if tel or settings.email or wa_number or address %}
 		<div class="footer-col">
 			<h2 id="footer-contact">{{ f.contact_heading|e }}</h2>

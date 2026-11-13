@@ -1,8 +1,8 @@
 {%- set lp = "/ar" if lang == "ar" else "" -%}
 {%- set c = t.contact -%}
-{#- settings values are stripped (blank -> None) in build_page_context; wa_number is normalised there. -#}
+{#- settings values are stripped (blank -> None) in build_page_context; tel (+ and digits only),
+    wa_number (digits only) and wa_display (+966 55 123 4567) are computed there. -#}
 {%- set address = settings.office_address_ar if lang == "ar" else settings.office_address_en -%}
-{%- set tel = (settings.phone or "") | replace(" ", "") -%}
 {% include "templates/kenz/pages/_page_hero.html" %}
 
 <section class="section" aria-labelledby="company-heading">
@@ -35,7 +35,7 @@
 				<div><dt>{{ c.phone_label|e }}</dt><dd><a href="tel:{{ tel|e }}" dir="ltr">{{ settings.phone|e }}</a></dd></div>
 				{%- endif %}
 				{%- if wa_number %}
-				<div><dt>{{ c.whatsapp_label|e }}</dt><dd><a href="https://wa.me/{{ wa_number|e }}" target="_blank" rel="noopener" dir="ltr">+{{ wa_number|e }}</a></dd></div>
+				<div><dt>{{ c.whatsapp_label|e }}</dt><dd><a href="https://wa.me/{{ wa_number|e }}" target="_blank" rel="noopener" dir="ltr">{{ wa_display|e }}</a></dd></div>
 				{%- endif %}
 				{%- if settings.email %}
 				<div><dt>{{ c.email_label|e }}</dt><dd><a href="mailto:{{ settings.email|e }}" dir="ltr">{{ settings.email|e }}</a></dd></div>

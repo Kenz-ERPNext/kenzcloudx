@@ -252,3 +252,10 @@ fixtures = [
 	{"dt": "Custom Field", "filters": [["name", "like", "Lead-kcx_%"]]},
 	{"dt": "Lead Source", "filters": [["name", "=", "Website"]]},
 ]
+
+# The stock /contact page is not part of this site (it is branded by the framework):
+# send it to About. kenzcloudx/www/contact.py also takes it out of sitemap.xml.
+website_redirects = [
+	{"source": "/contact", "target": "/about", "redirect_http_status": 301},
+	{"source": "/ar/contact", "target": "/ar/about", "redirect_http_status": 301},
+]

@@ -175,3 +175,21 @@ class patch_settings:
 	def __exit__(self, *exc):
 		frappe.db.rollback()
 		frappe.clear_document_cache("KenzCloudX Settings", "KenzCloudX Settings")
+
+
+class TestContactFormatting(FrappeTestCase):
+	def test_tel_href_keeps_only_plus_and_digits(self):
+		from kenzcloudx.website.context import tel_href
+
+		self.assertEqual(tel_href("+966 (11) 000-0000"), "+966110000000")
+		self.assertEqual(tel_href("٠١١ ٠٠٠ ٠٠٠٠"), "0110000000")  # noqa: RUF001
+		self.assertIsNone(tel_href(""))
+		self.assertIsNone(tel_href(None))
+		self.assertIsNone(tel_href("call us"))
+
+	def test_whatsapp_display(self):
+		from kenzcloudx.website.context import whatsapp_display
+
+		self.assertEqual(whatsapp_display("966551234567"), "+966 55 123 4567")
+		self.assertEqual(whatsapp_display("442079460958"), "+442079460958")
+		self.assertIsNone(whatsapp_display(None))

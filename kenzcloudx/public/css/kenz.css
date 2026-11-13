@@ -26,6 +26,8 @@
 	--line: #C9DDD8;
 	--line-soft: #E3E9EE;
 	--on-navy: #D5DEEC;
+	--error: #A4262C;          /* form errors: 7.3:1 on white */
+	--error-bg: #FBEFEF;
 
 	--font: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 	--container: 72rem;
@@ -36,6 +38,7 @@
 
 /* ---------- Base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body {
 	margin: 0;
@@ -330,6 +333,44 @@ img, svg { max-inline-size: 100%; }
 	font-size: 0.875rem; font-weight: 600; letter-spacing: 0.08em; color: var(--teal-text);
 }
 .not-found .btn-row { margin-block-start: 2rem; }
+
+/* Demo / quote form */
+.demo-section { padding-block-start: clamp(2rem, 1rem + 3vw, 3.5rem); }
+.demo-panel { max-inline-size: 46rem; }
+.demo-form { display: grid; gap: 1.5rem; }
+.field-row { display: grid; gap: 1.5rem; }
+@media (min-width: 640px) { .field-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.field { display: grid; gap: 0.4rem; align-content: start; min-inline-size: 0; }
+.field > label, .choice legend { font-weight: 600; color: var(--navy); font-size: 1rem; }
+.req { color: var(--teal-text); }
+.field input, .field select, .field textarea {
+	inline-size: 100%; min-block-size: 3rem; padding: 0.7rem 0.85rem;
+	font: inherit; font-size: 1rem; color: var(--ink); background: var(--white);
+	border: 1px solid var(--muted); border-radius: var(--radius);
+}
+.field textarea { min-block-size: 8rem; resize: vertical; }
+.field select { appearance: auto; }
+.field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible { outline-offset: 0; border-color: var(--navy); }
+[dir=rtl] .field input[dir=ltr] { text-align: end; }
+.field [aria-invalid="true"] { border-color: var(--error); border-width: 2px; }
+.field-hint, .form-note { color: var(--muted); font-size: 0.9375rem; }
+.field-error { color: var(--error); font-size: 0.9375rem; font-weight: 500; }
+.field-error:empty { display: none; }
+.choice { border: 0; margin: 0; padding: 0; }
+.choice legend { padding: 0; margin-block-end: 0.5rem; }
+.choice-options { display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; }
+.choice-options label { display: inline-flex; align-items: center; gap: 0.5rem; min-block-size: 2.75rem; cursor: pointer; }
+.choice-options input { inline-size: 1.25rem; block-size: 1.25rem; margin: 0; accent-color: var(--navy); }
+.hp { position: absolute; inset-inline-start: -9999px; inline-size: 1px; block-size: 1px; overflow: hidden; }
+.form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; }
+.form-actions .btn[disabled] { opacity: 0.7; cursor: progress; }
+.form-status:empty { display: none; }
+.form-status.is-error { padding: 0.85rem 1rem; border-inline-start: 4px solid var(--error); background: var(--error-bg); color: var(--ink); }
+.demo-thanks { padding: 2rem; border-inline-start: 4px solid var(--teal); background: var(--mint); }
+.demo-thanks:focus { outline: none; }
+.demo-thanks:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; }
+.demo-thanks h2 { font-size: 1.625rem; }
+.demo-thanks p { margin-block-start: 0.75rem; max-inline-size: 36rem; }
 
 /* Demo band (navy, full width) */
 .demo-band { background: var(--navy); color: var(--white); padding-block: clamp(3rem, 2rem + 4vw, 5rem); }

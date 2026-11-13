@@ -175,7 +175,7 @@
 			"intro": "We connect your ERPNext to the ZATCA Fatoora platform and make sure every invoice is cleared or reported correctly."
 		},
 		"phase2": {
-			"heading": "What Phase 2 means",
+			"heading": "What Phase 2 means",
 			"body": "In Phase 2 (the integration phase), your invoicing system must send every e-invoice to ZATCA. ZATCA tells each business when its wave starts, with at least six months' notice.",
 			"points": [
 				"Invoices are generated as structured XML and signed by your system.",

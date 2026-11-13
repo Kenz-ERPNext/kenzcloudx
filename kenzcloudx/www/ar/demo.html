@@ -1,3 +1,7 @@
 {% extends "templates/kenz/base.html" %}
 {% block body %}{% include "templates/kenz/pages/demo.html" %}{% endblock %}
 {% block demo_band %}{% endblock %}
+{#- super() is the base menu script (already-rendered markup): it must not be escaped. -#}
+{% block scripts %}{{ super() }}
+	<script src="/assets/kenzcloudx/js/demo.js?v={{ (build_version or '')|e }}" defer></script>
+{%- endblock %}

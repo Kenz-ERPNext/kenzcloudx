@@ -1,2 +1,100 @@
-{#- Task 4 skeleton: hero only. Task 5 adds the request form below the hero. -#}
+{#- Demo / quote request form. Server-side validation in kenzcloudx.api.demo is the source of truth;
+    public/js/demo.js only improves the experience (inline errors, fetch, thank-you without reload).
+    selected_plan is already validated against PLAN_KEYS in build_demo_context; the raw ?plan= value
+    is never rendered. Localised strings reach the script through escaped data-* attributes. -#}
+{%- set f = t.form -%}
+{%- set err = t.errors -%}
 {% include "templates/kenz/pages/_page_hero.html" %}
+
+<div class="section demo-section">
+	<div class="container">
+		<div class="demo-panel">
+			<form class="demo-form" id="demo-form" method="post" action="/api/method/kenzcloudx.api.demo.submit_demo_request" novalidate
+				data-csrf="{{ (csrf_token or '')|e }}"
+				data-msg-required="{{ err.required|e }}"
+				data-msg-email="{{ err.email|e }}"
+				data-msg-phone="{{ err.phone|e }}"
+				data-msg-users="{{ err.users|e }}"
+				data-msg-rate-limited="{{ err.rate_limited|e }}"
+				data-msg-generic="{{ err.generic|e }}"
+				data-msg-sending="{{ f.sending|e }}">
+				<p class="form-note">{{ f.required_note|e }}</p>
+				<input type="hidden" name="lang" value="{{ lang|e }}">
+
+				<div class="field-row">
+					<div class="field">
+						<label for="df-full_name">{{ f.full_name|e }} <span class="req" aria-hidden="true">*</span></label>
+						<input type="text" id="df-full_name" name="full_name" required maxlength="140" autocomplete="name" aria-describedby="df-full_name-error">
+						<p class="field-error" id="df-full_name-error"></p>
+					</div>
+					<div class="field">
+						<label for="df-company">{{ f.company|e }} <span class="req" aria-hidden="true">*</span></label>
+						<input type="text" id="df-company" name="company" required maxlength="140" autocomplete="organization" aria-describedby="df-company-error">
+						<p class="field-error" id="df-company-error"></p>
+					</div>
+				</div>
+
+				<div class="field-row">
+					<div class="field">
+						<label for="df-phone">{{ f.phone|e }} <span class="req" aria-hidden="true">*</span></label>
+						<input type="tel" id="df-phone" name="phone" required maxlength="20" inputmode="tel" autocomplete="tel" dir="ltr" aria-describedby="df-phone-hint df-phone-error">
+						<p class="field-hint" id="df-phone-hint">{{ f.phone_hint|e }}</p>
+						<p class="field-error" id="df-phone-error"></p>
+					</div>
+					<div class="field">
+						<label for="df-email">{{ f.email|e }} <span class="req" aria-hidden="true">*</span></label>
+						<input type="email" id="df-email" name="email" required maxlength="140" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" dir="ltr" aria-describedby="df-email-error">
+						<p class="field-error" id="df-email-error"></p>
+					</div>
+				</div>
+
+				<div class="field-row">
+					<div class="field">
+						<label for="df-users">{{ f.users|e }}</label>
+						<input type="text" id="df-users" name="users" maxlength="6" inputmode="numeric" autocomplete="off" aria-describedby="df-users-error">
+						<p class="field-error" id="df-users-error"></p>
+					</div>
+					<div class="field">
+						<label for="df-plan">{{ f.plan|e }}</label>
+						<select id="df-plan" name="plan">
+							<option value="">{{ f.plan_none|e }}</option>
+							{%- for key, name in plan_options %}
+							<option value="{{ key|e }}"{% if key == selected_plan %} selected{% endif %}>{{ name|e }}</option>
+							{%- endfor %}
+						</select>
+					</div>
+				</div>
+
+				<fieldset class="field choice">
+					<legend>{{ f.zatca_required|e }}</legend>
+					<div class="choice-options">
+						<label><input type="radio" name="zatca_required" value="1"> {{ f.zatca_yes|e }}</label>
+						<label><input type="radio" name="zatca_required" value="0"> {{ f.zatca_no|e }}</label>
+					</div>
+				</fieldset>
+
+				<div class="field">
+					<label for="df-message">{{ f.message|e }}</label>
+					<textarea id="df-message" name="message" rows="5" maxlength="2000" aria-describedby="df-message-hint"></textarea>
+					<p class="field-hint" id="df-message-hint">{{ f.message_hint|e }}</p>
+				</div>
+
+				<div class="hp" aria-hidden="true">
+					<label for="df-website">Website</label>
+					<input type="text" id="df-website" name="website" tabindex="-1" autocomplete="off">
+				</div>
+
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary">{{ f.submit|e }}</button>
+					<p class="form-note">{{ f.privacy_note|e }}</p>
+				</div>
+				<p class="form-status" id="demo-status" role="status" aria-live="polite"></p>
+			</form>
+
+			<div class="demo-thanks" id="demo-thanks" tabindex="-1" hidden>
+				<h2>{{ t.thanks.heading|e }}</h2>
+				<p>{{ t.thanks.body|e }}</p>
+			</div>
+		</div>
+	</div>
+</div>
