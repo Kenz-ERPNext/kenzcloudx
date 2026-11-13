@@ -1,0 +1,31 @@
+{% include "templates/kenz/pages/_page_hero.html" %}
+
+<section class="section" aria-labelledby="modules-heading">
+	<div class="container split">
+		<header class="section-head">
+			<h2 id="modules-heading">{{ t.modules.heading|e }}</h2>
+		</header>
+		<ol class="numbered-blocks">
+			{%- for item in t.modules["items"] %}
+			<li class="numbered-block" id="{{ item.key|e }}">
+				<span class="numeral" aria-hidden="true">{{ ("%02d" % loop.index)|e }}</span>
+				<h3>{{ item.title|e }}</h3>
+				<p>{{ item.body|e }}</p>
+			</li>
+			{%- endfor %}
+		</ol>
+	</div>
+</section>
+
+<section class="section section-mint" aria-labelledby="hosting-heading">
+	<div class="container split">
+		<header class="section-head">
+			<h2 id="hosting-heading">{{ t.hosting.heading|e }}</h2>
+		</header>
+		<ul class="point-list point-list-2">
+			{%- for point in t.hosting.points %}
+			<li>{{ point|e }}</li>
+			{%- endfor %}
+		</ul>
+	</div>
+</section>

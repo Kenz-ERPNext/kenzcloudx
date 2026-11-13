@@ -430,5 +430,14 @@
 				"body": "[PLACEHOLDER] These terms are governed by the laws of the Kingdom of Saudi Arabia. Final text to be reviewed by a lawyer."
 			}
 		]
+	},
+	"not_found": {
+		"meta": {
+			"title": "Page not found – KenzCloudX",
+			"description": "The page you are looking for does not exist or has moved."
+		},
+		"h1": "We could not find that page",
+		"body": "The link may be old, or the address may have a typing mistake. Try the home page, or tell us what you were looking for.",
+		"home": "Go to the home page"
 	}
 }

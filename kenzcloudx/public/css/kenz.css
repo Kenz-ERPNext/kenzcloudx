@@ -245,16 +245,91 @@ img, svg { max-inline-size: 100%; }
 .step:last-child::before { display: none; }
 .step h3 { margin-block: 0.4rem 0.35rem; }
 .step p { color: var(--muted); }
+/* .steps-vertical keeps the mobile (vertical) layout at every width, e.g. beside a .split heading */
 @media (min-width: 960px) {
-	.steps { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-block-start: 3rem; }
-	.step { display: block; }
-	.step-dot { margin-block-end: 1.25rem; }
-	.step::before {
+	.steps:not(.steps-vertical) { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-block-start: 3rem; }
+	.steps:not(.steps-vertical) .step { display: block; }
+	.steps:not(.steps-vertical) .step-dot { margin-block-end: 1.25rem; }
+	.steps:not(.steps-vertical) .step::before {
 		inset-inline: 2.5rem -2rem; inset-block: calc(1.25rem - 0.5px) auto;
 		border-inline-start: 0; border-block-start: 1px solid var(--navy);
 	}
-	.step h3 { margin-block-start: 0; }
+	.steps:not(.steps-vertical) .step h3 { margin-block-start: 0; }
 }
+.split > .steps { margin-block-start: 0; }
+
+/* ---------- Inner pages ---------- */
+.page-hero { padding-block: clamp(2.5rem, 1.5rem + 4vw, 5rem); }
+.page-hero h1 { max-inline-size: 44rem; }
+.page-hero .lead { margin-block-start: 1.25rem; max-inline-size: 42rem; }
+.page-updated { margin-block-start: 1rem; color: var(--muted); font-size: 0.9375rem; }
+
+/* Plain list with a small teal dot per line */
+.point-list { list-style: none; margin: 0; padding: 0; }
+.point-list li {
+	position: relative; padding-block: 0.75rem; padding-inline-start: 1.5rem;
+	border-block-start: 1px solid var(--line-soft);
+}
+.point-list li::before {
+	content: ""; position: absolute; inset-inline-start: 0.125rem; inset-block-start: 1.4rem;
+	inline-size: 0.4375rem; block-size: 0.4375rem; border-radius: 50%; background: var(--teal);
+}
+.section-mint .point-list li { border-color: var(--line); }
+.prose { max-inline-size: 42rem; }
+.prose > * + * { margin-block-start: 1.5rem; }
+@media (min-width: 640px) { .point-list-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 3rem; align-content: start; } }
+
+/* FAQ: native details/summary, no JS */
+.faq { border-block-start: 1px solid var(--line-soft); }
+.faq-item { border-block-end: 1px solid var(--line-soft); }
+.faq-item summary {
+	display: flex; align-items: baseline; justify-content: space-between; gap: 1.5rem;
+	padding-block: 1.25rem; cursor: pointer; list-style: none;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+	content: "+"; content: "+" / ""; flex: none;
+	font-size: 1.5rem; line-height: 1; font-weight: 400; color: var(--teal-text);
+}
+.faq-item[open] summary::after { content: "\2212"; content: "\2212" / ""; }
+.faq-item summary h3 { font-size: 1.125rem; }
+.faq-item summary:hover h3 { color: var(--teal-text); }
+.faq-item p { padding-block-end: 1.5rem; max-inline-size: 40rem; color: var(--muted); }
+
+/* Plans: bordered panels, stacked on mobile, 3 across on desktop. No prices. */
+.plans { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.5rem; }
+.plan {
+	display: flex; flex-direction: column; gap: 0.75rem;
+	padding: 1.75rem 1.5rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--white);
+}
+.plan h2 { font-size: 1.5rem; }
+.plan-tagline { color: var(--muted); }
+.plan .point-list { flex: 1 0 auto; margin-block: 0.75rem; }
+.plan .point-list li:last-child { border-block-end: 1px solid var(--line-soft); }
+.plan .btn { align-self: flex-start; }
+.plans-note { margin-block-start: 2.5rem; max-inline-size: 44rem; color: var(--muted); }
+@media (min-width: 960px) { .plans { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; } .plan { padding: 2rem; } }
+
+/* About: contact list */
+.contact-list { margin: 0; max-inline-size: 40rem; border-block-start: 1px solid var(--line-soft); }
+.contact-list > div { display: grid; gap: 0.15rem; padding-block: 0.9rem; border-block-end: 1px solid var(--line-soft); }
+.contact-list dt { color: var(--muted); font-size: 0.9375rem; }
+.contact-list dd { margin: 0; font-weight: 500; }
+.contact-address { white-space: pre-line; }
+.contact-cta { margin-block-start: 2rem; }
+@media (min-width: 640px) { .contact-list > div { grid-template-columns: 13rem minmax(0, 1fr); column-gap: 1.5rem; } }
+
+/* Legal pages */
+.legal > section + section { margin-block-start: 2.5rem; }
+.legal h2 { font-size: 1.375rem; margin-block-end: 0.75rem; }
+
+/* 404 */
+.not-found { padding-block: clamp(4rem, 2rem + 8vw, 8rem); }
+.not-found-code {
+	margin-block-end: 1rem; font-family: "IBM Plex Sans", sans-serif;
+	font-size: 0.875rem; font-weight: 600; letter-spacing: 0.08em; color: var(--teal-text);
+}
+.not-found .btn-row { margin-block-start: 2rem; }
 
 /* Demo band (navy, full width) */
 .demo-band { background: var(--navy); color: var(--white); padding-block: clamp(3rem, 2rem + 4vw, 5rem); }

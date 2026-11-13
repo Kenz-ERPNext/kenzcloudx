@@ -1,0 +1,15 @@
+{#- Shared by /privacy and /terms. The legal text is [PLACEHOLDER] copy until reviewed by a lawyer. -#}
+{% include "templates/kenz/pages/_page_hero.html" %}
+
+<section class="section">
+	<div class="container">
+		<div class="prose legal">
+			{%- for s in t.sections %}
+			<section aria-labelledby="legal-{{ loop.index|e }}">
+				<h2 id="legal-{{ loop.index|e }}">{{ s.heading|e }}</h2>
+				<p>{{ s.body|e }}</p>
+			</section>
+			{%- endfor %}
+		</div>
+	</div>
+</section>

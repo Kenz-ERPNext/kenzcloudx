@@ -1,0 +1,12 @@
+{%- set lp = "/ar" if lang == "ar" else "" -%}
+<section class="hero page-hero not-found">
+	<div class="container">
+		<p class="not-found-code" aria-hidden="true">404</p>
+		<h1>{{ t.h1|e }}</h1>
+		<p class="lead">{{ t.body|e }}</p>
+		<div class="btn-row">
+			<a class="btn btn-primary" href="{{ (lp or '/')|e }}">{{ t.home|e }}</a>
+			<a class="btn btn-outline" href="{{ lp|e }}/demo">{{ common.cta_demo|e }}</a>
+		</div>
+	</div>
+</section>

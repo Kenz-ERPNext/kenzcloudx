@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 {#- Standalone document for every public KenzCloudX page. Never extends templates/web.html.
     Note: the website renderer overwrites context.canonical with its own URL, so the
-    canonical link is taken from the hreflang entry for the current language. -#}
-{%- set _urls = dict(hreflang) -%}
-{%- set _canonical = _urls[lang] -%}
+    canonical link is taken from the hreflang entry for the current language.
+    The 404 context has an empty hreflang list, so it gets no canonical, hreflang or og:url. -#}
+{%- set _canonical = dict(hreflang)[lang] if hreflang else None -%}
 {%- set _asset = "/assets/kenzcloudx" %}
 <html lang="{{ lang|e }}" dir="{{ dir|e }}">
 <head>
@@ -11,7 +11,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>{{ t.meta.title|e }}</title>
 	<meta name="description" content="{{ t.meta.description|e }}">
+	{%- if _canonical %}
 	<link rel="canonical" href="{{ _canonical|e }}">
+	{%- endif %}
 	{%- for code, url in hreflang %}
 	<link rel="alternate" hreflang="{{ code|e }}" href="{{ url|e }}">
 	{%- endfor %}
@@ -19,7 +21,9 @@
 	<meta property="og:site_name" content="KenzCloudX">
 	<meta property="og:title" content="{{ t.meta.title|e }}">
 	<meta property="og:description" content="{{ t.meta.description|e }}">
+	{%- if _canonical %}
 	<meta property="og:url" content="{{ _canonical|e }}">
+	{%- endif %}
 	<meta property="og:locale" content="{{ ('ar_SA' if lang == 'ar' else 'en_US')|e }}">
 	<meta property="og:image" content="https://kenzcloudx.com{{ _asset|e }}/images/og-{{ lang|e }}.png">
 	<meta property="og:image:width" content="1200">

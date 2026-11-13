@@ -78,31 +78,57 @@ def _clean(value):
 	return value
 
 
+def _base_context(context, lang: str, t: dict) -> None:
+	"""Language, direction, shared content and public settings for any KenzCloudX page."""
+	content = load_content(lang)
+	context.lang = lang
+	context.dir = "rtl" if lang == "ar" else "ltr"
+	context.t = t
+	context.common = content["common"]
+	context.alt_lang = _other(lang)
+	settings = frappe.get_cached_doc("KenzCloudX Settings")
+	context.settings = {f: _clean(settings.get(f)) for f in PUBLIC_SETTINGS_FIELDS}
+	context.wa_number = whatsapp_number(context.settings["whatsapp_number"])
+	context.title = t["meta"]["title"]
+	context.description = t["meta"]["description"]
+
+
 def build_page_context(context, stem: str, lang: str) -> None:
 	if lang not in LANGS:
 		raise ValueError(f"Unsupported language: {lang!r}")
 	if stem not in PAGES:
 		raise ValueError(f"Unknown page stem: {stem!r}")
-	content = load_content(lang)
-	t = content[stem or "home"]
-
-	context.lang = lang
-	context.dir = "rtl" if lang == "ar" else "ltr"
-	context.t = t
-	context.common = content["common"]
+	_base_context(context, lang, load_content(lang)[stem or "home"])
 	context.page_url = page_url(stem, lang)
 	context.alt_url = alt_url(stem, lang)
-	context.alt_lang = _other(lang)
 	context.canonical = BASE_URL + context.page_url
 	context.hreflang = [
 		("en", BASE_URL + page_url(stem, "en")),
 		("ar", BASE_URL + page_url(stem, "ar")),
 		("x-default", BASE_URL + page_url(stem, "en")),
 	]
-	settings = frappe.get_cached_doc("KenzCloudX Settings")
-	context.settings = {f: _clean(settings.get(f)) for f in PUBLIC_SETTINGS_FIELDS}
-	context.wa_number = whatsapp_number(context.settings["whatsapp_number"])
-	context.title = t["meta"]["title"]
-	context.description = t["meta"]["description"]
 	context.no_cache = 0
 	context.sitemap = 1
+
+
+def build_not_found_context(context, lang: str) -> None:
+	"""Context for the branded 404 page: no canonical/hreflang, never cached, not in the sitemap.
+
+	The website page cache is keyed by template path ("404"), not by URL, so caching it
+	would serve one language's 404 for both.
+	"""
+	if lang not in LANGS:
+		raise ValueError(f"Unsupported language: {lang!r}")
+	_base_context(context, lang, load_content(lang)["not_found"])
+	context.page_url = None
+	context.alt_url = page_url("", _other(lang))
+	context.hreflang = []
+	context.http_status_code = 404
+	context.no_cache = 1
+	context.sitemap = 0
+
+
+def lang_from_path(path) -> str:
+	"""Return "ar" for /ar and /ar/..., else "en"."""
+	path = "/" + (path or "").strip("/")
+	return "ar" if path == "/ar" or path.startswith("/ar/") else "en"

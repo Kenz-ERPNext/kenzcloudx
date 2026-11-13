@@ -1,0 +1,51 @@
+{% include "templates/kenz/pages/_page_hero.html" %}
+
+<section class="section" aria-labelledby="phase2-heading">
+	<div class="container split">
+		<header class="section-head">
+			<h2 id="phase2-heading">{{ t.phase2.heading|e }}</h2>
+		</header>
+		<div class="prose">
+			<p>{{ t.phase2.body|e }}</p>
+			<ul class="point-list">
+				{%- for point in t.phase2.points %}
+				<li>{{ point|e }}</li>
+				{%- endfor %}
+			</ul>
+		</div>
+	</div>
+</section>
+
+<section class="section section-mint" aria-labelledby="onboarding-heading">
+	<div class="container split">
+		<header class="section-head">
+			<h2 id="onboarding-heading">{{ t.onboarding.heading|e }}</h2>
+			<p class="lead">{{ t.onboarding.intro|e }}</p>
+		</header>
+		<ol class="steps steps-vertical">
+			{%- for step in t.onboarding.steps %}
+			<li class="step">
+				<span class="step-dot" aria-hidden="true">{{ loop.index|e }}</span>
+				<h3>{{ step.title|e }}</h3>
+				<p>{{ step.body|e }}</p>
+			</li>
+			{%- endfor %}
+		</ol>
+	</div>
+</section>
+
+<section class="section" aria-labelledby="faq-heading">
+	<div class="container split">
+		<header class="section-head">
+			<h2 id="faq-heading">{{ t.faq.heading|e }}</h2>
+		</header>
+		<div class="faq">
+			{%- for item in t.faq["items"] %}
+			<details class="faq-item">
+				<summary><h3>{{ item.q|e }}</h3></summary>
+				<p>{{ item.a|e }}</p>
+			</details>
+			{%- endfor %}
+		</div>
+	</div>
+</section>

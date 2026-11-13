@@ -1,0 +1,12 @@
+{#- Shared hero for inner pages: t.hero.h1 plus t.hero.intro (or t.hero.updated on legal pages). -#}
+<section class="hero page-hero">
+	<div class="container">
+		<h1>{{ t.hero.h1|e }}</h1>
+		{%- if t.hero.intro %}
+		<p class="lead">{{ t.hero.intro|e }}</p>
+		{%- endif %}
+		{%- if t.hero.updated %}
+		<p class="page-updated">{{ t.hero.updated|e }}</p>
+		{%- endif %}
+	</div>
+</section>

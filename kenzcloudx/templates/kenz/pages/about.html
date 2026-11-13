@@ -1,0 +1,59 @@
+{%- set lp = "/ar" if lang == "ar" else "" -%}
+{%- set c = t.contact -%}
+{#- settings values are stripped (blank -> None) in build_page_context; wa_number is normalised there. -#}
+{%- set address = settings.office_address_ar if lang == "ar" else settings.office_address_en -%}
+{%- set tel = (settings.phone or "") | replace(" ", "") -%}
+{% include "templates/kenz/pages/_page_hero.html" %}
+
+<section class="section" aria-labelledby="company-heading">
+	<div class="container split">
+		<header class="section-head">
+			<h2 id="company-heading">{{ t.company.heading|e }}</h2>
+		</header>
+		<div class="prose"><p>{{ t.company.body|e }}</p></div>
+	</div>
+</section>
+
+<section class="section section-mint" aria-labelledby="team-heading">
+	<div class="container split">
+		<header class="section-head">
+			<h2 id="team-heading">{{ t.team.heading|e }}</h2>
+		</header>
+		<div class="prose"><p>{{ t.team.body|e }}</p></div>
+	</div>
+</section>
+
+<section class="section" aria-labelledby="contact-heading">
+	<div class="container split">
+		<header class="section-head">
+			<h2 id="contact-heading">{{ c.heading|e }}</h2>
+		</header>
+		<div>
+			{%- if tel or wa_number or settings.email or address or settings.cr_number or settings.vat_number %}
+			<dl class="contact-list">
+				{%- if tel %}
+				<div><dt>{{ c.phone_label|e }}</dt><dd><a href="tel:{{ tel|e }}" dir="ltr">{{ settings.phone|e }}</a></dd></div>
+				{%- endif %}
+				{%- if wa_number %}
+				<div><dt>{{ c.whatsapp_label|e }}</dt><dd><a href="https://wa.me/{{ wa_number|e }}" target="_blank" rel="noopener" dir="ltr">+{{ wa_number|e }}</a></dd></div>
+				{%- endif %}
+				{%- if settings.email %}
+				<div><dt>{{ c.email_label|e }}</dt><dd><a href="mailto:{{ settings.email|e }}" dir="ltr">{{ settings.email|e }}</a></dd></div>
+				{%- endif %}
+				{%- if address %}
+				<div><dt>{{ c.address_label|e }}</dt><dd class="contact-address">{{ address|e }}</dd></div>
+				{%- endif %}
+				{%- if settings.cr_number %}
+				<div><dt>{{ c.cr_label|e }}</dt><dd><span dir="ltr">{{ settings.cr_number|e }}</span></dd></div>
+				{%- endif %}
+				{%- if settings.vat_number %}
+				<div><dt>{{ c.vat_label|e }}</dt><dd><span dir="ltr">{{ settings.vat_number|e }}</span></dd></div>
+				{%- endif %}
+			</dl>
+			{%- endif %}
+			<div class="btn-row contact-cta">
+				<a class="btn btn-primary" href="{{ lp|e }}/demo">{{ common.cta_demo|e }}</a>
+			</div>
+		</div>
+	</div>
+</section>

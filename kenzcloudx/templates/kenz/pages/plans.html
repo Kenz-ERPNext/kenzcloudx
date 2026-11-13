@@ -1,0 +1,23 @@
+{#- No prices and no currency on this page, by design: every button asks for a quote. -#}
+{%- set lp = "/ar" if lang == "ar" else "" -%}
+{% include "templates/kenz/pages/_page_hero.html" %}
+
+<section class="section">
+	<div class="container">
+		<ul class="plans">
+			{%- for plan in t["items"] %}
+			<li class="plan" id="plan-{{ plan.key|e }}">
+				<h2 id="plan-{{ plan.key|e }}-name">{{ plan.name|e }}</h2>
+				<p class="plan-tagline">{{ plan.tagline|e }}</p>
+				<ul class="point-list">
+					{%- for feature in plan.features %}
+					<li>{{ feature|e }}</li>
+					{%- endfor %}
+				</ul>
+				<a class="btn btn-outline" href="{{ lp|e }}/demo?plan={{ plan.key|e }}" aria-describedby="plan-{{ plan.key|e }}-name">{{ t.button|e }}</a>
+			</li>
+			{%- endfor %}
+		</ul>
+		<p class="plans-note">{{ t.note|e }}</p>
+	</div>
+</section>
