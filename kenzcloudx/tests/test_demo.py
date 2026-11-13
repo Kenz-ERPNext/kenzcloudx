@@ -210,6 +210,9 @@ class TestDemoRequest(FrappeTestCase):
 			"٠٥٥١٢٣٤٥٦٧",
 			"۰۵۵۱۲۳۴۵۶۷",
 			"+٩٦٦٥٥١٢٣٤٥٦٧",
+			"+9660551234567",  # "+966 05…" is a common way to write it
+			"96605 5123 4567",
+			"009660551234567",
 		)
 		for raw in ok:
 			self.assertEqual(normalize_ksa_phone(raw), "+966551234567", raw)
@@ -221,7 +224,9 @@ class TestDemoRequest(FrappeTestCase):
 			"05512345678",
 			"+44 20 7946 0958",
 			"abc",
-			"+9660551234567",
+			"０５５１２３４５６７",  # fullwidth digits  # noqa: RUF001
+			"०५५१२३४५६७",  # Devanagari digits
+			"+96605512345678",
 		):
 			self.assertIsNone(normalize_ksa_phone(raw), raw)
 
@@ -355,6 +360,181 @@ class TestDemoPage(FrappeTestCase):
 			self.assertIn('dir="ltr"', tag, field)
 
 
+class TestFixRound1(FrappeTestCase):
+	"""Task 5 review, fix round 1."""
+
+	def tearDown(self):
+		frappe.set_user("Administrator")
+
+	# 1. only a single bare address is accepted and stored
+	def test_email_must_be_a_single_bare_address(self):
+		for bad in (
+			"x <a@x.sa>",
+			"a@x.sa,b@y.sa",
+			"<img src=x onerror=alert(1)> <a@x.sa>",
+			"nope,a@x.sa",
+			"a@x.sa;b@y.sa",
+			'"a"@x.sa',
+			"a b@x.sa",
+			"a@x",
+		):
+			with self.assertRaises(frappe.ValidationError, msg=bad) as cm:
+				submit(email=bad)
+			self.assertEqual(str(cm.exception), ERR_EN["email"], bad)
+		self.assertFalse(frappe.db.exists("Lead", {"email_id": ["like", "%a@x.sa%"]}))
+
+	def test_valid_email_stored_bare_and_lowercase(self):
+		submit(email="  Bare.Address+demo@Nesco.SA ")
+		self.assertEqual(
+			frappe.db.get_value("Lead", {"email_id": "bare.address+demo@nesco.sa"}, "email_id"),
+			"bare.address+demo@nesco.sa",
+		)
+
+	# 2. repeat request on a closed Lead: Comment + ToDo + flagged notification
+	def _closed_lead(self, email, owner=None, status="Converted"):
+		submit(email=email)
+		lead = frappe.db.get_value("Lead", {"email_id": email})
+		frappe.db.set_value("Lead", lead, {"status": status, "lead_owner": owner})
+		return lead
+
+	def _todos(self, lead):
+		return frappe.get_all(
+			"ToDo",
+			filters={"reference_type": "Lead", "reference_name": lead},
+			fields=["allocated_to", "description", "status"],
+		)
+
+	def test_closed_lead_gets_comment_and_todo_for_administrator(self):
+		lead = self._closed_lead("closed1@x.sa")
+		with patch("frappe.sendmail"):
+			self.assertEqual(submit(email="closed1@x.sa", company="<b>Nesco</b>"), {"ok": True})
+		self.assertEqual(frappe.db.count("Lead", {"email_id": "closed1@x.sa"}), 1)
+		self.assertEqual(len(comments_on(lead)), 1)
+		todos = self._todos(lead)
+		self.assertEqual(len(todos), 1)
+		self.assertEqual(todos[0].allocated_to, "Administrator")
+		self.assertEqual(todos[0].status, "Open")
+		self.assertIn("+966551234567", todos[0].description)
+		self.assertIn("Ali Hassan", todos[0].description)
+		self.assertNotIn("<b>Nesco", todos[0].description)
+		self.assertIn("&lt;b&gt;Nesco", todos[0].description)
+
+	def test_closed_lead_todo_goes_to_enabled_lead_owner(self):
+		owner = frappe.get_doc(
+			{"doctype": "User", "email": "kcx-owner@x.sa", "first_name": "Owner", "send_welcome_email": 0}
+		).insert(ignore_permissions=True)
+		lead = self._closed_lead("closed2@x.sa", owner=owner.name, status="Do Not Contact")
+		with patch("frappe.sendmail"):
+			submit(email="closed2@x.sa")
+		self.assertEqual(self._todos(lead)[0].allocated_to, owner.name)
+		# a disabled owner falls back to Administrator
+		frappe.db.set_value("User", owner.name, "enabled", 0)
+		with patch("frappe.sendmail"):
+			submit(email="closed2@x.sa")
+		self.assertEqual(
+			sorted(t.allocated_to for t in self._todos(lead)), sorted(["Administrator", owner.name])
+		)
+
+	def test_closed_lead_notification_is_flagged(self):
+		old = frappe.db.get_single_value(SETTINGS, "notify_emails")
+		try:
+			frappe.db.set_single_value(SETTINGS, "notify_emails", "sales@kenz.sa")
+			with patch("frappe.sendmail"):
+				self._closed_lead("closed3@x.sa")
+			with patch("frappe.sendmail") as sendmail:
+				submit(email="closed3@x.sa")
+			kw = sendmail.call_args.kwargs
+			self.assertEqual(kw["subject"], "CLOSED Lead (Converted) – new request: Nesco")  # noqa: RUF001
+			self.assertIn("closed", kw["message"])
+			self.assertIn("ToDo", kw["message"])
+		finally:
+			frappe.db.set_single_value(SETTINGS, "notify_emails", old)
+
+	def test_open_lead_repeat_has_no_todo_and_says_open(self):
+		old = frappe.db.get_single_value(SETTINGS, "notify_emails")
+		try:
+			frappe.db.set_single_value(SETTINGS, "notify_emails", "sales@kenz.sa")
+			with patch("frappe.sendmail"):
+				submit(email="open1@x.sa")
+			lead = frappe.db.get_value("Lead", {"email_id": "open1@x.sa"})
+			with patch("frappe.sendmail") as sendmail:
+				submit(email="open1@x.sa")
+			self.assertEqual(self._todos(lead), [])
+			kw = sendmail.call_args.kwargs
+			self.assertEqual(kw["subject"], "New demo request: Nesco")
+			self.assertIn("Repeat request on an open Lead (status: Lead)", kw["message"])
+		finally:
+			frappe.db.set_single_value(SETTINGS, "notify_emails", old)
+
+	# 3. users parsing
+	def test_users_parsing(self):
+		for bad in ("²", "1" * 20, "0", "-3", "1.5", "١٢٣٤٥٦٧"):
+			with self.assertRaises(frappe.ValidationError, msg=bad) as cm:
+				submit(email="users-bad@x.sa", users=bad)
+			self.assertEqual(str(cm.exception), ERR_EN["users"], bad)
+		submit(email="users12@x.sa", users="12")
+		submit(email="users-ar@x.sa", users="١٢")
+		submit(email="users-max@x.sa", users="999999")
+		self.assertEqual(frappe.db.get_value("Lead", {"email_id": "users12@x.sa"}, "kcx_users"), 12)
+		self.assertEqual(frappe.db.get_value("Lead", {"email_id": "users-ar@x.sa"}, "kcx_users"), 12)
+		self.assertEqual(frappe.db.get_value("Lead", {"email_id": "users-max@x.sa"}, "kcx_users"), 999999)
+
+	# 4. a Lead that appears between the check and the insert (concurrent first submissions)
+	def test_race_on_first_submission_falls_back_to_comment(self):
+		from kenzcloudx.api import demo
+
+		submit(email="race@x.sa")
+		lead = frappe.db.get_value("Lead", {"email_id": "race@x.sa"})
+		real = demo._existing_lead
+		calls = []
+
+		def first_miss(email):
+			calls.append(email)
+			return None if len(calls) == 1 else real(email)
+
+		frappe.local.message_log = []
+		with patch.object(demo, "_existing_lead", side_effect=first_miss):
+			self.assertEqual(submit(email="race@x.sa", message="second"), {"ok": True})
+		self.assertEqual(frappe.db.count("Lead", {"email_id": "race@x.sa"}), 1)
+		self.assertIn("second", comments_on(lead)[0])
+		self.assertEqual(frappe.local.message_log, [])  # ERPNext's English message is not leaked
+		# the Contact made by the failed insert's before_insert was rolled back too
+		self.assertEqual(frappe.db.count("Contact Email", {"email_id": "race@x.sa"}), 1)
+
+	def test_insert_failure_gives_localized_generic_error(self):
+		from kenzcloudx.api import demo
+
+		submit(email="race2@x.sa")
+		lead = frappe.db.get_value("Lead", {"email_id": "race2@x.sa"})
+		frappe.local.message_log = []
+		with patch.object(demo, "_existing_lead", return_value=None), patch("frappe.log_error") as log:
+			with self.assertRaises(frappe.ValidationError) as cm:
+				submit(email="race2@x.sa", lang="ar")
+		log.assert_called_once()
+		self.assertEqual(str(cm.exception), ERR_AR["generic"])
+		self.assertNotIn(lead, str(cm.exception))
+		messages = [m.get("message", "") for m in frappe.local.message_log]
+		self.assertEqual(messages, [ERR_AR["generic"]])
+		self.assertEqual(frappe.db.count("Lead", {"email_id": "race2@x.sa"}), 1)
+
+	# 6. no invisible bidi controls in source
+	def test_no_invisible_bidi_characters_in_source(self):
+		import re
+
+		for parts in (("public", "js", "demo.js"), ("api", "demo.py")):
+			with open(frappe.get_app_path("kenzcloudx", *parts), encoding="utf-8") as f:
+				src = f.read()
+			self.assertIsNone(re.search("[‎‏‪-‮⁦-⁩]", src), parts)
+
+	# 7. browser validation still works without JS
+	def test_form_has_no_novalidate_attribute(self):
+		_, h = html("/demo")
+		start = h.index('<form class="demo-form"')
+		self.assertNotIn("novalidate", h[start : h.index(">", start)])
+		with open(frappe.get_app_path("kenzcloudx", "public", "js", "demo.js"), encoding="utf-8") as f:
+			self.assertIn("form.noValidate = true", f.read())
+
+
 class TestDemoHTTP(FrappeTestCase):
 	"""Real HTTP requests through the WSGI app (in a thread, like Frappe's own API tests).
 
@@ -367,6 +547,11 @@ class TestDemoHTTP(FrappeTestCase):
 		frappe.cache.delete_keys(f"rl:{METHOD}")
 		self.client = get_test_client()
 		self.started = frappe.utils.now()
+		# the HTTP requests run on their own connection: commit a blank recipient list so the
+		# suite never queues real emails on a site that has notify_emails configured
+		self.notify_emails = frappe.db.get_single_value(SETTINGS, "notify_emails")
+		frappe.db.set_single_value(SETTINGS, "notify_emails", "")
+		frappe.db.commit()
 
 	def tearDown(self):
 		frappe.cache.delete_keys(f"rl:{METHOD}")
@@ -379,6 +564,7 @@ class TestDemoHTTP(FrappeTestCase):
 		frappe.db.delete(
 			"Comment", {"comment_type": "Deleted", "reference_doctype": ["in", ["Lead", "Contact"]], **since}
 		)
+		frappe.db.set_single_value(SETTINGS, "notify_emails", self.notify_emails or "")
 		frappe.db.commit()
 
 	def post(self, **data):
@@ -402,6 +588,9 @@ class TestDemoHTTP(FrappeTestCase):
 			kwargs={"data": payload},
 			site=frappe.local.site,
 		)
+
+	def test_http_tests_run_without_recipients(self):
+		self.assertFalse(frappe.db.get_single_value(SETTINGS, "notify_emails"))
 
 	def test_guest_post_without_csrf_creates_lead(self):
 		r = self.post()

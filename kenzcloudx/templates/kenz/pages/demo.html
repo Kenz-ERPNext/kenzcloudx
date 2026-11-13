@@ -9,7 +9,7 @@
 <div class="section demo-section">
 	<div class="container">
 		<div class="demo-panel">
-			<form class="demo-form" id="demo-form" method="post" action="/api/method/kenzcloudx.api.demo.submit_demo_request" novalidate
+			<form class="demo-form" id="demo-form" method="post" action="/api/method/kenzcloudx.api.demo.submit_demo_request"
 				data-csrf="{{ (csrf_token or '')|e }}"
 				data-msg-required="{{ err.required|e }}"
 				data-msg-email="{{ err.email|e }}"

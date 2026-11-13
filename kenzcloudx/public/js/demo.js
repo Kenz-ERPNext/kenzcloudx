@@ -6,6 +6,8 @@
 	var form = document.getElementById("demo-form");
 	if (!form || !window.fetch || !window.URLSearchParams || !window.FormData) return;
 
+	// the browser's own validation stays on without JS; with JS we show inline, localised errors
+	form.noValidate = true;
 	var msg = form.dataset;
 	var statusEl = document.getElementById("demo-status");
 	var thanks = document.getElementById("demo-thanks");
@@ -24,8 +26,8 @@
 		company: function (v) { return v ? "" : msg.msgRequired; },
 		phone: function (v) {
 			if (!v) return msg.msgRequired;
-			v = ascii(v).replace(/[\s\-‐-―()\[\]{}‎‏‪-‮⁦-⁩]/g, "");
-			return /^(?:\+966|00966|966|0)?5\d{8}$/.test(v) ? "" : msg.msgPhone;
+			v = ascii(v).replace(/[\s\-\u2010-\u2015()\[\]{}\u200e\u200f\u202a-\u202e\u2066-\u2069]/g, "");
+			return /^(?:\+966|00966|966)?0?5[0-9]{8}$/.test(v) ? "" : msg.msgPhone;
 		},
 		email: function (v) {
 			if (!v) return msg.msgRequired;

@@ -16,14 +16,21 @@ MAX_MESSAGE = 2000
 
 # spaces (incl. NBSP), dashes, brackets and bidi marks that phones and copy-paste add
 _PHONE_JUNK = re.compile(r"[\s\-\u2010-\u2015()\[\]{}\u200e\u200f\u202a-\u202e\u2066-\u2069]")
-_KSA_MOBILE = re.compile(r"(?:\+966|00966|966|0)?(5\d{8})")
+# ASCII digits only ([0-9], not \d, which also matches fullwidth or Devanagari digits).
+# A trunk 0 is allowed after the country code: +966 05XXXXXXXX is a common way to write it.
+_KSA_MOBILE = re.compile(r"(?:\+966|00966|966)?0?(5[0-9]{8})")
+# a single bare address: no display name, no lists, no quotes or spaces
+_BARE_EMAIL = re.compile(r'[^@\s<>",;]+@[^@\s<>",;]+\.[^@\s<>",;]+')
+_USERS = re.compile(r"[0-9]{1,6}")
+DASH = "\u2013"  # en dash, for the email subject and ToDo summary
 
 
 def normalize_ksa_phone(raw) -> str | None:
 	"""Return a Saudi mobile number as +9665XXXXXXXX, or None.
 
 	Accepts Arabic-Indic/Persian digits, spaces, dashes and brackets, and the forms 05XXXXXXXX,
-	5XXXXXXXX, 9665XXXXXXXX, +9665XXXXXXXX (and 009665XXXXXXXX).
+	5XXXXXXXX, 9665XXXXXXXX, +9665XXXXXXXX (and 009665XXXXXXXX), each also with a 0 before
+	the 5 after the country code (+96605XXXXXXXX).
 	"""
 	value = _PHONE_JUNK.sub("", str(raw or "").translate(_DIGITS))
 	match = _KSA_MOBILE.fullmatch(value)
@@ -43,9 +50,15 @@ def _users(value, lang: str) -> int | None:
 	value = str(value if value is not None else "").translate(_DIGITS).strip()
 	if not value:
 		return None
-	if not value.isdigit() or int(value) < 1:
+	if not _USERS.fullmatch(value) or int(value) < 1:
 		_fail(lang, "users")
 	return int(value)
+
+
+def _is_bare_email(email: str) -> bool:
+	"""True only for one plain address. validate_email_address alone also accepts display-name
+	forms ("x <a@b.sa>") and comma lists and returns the extracted address, not the input."""
+	return bool(_BARE_EMAIL.fullmatch(email)) and validate_email_address(email) == email
 
 
 @frappe.whitelist(allow_guest=True, methods=["POST"])
@@ -82,19 +95,47 @@ def submit_demo_request(
 	data.phone = normalize_ksa_phone(data.raw_phone)
 	if not data.phone:
 		_fail(lang, "phone")
-	if not validate_email_address(data.email, throw=False):
+	if not _is_bare_email(data.email):
 		_fail(lang, "email")
 	data.users = _users(users, lang)
 
-	existing = _existing_lead(data.email)
-	if existing:
-		_add_comment(existing, data)
-		lead_name = existing
-	else:
-		lead_name = _create_lead(data)
+	lead_name = _existing_lead(data.email)
+	if not lead_name:
+		lead_name, created = _create_lead_or_find(data)
+		if created:
+			_notify(lead_name, data, None)
+			return {"ok": True}
 
-	_notify(lead_name, data, is_new=not existing)
+	# repeat request: no new Lead (ERPNext allows one Lead per email)
+	status, owner = frappe.db.get_value("Lead", lead_name, ["status", "lead_owner"])
+	_add_comment(lead_name, data)
+	if status in CLOSED_STATUSES:
+		_add_todo(lead_name, status, owner, data)
+	_notify(lead_name, data, status)
 	return {"ok": True}
+
+
+def _create_lead_or_find(data) -> tuple[str, bool]:
+	"""Create the Lead and return (name, True); or, if a Lead with this email appeared meanwhile
+	(two first submissions at once fail ERPNext's unique-email check), return (its name, False).
+
+	ERPNext's own message is never shown: it is English and names the existing Lead.
+	"""
+	messages_before = len(frappe.local.message_log)
+	frappe.db.savepoint("kcx_demo_lead")
+	try:
+		name = _create_lead(data)
+		frappe.db.release_savepoint("kcx_demo_lead")
+		return name, True
+	except (frappe.DuplicateEntryError, frappe.ValidationError):
+		# also undoes the Contact that ERPNext creates in Lead.before_insert
+		frappe.db.rollback(save_point="kcx_demo_lead")
+		frappe.local.message_log = frappe.local.message_log[:messages_before]
+		existing = _existing_lead(data.email)
+		if existing:
+			return existing, False
+		frappe.log_error(title="KenzCloudX demo request: Lead insert failed")
+		_fail(data.lang, "generic")
 
 
 def _existing_lead(email: str) -> str | None:
@@ -173,23 +214,47 @@ def _add_comment(lead_name: str, data) -> None:
 	).insert(ignore_permissions=True)
 
 
+def _add_todo(lead_name: str, status: str, owner, data) -> None:
+	"""A closed Lead asked again: make sure someone follows up."""
+	allocated_to = owner if owner and frappe.db.get_value("User", owner, "enabled") else "Administrator"
+	summary = f"{data.company} {DASH} {data.full_name} {DASH} {data.phone}"
+	frappe.get_doc(
+		{
+			"doctype": "ToDo",
+			"allocated_to": allocated_to,
+			"reference_type": "Lead",
+			"reference_name": lead_name,
+			"priority": "High",
+			"description": f"<p>New website demo request on a closed Lead ({escape(status)}):</p>"
+			f"<p>{escape(summary)}</p>",
+		}
+	).insert(ignore_permissions=True)
+
+
 def _recipients() -> list[str]:
 	raw = frappe.db.get_single_value(SETTINGS, "notify_emails") or ""
 	return [line.strip() for line in raw.splitlines() if line.strip()]
 
 
-def _notify(lead_name: str, data, is_new: bool) -> None:
+def _notify(lead_name: str, data, status) -> None:
 	"""Email the sales team. Never lets a mail problem fail the request."""
 	messages_before = len(frappe.local.message_log)
 	try:
 		recipients = _recipients()
 		if not recipients:
 			return
-		intro = "New Lead" if is_new else "Repeat request on an existing Lead"
+		subject = f"New demo request: {data.company}"
+		if status is None:
+			intro = "New Lead"
+		elif status in CLOSED_STATUSES:
+			subject = f"CLOSED Lead ({status}) {DASH} new request: {data.company}"
+			intro = f"This Lead is closed ({status}); a ToDo was created to follow up. Lead"
+		else:
+			intro = f"Repeat request on an open Lead (status: {status})"
 		link = get_url_to_form("Lead", lead_name)
 		frappe.sendmail(
 			recipients=recipients,
-			subject=f"New demo request: {data.company}",
+			subject=subject,
 			message=f'<p>{escape(intro)}: <a href="{escape(link)}">{escape(lead_name)}</a></p>'
 			f"<p>{_summary_html(data)}</p>",
 			delayed=True,
