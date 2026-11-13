@@ -157,12 +157,11 @@ def _create_lead_or_find(data) -> tuple[str, bool]:
 		existing = _existing_lead(data.email)
 		if existing:
 			return existing, False
-		# The request is rolled back after we raise. defer_insert queues the log in Redis; the
-		# scheduler's deferred_insert.save_to_db writes it (every 15 minutes), outside our transaction.
+		# Survives the request rollback only because Error Log is non-transactional (MyISAM in
+		# Frappe v15); TestDemoHTTP.test_generic_failure_is_logged_through_http guards that.
 		frappe.log_error(
 			title="KenzCloudX demo request: Lead insert failed",
 			message=frappe.get_traceback(with_context=True),
-			defer_insert=True,
 		)
 		_fail(data.lang, "generic")
 

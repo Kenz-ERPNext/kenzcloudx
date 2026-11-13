@@ -558,7 +558,7 @@ class TestFixRound1(FrappeTestCase):
 			with self.assertRaises(frappe.ValidationError) as cm:
 				submit(email="race2@x.sa", lang="ar")
 		log.assert_called_once()
-		self.assertTrue(log.call_args.kwargs.get("defer_insert"))
+		self.assertFalse(log.call_args.kwargs.get("defer_insert"))  # immediate insert
 		self.assertIn("DuplicateEntryError", log.call_args.kwargs.get("message", ""))
 		self.assertEqual(str(cm.exception), ERR_AR["generic"])
 		self.assertNotIn(lead, str(cm.exception))
@@ -670,9 +670,11 @@ class TestDemoHTTP(FrappeTestCase):
 
 	# Review Focus 3 (rate limit)
 	def test_generic_failure_is_logged_through_http(self):
-		"""The request is rolled back, but the Error Log must still be written (defer_insert)."""
-		from frappe.deferred_insert import save_to_db
+		"""The request is rolled back, but the Error Log row must exist immediately afterwards.
 
+		This relies on Error Log being non-transactional (MyISAM in Frappe v15): if that ever
+		changes, this test fails instead of failures going unlogged.
+		"""
 		from kenzcloudx.api import demo
 
 		title = "KenzCloudX demo request: Lead insert failed"
@@ -687,8 +689,7 @@ class TestDemoHTTP(FrappeTestCase):
 		messages = [json.loads(m)["message"] for m in json.loads(r.json["_server_messages"])]
 		self.assertEqual(messages, [ERR_AR["generic"]])
 
-		save_to_db()  # what the scheduler does every 15 minutes
-		frappe.db.commit()
+		frappe.db.rollback()  # read fresh, as another connection would (no queue flush)
 		new = frappe.get_all(
 			"Error Log",
 			filters={"method": title, "name": ["not in", list(before) or [""]]},
