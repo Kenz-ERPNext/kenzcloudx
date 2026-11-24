@@ -1,0 +1,11 @@
+{#- Shared macros for page bodies.
+    acc_heading(h): a heading from content {"pre", "acc", "post"}: pre + <span class="acc">acc</span> + post.
+    A newline in pre or post becomes <br>. Every part is escaped here.
+    Use the statement form, call acc_heading(h) ... endcall, so that every expression tag in the
+    templates still ends in |e (tests/test_chrome.py). The macro must mention caller to accept a call block. -#}
+{%- macro acc_heading(h) -%}
+{%- if caller %}{% endif -%}
+{%- for part in (h.pre or "").split("\n") -%}{%- if not loop.first %}<br>{% endif -%}{{ part|e }}{%- endfor -%}
+<span class="acc">{{ h.acc|e }}</span>
+{%- for part in (h.post or "").split("\n") -%}{%- if not loop.first %}<br>{% endif -%}{{ part|e }}{%- endfor -%}
+{%- endmacro -%}

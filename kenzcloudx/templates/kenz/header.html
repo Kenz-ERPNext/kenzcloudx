@@ -1,12 +1,11 @@
 {#- Floating frosted nav pill. Desktop: links in the middle, language switch + Request a demo on the end side.
     Below 1100px the links move into .mobile-panel (opened by .menu-btn, see public/js/main.js).
-    "How it works" is an anchor on the home page and /#how (or /ar#how) everywhere else.
-    Compliance points at /zatca until the /compliance page exists. -#}
+    "How it works" is an anchor on the home page and /#how (or /ar#how) everywhere else. -#}
 {%- set lp = "/ar" if lang == "ar" else "" -%}
 {%- set home = lp or "/" -%}
 {%- set links = [
 	("erpnext", lp ~ "/erpnext"),
-	("compliance", lp ~ "/zatca"),
+	("compliance", lp ~ "/compliance"),
 	("how", "#how" if page_url == home else home ~ "#how"),
 	("plans", lp ~ "/plans"),
 	("about", lp ~ "/about"),

@@ -1,0 +1,75 @@
+{#- Country tabs: one component for the home page and /compliance.
+    Context (build_page_context, TAB_PAGES): countries + tabs (content compliance.countries / compliance.tabs),
+    qr_path(key) for the decorative QR-like block, settings, lang. Set tabs_expanded = true before the include
+    to show each country's details (the /compliance page).
+    Without JS: the tabs are in-page links (#saudi-arabia, #india, #uae, #oman) and every panel is shown, stacked.
+    With JS (public/js/main.js): a real tablist with roving tabindex, arrow keys (mirrored in RTL), Home/End,
+    an animated panel switch, and deep links by hash. -#}
+{%- set lp = "/ar" if lang == "ar" else "" -%}
+{%- set other_lang = "en" if lang == "ar" else "ar" -%}
+<div class="tabs-wrap" data-tabs>
+	<div class="tabs reveal" role="tablist" aria-label="{{ tabs.label|e }}">
+		<span class="tab-ind" aria-hidden="true"></span>
+		{%- for c in countries %}
+		<a class="tab" role="tab" id="tab-{{ c.key|e }}" href="#{{ c.key|e }}" aria-controls="{{ c.key|e }}" aria-selected="{{ ('true' if loop.first else 'false')|e }}"{% if not loop.first %} tabindex="-1"{% endif %}>{{ c.name|e }} <span class="cc" dir="ltr">{{ c.code|e }}</span></a>
+		{%- endfor %}
+	</div>
+	<div class="tab-stage reveal">
+		{%- for c in countries %}
+		{%- set inv = c.invoice %}
+		<div class="tabpanel glass" id="{{ c.key|e }}" role="tabpanel" aria-labelledby="tab-{{ c.key|e }}" tabindex="0">
+			<div class="tab-copy">
+				<span class="eyebrow">{{ c.eyebrow|e }}</span>
+				<h3>{{ c.heading|e }}</h3>
+				<p class="lede">{{ c.intro|e }}</p>
+				<ul class="checks">
+					{%- for point in c.points %}
+					<li><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m3.5 9.5 3.5 3.5 7.5-8"/></svg><span>{{ point|e }}</span></li>
+					{%- endfor %}
+				</ul>
+				{%- if c.key == "saudi-arabia" and settings.stat_zatca_customers %}
+				<p class="tab-stat"><b dir="ltr">{{ settings.stat_zatca_customers|e }}+</b> <span>{{ tabs.zatca_customers_label|e }}</span></p>
+				{%- endif %}
+				{%- if tabs_expanded %}
+				<div class="tab-details">
+					<h4>{{ tabs.details_heading|e }}</h4>
+					<ul>
+						{%- for d in c.details %}
+						<li>{{ d|e }}</li>
+						{%- endfor %}
+					</ul>
+				</div>
+				{%- endif %}
+				<p class="note">
+					{%- if c.more_stem %}
+					<a class="link-accent" href="{{ lp|e }}/{{ c.more_stem|e }}">{{ c.more|e }}<svg class="icon-dir" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+					<span class="sep" aria-hidden="true">·</span>
+					{%- endif %}
+					<span>{{ tabs.note|e }} <a class="link-accent" href="{{ lp|e }}/demo">{{ tabs.note_link|e }}</a></span>
+				</p>
+			</div>
+			<div class="tinv" role="img" aria-label="{{ inv.alt|e }}">
+				<div class="tinv-head">
+					<div>
+						<div class="tinv-title">{{ inv.title|e }}
+							{%- if inv.title_alt %}<span class="tinv-alt" lang="{{ other_lang|e }}">{{ inv.title_alt|e }}</span>{% endif -%}
+						</div>
+						<div class="tinv-meta">{{ inv.number|e }}<br>{{ inv.tax_label|e }} <span dir="ltr">{{ inv.tax_id|e }}</span></div>
+					</div>
+					<span class="pill p-{{ inv.status_kind|e }}">{{ inv.status|e }}</span>
+				</div>
+				<div class="tinv-lines">
+					{%- for line in inv.lines %}
+					<div><span>{{ line.label|e }}</span><span dir="ltr">{{ line.amount|e }}</span></div>
+					{%- endfor %}
+				</div>
+				<div class="tinv-total"><span>{{ inv.total_label|e }}</span><b dir="ltr">{{ inv.currency|e }} {{ inv.total|e }}</b></div>
+				<div class="tinv-foot">
+					<div class="qr"><svg viewBox="0 0 21 21" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path d="{{ qr_path(c.key)|e }}" fill="#1C1C1F"/><path d="M0 0h7v7H0zM14 0h7v7h-7zM0 14h7v7H0z" fill="#1C1C1F"/><path d="M1 1h5v5H1zM15 1h5v5h-5zM1 15h5v5H1z" fill="#fff"/><path d="M2 2h3v3H2zM16 2h3v3h-3zM2 16h3v3H2z" fill="#1C1C1F"/></svg></div>
+					<div><small>{{ inv.foot|e }}</small><span class="mono" dir="ltr">{{ inv.ref|e }}</span></div>
+				</div>
+			</div>
+		</div>
+		{%- endfor %}
+	</div>
+</div>

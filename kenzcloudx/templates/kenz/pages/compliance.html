@@ -1,0 +1,32 @@
+{#- /compliance: hero, the country tabs with each country's details, what stays the same everywhere,
+    then the demo band ("Country not listed? Ask us"). /zatca stays the Saudi detail page (linked from its tab). -#}
+{%- from "templates/kenz/pages/_macros.html" import acc_heading -%}
+{%- set tabs_expanded = true -%}
+<section class="page-top wrap" aria-labelledby="compliance-h1">
+	<div class="page-top-copy veil reveal">
+		<p class="eyebrow">{{ t.hero.eyebrow|e }}</p>
+		<h1 class="h1" id="compliance-h1">{% call acc_heading(t.hero.h1) %}{% endcall %}</h1>
+		<p class="lede">{{ t.hero.intro|e }}</p>
+	</div>
+</section>
+
+<section class="section wrap comp-tabs" aria-labelledby="countries-heading">
+	<h2 class="visually-hidden" id="countries-heading">{{ t.countries_section.heading|e }}</h2>
+	{% include "templates/kenz/pages/_country_tabs.html" %}
+</section>
+
+<section class="section wrap" id="same-everywhere" aria-labelledby="same-heading">
+	<div class="head reveal">
+		<h2 class="h2" id="same-heading">{% call acc_heading(t.same.heading) %}{% endcall %}</h2>
+		<p class="lede">{{ t.same.intro|e }}</p>
+	</div>
+	<div class="grid-4">
+		{%- for item in t.same["items"] %}
+		<article class="mini-card glass reveal" style="--d:{{ loop.index0|e }}">
+			<span class="mini-num" dir="ltr" aria-hidden="true">{{ ("%02d" % loop.index)|e }}</span>
+			<h3>{{ item.title|e }}</h3>
+			<p>{{ item.body|e }}</p>
+		</article>
+		{%- endfor %}
+	</div>
+</section>

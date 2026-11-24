@@ -1,11 +1,13 @@
 {#- Closing call to action on every page except /demo. Uses t.demo_band when the page has one, else t.cta.
+    The heading is a string, or {"pre", "acc", "post"} for an accent word (see pages/_macros.html).
     data-pose="cta" steers the ribbon (public/js/ribbon.js). -#}
+{%- from "templates/kenz/pages/_macros.html" import acc_heading -%}
 {%- set lp = "/ar" if lang == "ar" else "" -%}
 {%- set band = t.demo_band or t.cta -%}
 {%- if band %}
 <section class="demo-band" aria-labelledby="demo-band-heading" data-pose="cta">
 	<div class="wrap cta veil reveal">
-		<h2 class="h2" id="demo-band-heading">{{ band.heading|e }}</h2>
+		<h2 class="h2" id="demo-band-heading">{% if band.heading is mapping %}{% call acc_heading(band.heading) %}{% endcall %}{% else %}{{ band.heading|e }}{% endif %}</h2>
 		<p class="lede">{{ band.body|e }}</p>
 		<div class="btn-row">
 			<a class="btn btn-dark" href="{{ lp|e }}/demo">{{ band.button|e }}</a>

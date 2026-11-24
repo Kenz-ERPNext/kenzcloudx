@@ -4,7 +4,9 @@ import re
 
 import frappe
 
-PAGES: tuple[str, ...] = ("", "erpnext", "zatca", "plans", "about", "demo", "privacy", "terms")
+PAGES: tuple[str, ...] = ("", "erpnext", "zatca", "compliance", "plans", "about", "demo", "privacy", "terms")
+# Pages that show the country tabs (templates/kenz/pages/_country_tabs.html); content: compliance.countries
+TAB_PAGES: tuple[str, ...] = ("", "compliance")
 PLAN_KEYS: tuple[str, ...] = ("starter", "business", "enterprise")
 LANGS: tuple[str, ...] = ("en", "ar")
 BASE_URL = "https://kenzcloudx.com"
@@ -86,6 +88,27 @@ def whatsapp_display(wa_number) -> str | None:
 	return f"+966 {m[1]} {m[2]} {m[3]}" if m else f"+{wa_number}"
 
 
+def qr_path(key: str) -> str:
+	"""SVG path data for a decorative, QR-like 21x21 block (not scannable), stable for a given key.
+
+	Used by the mock invoices on the country tabs; the three finder squares are drawn by the template.
+	"""
+	seed = 0
+	for ch in key:
+		seed = (seed * 31 + ord(ch)) & 0x7FFFFFFF
+	s = seed + 7
+	cells = []
+	n = 21
+	for y in range(n):
+		for x in range(n):
+			if (x < 8 and y < 8) or (x > n - 9 and y < 8) or (x < 8 and y > n - 9):
+				continue
+			s = (s * 1103515245 + 12345) & 0x7FFFFFFF
+			if s / 0x7FFFFFFF > 0.52:
+				cells.append(f"M{x} {y}h1v1h-1z")
+	return "".join(cells)
+
+
 def _clean(value):
 	if isinstance(value, str):
 		return value.strip() or None
@@ -125,6 +148,12 @@ def build_page_context(context, stem: str, lang: str) -> None:
 	]
 	context.no_cache = 0
 	context.sitemap = 1
+	if stem in TAB_PAGES:
+		compliance = load_content(lang)["compliance"]
+		context.countries = compliance["countries"]
+		context.tabs = compliance["tabs"]
+		context.qr_path = qr_path
+		context.plans = load_content(lang)["plans"]
 
 
 def build_demo_context(context, lang: str) -> None:
