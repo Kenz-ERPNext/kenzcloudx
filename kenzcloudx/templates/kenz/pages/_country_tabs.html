@@ -40,13 +40,10 @@
 					</ul>
 				</div>
 				{%- endif %}
-				<p class="note">
-					{%- if c.more_stem %}
-					<a class="link-accent" href="{{ lp|e }}/{{ c.more_stem|e }}">{{ c.more|e }}<svg class="icon-dir" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
-					<span class="sep" aria-hidden="true">·</span>
-					{%- endif %}
-					<span>{{ tabs.note|e }} <a class="link-accent" href="{{ lp|e }}/demo">{{ tabs.note_link|e }}</a></span>
-				</p>
+				{%- if c.more_stem %}
+				<p class="tab-more"><a class="link-accent" href="{{ lp|e }}/{{ c.more_stem|e }}">{{ c.more|e }}<svg class="icon-dir" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a></p>
+				{%- endif %}
+				<p class="note">{{ tabs.note|e }} <a class="link-accent" href="{{ lp|e }}/demo">{{ tabs.note_link|e }}</a></p>
 			</div>
 			<div class="tinv" role="img" aria-label="{{ inv.alt|e }}">
 				<div class="tinv-head">
@@ -54,7 +51,7 @@
 						<div class="tinv-title">{{ inv.title|e }}
 							{%- if inv.title_alt %}<span class="tinv-alt" lang="{{ other_lang|e }}">{{ inv.title_alt|e }}</span>{% endif -%}
 						</div>
-						<div class="tinv-meta">{{ inv.number|e }}<br>{{ inv.tax_label|e }} <span dir="ltr">{{ inv.tax_id|e }}</span></div>
+						<div class="tinv-meta"><bdi dir="ltr">{{ inv.number|e }}</bdi> · <bdi>{{ inv.date|e }}</bdi><br>{{ inv.tax_label|e }} <bdi dir="ltr">{{ inv.tax_id|e }}</bdi></div>
 					</div>
 					<span class="pill p-{{ inv.status_kind|e }}">{{ inv.status|e }}</span>
 				</div>

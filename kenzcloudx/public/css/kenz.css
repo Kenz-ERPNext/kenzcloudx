@@ -538,8 +538,9 @@ h3 { font-size: 22px; line-height: 1.3; font-weight: 500; letter-spacing: -0.02e
 .tab-details ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .tab-details li { position: relative; padding-inline-start: 18px; color: var(--ink-2); font-size: 15.5px; }
 .tab-details li::before { content: ""; position: absolute; inset-inline-start: 2px; inset-block-start: .62em; inline-size: 6px; block-size: 6px; border-radius: 50%; background: var(--accent); }
-.note { display: flex; flex-wrap: wrap; gap: 6px 10px; margin-block-start: 26px; font-size: 15px; color: var(--muted); }
-.note .sep { color: var(--muted-2); }
+.tab-more { margin-block-start: 26px; font-size: 15.5px; }
+.note { margin-block-start: 26px; font-size: 15px; color: var(--muted); }
+.tab-more + .note { margin-block-start: 12px; }
 .comp-tabs .tabpanel { align-items: start; }
 
 /* mock tax invoice */

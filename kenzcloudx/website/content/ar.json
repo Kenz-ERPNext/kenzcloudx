@@ -625,7 +625,8 @@
 				"invoice": {
 					"title": "فاتورة ضريبية",
 					"title_alt": "Tax Invoice",
-					"number": "INV-SA-2026-0418 · 21 نوفمبر 2026",
+					"number": "INV-SA-2026-0418",
+					"date": "21 نوفمبر 2026",
 					"tax_label": "الرقم الضريبي",
 					"tax_id": "3XXXXXXXXXXXXX3",
 					"status": "معتمدة",
@@ -675,7 +676,8 @@
 				"invoice": {
 					"title": "فاتورة ضريبية",
 					"title_alt": "",
-					"number": "INV-IN-2026-0291 · 21 نوفمبر 2026",
+					"number": "INV-IN-2026-0291",
+					"date": "21 نوفمبر 2026",
 					"tax_label": "GSTIN",
 					"tax_id": "27XXXXX0000X1Z5",
 					"status": "تم إصدار IRN",
@@ -725,7 +727,8 @@
 				"invoice": {
 					"title": "فاتورة ضريبية",
 					"title_alt": "Tax Invoice",
-					"number": "INV-AE-2026-0733 · 21 نوفمبر 2026",
+					"number": "INV-AE-2026-0733",
+					"date": "21 نوفمبر 2026",
 					"tax_label": "رقم التسجيل الضريبي",
 					"tax_id": "100XXXXXXXXXXX3",
 					"status": "فاتورة ضريبية",
@@ -774,7 +777,8 @@
 				"invoice": {
 					"title": "فاتورة ضريبية",
 					"title_alt": "Tax Invoice",
-					"number": "INV-OM-2026-0152 · 21 نوفمبر 2026",
+					"number": "INV-OM-2026-0152",
+					"date": "21 نوفمبر 2026",
 					"tax_label": "الرقم الضريبي",
 					"tax_id": "OM11XXXXXXXX",
 					"status": "فاتورة ضريبية",
