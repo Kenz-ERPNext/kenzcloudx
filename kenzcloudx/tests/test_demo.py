@@ -544,9 +544,9 @@ class TestDemoPage(FrappeTestCase):
 			self.assertIn('type="tel" id="df-phone"', h.replace('<input type="tel"', 'type="tel"'))
 			self.assertNotIn("Frappe", h)
 			self.assertNotIn("{{", h)
-			# the base scripts (menu, reveals, ribbon) are still there next to demo.js
+			# the base script (menu, reveals) is still there next to demo.js; the ribbon is off on /demo
 			self.assertIn("/assets/kenzcloudx/js/main.js", h)
-			self.assertIn("/assets/kenzcloudx/js/ribbon.js", h)
+			self.assertNotIn("/assets/kenzcloudx/js/ribbon.js", h)
 
 	def test_honeypot_markup(self):
 		_, h = html("/demo")

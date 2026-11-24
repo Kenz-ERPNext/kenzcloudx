@@ -7,7 +7,10 @@
    - dir=rtl mirrors every pose horizontally, so Arabic pages are a true mirror image.
    - Phones (<768px): fewer tiles, lower pixel ratio. devicePixelRatio is capped at 2.
    - prefers-reduced-motion: one static frame. No WebGL / any error: html.no-webgl (CSS fallback shape).
-   - The loop stops while the tab is hidden. */
+   - The loop stops while the tab is hidden. Phones render at most 30 fps.
+   - Budget: low-power GPU; no WebGL at all (CSS shape) when the visitor asks to save data or the device
+     reports <= 4 GB of memory; a lost WebGL context switches to the CSS shape for the rest of the visit.
+   - Pages that do not need it (demo, legal, 404) never load this module (base.html, context.ribbon). */
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
@@ -18,6 +21,13 @@ const inner = document.body.classList.contains('inner-page');
 const mirror = (root.getAttribute('dir') || '').toLowerCase() === 'rtl' ? -1 : 1;
 
 function fallback() { root.classList.add('no-webgl'); window.__ribbonReady = true; }
+
+/* Save-Data or a small device: keep the static CSS shape, skip WebGL entirely. */
+function lowBudget() {
+  const conn = navigator.connection;
+  if (conn && conn.saveData) return true;
+  return typeof navigator.deviceMemory === 'number' && navigator.deviceMemory <= 4;
+}
 
 /* Poses in normalised screen units: x,y in [-1,1] of the visible half-size (x = +1 is the inline-end
    edge in LTR, flipped for RTL), z in world units. 6 control points each; points beyond ±1 sit
@@ -120,7 +130,7 @@ function init() {
   try {
     const ctx = canvas.getContext('webgl2', { alpha: true }) || canvas.getContext('webgl', { alpha: true });
     if (!ctx) throw new Error('no webgl');
-    renderer = new THREE.WebGLRenderer({ canvas, context: ctx, alpha: true, antialias: true, powerPreference: 'high-performance' });
+    renderer = new THREE.WebGLRenderer({ canvas, context: ctx, alpha: true, antialias: true, powerPreference: 'low-power' });
   } catch (e) { fallback(); return; }
 
   renderer.setClearColor(0x000000, 0);
@@ -201,8 +211,13 @@ function init() {
     const key = anchors[Math.max(0, Math.min(anchors.length - 1, i))]?.key || 'hero';
     if (mobile && POSES_MOBILE_OVERRIDE[key]) return POSES_MOBILE_OVERRIDE[key];
     const p = POSES[key] || POSES.hero;
-    if (mobile && MOBILE_PUSH.has(key)) return p.map(([x, y, z]) => [x > 0.4 ? x + 0.32 : x, y, z]);
+    if (mobile && MOBILE_PUSH.has(key)) return pushed(key, p);
     return p;
+  }
+  const pushedCache = {};
+  function pushed(key, p) {
+    if (!pushedCache[key]) pushedCache[key] = p.map(([x, y, z]) => [x > 0.4 ? x + 0.32 : x, y, z]);
+    return pushedCache[key];
   }
 
   /* ---- per frame ---- */
@@ -212,8 +227,23 @@ function init() {
   const P = new THREE.Vector3(), T = new THREE.Vector3(), Vp = new THREE.Vector3(), X = new THREE.Vector3(), Y = new THREE.Vector3(), Z = new THREE.Vector3(), X2 = new THREE.Vector3(), Y2 = new THREE.Vector3();
   const VIEW = new THREE.Vector3(0, 0, 1);
   const flowSpeed = inner ? 0.0028 : 0.004;
-  let f = 0, flow = 0, last = performance.now(), time = 0;
-  const tmp = [];
+  let f = 0, flow = 0, last = performance.now(), time = 0, lastDraw = 0;
+  /* one record per tile, reused every frame (no per-frame allocation); `order` is re-sorted in place */
+  let recs = [], order = [];
+  function ensureRecs() {
+    if (recs.length === N) return;
+    recs = Array.from({ length: N }, () => ({ u: 0, px: 0, py: 0, pz: 0, xx: 0, xy: 0, xz: 0, yx: 0, yy: 0, yz: 0, zx: 0, zy: 0, zz: 0, sc: 0 }));
+    order = recs.slice();
+  }
+  /* insertion sort by depth: the order barely changes between frames, so this is close to linear */
+  function sortByDepth() {
+    for (let i = 1; i < order.length; i++) {
+      const d = order[i];
+      let j = i - 1;
+      while (j >= 0 && order[j].pz > d.pz) { order[j + 1] = order[j]; j--; }
+      order[j + 1] = d;
+    }
+  }
 
   function smooth(t) { return t * t * (3 - 2 * t); }
 
@@ -238,7 +268,7 @@ function init() {
     }
     curve.updateArcLengths();
 
-    tmp.length = 0;
+    ensureRecs();
     for (let i = 0; i < N; i++) {
       let u = ((i + 0.5) / N + flow) % 1;
       if (u < 0) u += 1;
@@ -255,12 +285,14 @@ function init() {
       X2.copy(X).multiplyScalar(c).addScaledVector(Y, s);
       Y2.copy(Y).multiplyScalar(c).addScaledVector(X, -s);
       const sc = tile * (0.92 + 0.08 * Math.sin(u * 3.1));
-      tmp.push({ u, px: P.x, py: P.y, pz: P.z, xx: X2.x, xy: X2.y, xz: X2.z, yx: Y2.x, yy: Y2.y, yz: Y2.z, zx: Z.x, zy: Z.y, zz: Z.z, sc });
+      const r = recs[i];
+      r.u = u; r.px = P.x; r.py = P.y; r.pz = P.z;
+      r.xx = X2.x; r.xy = X2.y; r.xz = X2.z; r.yx = Y2.x; r.yy = Y2.y; r.yz = Y2.z; r.zx = Z.x; r.zy = Z.y; r.zz = Z.z; r.sc = sc;
     }
     // back to front so the translucent slabs blend correctly
-    tmp.sort((a, b) => a.pz - b.pz);
+    sortByDepth();
     for (let i = 0; i < N; i++) {
-      const d = tmp[i];
+      const d = order[i];
       m4.set(
         d.xx * d.sc, d.yx * d.sc, d.zx * d.sc, d.px,
         d.xy * d.sc, d.yy * d.sc, d.zy * d.sc, d.py,
@@ -276,16 +308,19 @@ function init() {
     mat.uniforms.uGlint.value = staticFrame ? -1 : ((time * 0.05) % 1.4) - 0.2;
   }
 
-  let raf = 0, running = false, measureTimer = 0;
+  let raf = 0, running = false, measureTimer = 0, lost = false;
+  const MOBILE_FRAME = 1000 / 30;
   function frame(now) {
+    raf = requestAnimationFrame(frame);
+    if (mobile && now - lastDraw < MOBILE_FRAME - 1) return; // phones: at most 30 fps
+    lastDraw = now;
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
     update(dt, false);
     renderer.render(scene, camera);
-    raf = requestAnimationFrame(frame);
   }
   function start() {
-    if (running || reduced) return;
+    if (running || reduced || lost) return;
     running = true; last = performance.now(); raf = requestAnimationFrame(frame);
     measureTimer = setInterval(measure, 2000); // keeps anchors right after reveals and accordions change heights
   }
@@ -296,23 +331,29 @@ function init() {
   let rt = 0;
   window.addEventListener('resize', () => {
     clearTimeout(rt);
-    rt = setTimeout(() => { resize(); if (reduced) renderStatic(); }, 120);
+    rt = setTimeout(() => { if (lost) return; resize(); if (reduced) renderStatic(); }, 120);
   });
   window.addEventListener('load', measure);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
 
-  canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); stop(); fallback(); });
+  /* A lost context never comes back to life here: we stay on the CSS shape (rebuilding every GPU resource
+     after a restore is not worth it for a decoration), and visibilitychange can no longer restart the loop. */
+  canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); lost = true; stop(); fallback(); canvas.classList.remove('ready'); });
+  canvas.addEventListener('webglcontextrestored', () => { lost = true; fallback(); });
 
   if (reduced) {
     renderStatic();
   } else {
     f = poseFloat();
     start();
-    document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); else start(); });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); else if (!lost) start(); });
   }
   root.classList.remove('no-webgl');
   window.__ribbonReady = true;
   requestAnimationFrame(() => canvas.classList.add('ready'));
 }
 
-try { init(); } catch (e) { console.error(e); fallback(); }
+if (lowBudget()) fallback();
+else {
+  try { init(); } catch (e) { console.error(e); fallback(); }
+}

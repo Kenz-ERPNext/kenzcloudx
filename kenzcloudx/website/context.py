@@ -7,6 +7,9 @@ import frappe
 PAGES: tuple[str, ...] = ("", "erpnext", "zatca", "compliance", "plans", "about", "demo", "privacy", "terms")
 # Pages that show the country tabs (templates/kenz/pages/_country_tabs.html); content: compliance.countries
 TAB_PAGES: tuple[str, ...] = ("", "compliance")
+# Pages that do not load three.js / the WebGL ribbon (they show the static CSS shape): the form and the
+# legal pages. The 404 is off too (build_not_found_context).
+NO_RIBBON_PAGES: tuple[str, ...] = ("demo", "privacy", "terms")
 PLAN_KEYS: tuple[str, ...] = ("starter", "business", "enterprise")
 LANGS: tuple[str, ...] = ("en", "ar")
 BASE_URL = "https://kenzcloudx.com"
@@ -128,6 +131,7 @@ def _base_context(context, lang: str, t: dict) -> None:
 	context.wa_number = whatsapp_number(context.settings["whatsapp_number"])
 	context.wa_display = whatsapp_display(context.wa_number)
 	context.tel = tel_href(context.settings["phone"])
+	context.ribbon = "on"
 	context.title = t["meta"]["title"]
 	context.description = t["meta"]["description"]
 
@@ -148,6 +152,7 @@ def build_page_context(context, stem: str, lang: str) -> None:
 	]
 	context.no_cache = 0
 	context.sitemap = 1
+	context.ribbon = "off" if stem in NO_RIBBON_PAGES else "on"
 	if stem in TAB_PAGES:
 		compliance = load_content(lang)["compliance"]
 		context.countries = compliance["countries"]
@@ -185,6 +190,7 @@ def build_not_found_context(context, lang: str) -> None:
 	context.alt_url = page_url("", _other(lang))
 	context.hreflang = []
 	context.http_status_code = 404
+	context.ribbon = "off"
 	context.no_cache = 1
 	context.sitemap = 0
 

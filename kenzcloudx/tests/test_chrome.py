@@ -48,11 +48,13 @@ class TestChromeMarkup(FrappeTestCase):
 			# the import map must come before any module script
 			self.assertLess(h.index('type="importmap"'), h.index('type="module"'), p)
 
-	def test_ribbon_on_404_too(self):
+	def test_no_ribbon_on_404(self):
+		# fix wave: the 404 shows the static CSS shape and loads no three.js (tests/test_fixwave.py)
 		code, h = html("/ar/no-such-page")
 		self.assertEqual(code, 404)
-		self.assertIn('<canvas id="ribbon"', h)
-		self.assertIn("/js/ribbon.js", h)
+		self.assertNotIn('<canvas id="ribbon"', h)
+		self.assertNotIn("/js/ribbon.js", h)
+		self.assertIn('class="ribbon-fallback"', h)
 
 	def test_no_external_hosts_in_assets(self):
 		"""Scripts, stylesheets, fonts and images are self-hosted; only canonical/hreflang/og may be absolute."""
@@ -67,8 +69,8 @@ class TestChromeMarkup(FrappeTestCase):
 						)
 						self.assertNotIn('rel="stylesheet"', tag, p)
 						self.assertNotIn("<script", tag, p)
-			importmap = re.search(r'<script type="importmap">(.*?)</script>', h, re.S).group(1)
-			self.assertNotIn("http", importmap, p)
+			importmap = re.search(r'<script type="importmap">(.*?)</script>', h, re.S)
+			self.assertNotIn("http", importmap.group(1) if importmap else "", p)
 			for host in ("jsdelivr", "unpkg", "googleapis", "gstatic", "cdnjs"):
 				self.assertNotIn(host, h, (p, host))
 

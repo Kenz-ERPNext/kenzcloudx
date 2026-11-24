@@ -8,7 +8,10 @@
 {%- set _asset = "/assets/kenzcloudx" %}
 {%- set _v = (build_version or "") %}
 {%- set _home = "/ar" if lang == "ar" else "/" %}
-<html lang="{{ lang|e }}" dir="{{ dir|e }}">
+{#- ribbon == "off" (demo, legal pages, 404; see website/context.py): no three.js, no canvas, the static CSS
+    shape from the first paint. -#}
+{%- set _ribbon = ribbon != "off" %}
+<html lang="{{ lang|e }}" dir="{{ dir|e }}"{% if not _ribbon %} class="no-webgl ribbon-off"{% endif %}>
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -34,7 +37,10 @@
 	<meta name="twitter:card" content="summary_large_image">
 	<meta name="theme-color" content="#F1F1F3">
 	<link rel="icon" href="{{ _asset|e }}/images/logo-mark.svg" type="image/svg+xml">
-	<link rel="preload" href="{{ _asset|e }}/fonts/{{ ('ibm-plex-sans-arabic-arabic-400-normal.woff2' if lang == 'ar' else 'archivo-latin-wdth-normal.woff2')|e }}" as="font" type="font/woff2" crossorigin>
+	{#- the fonts of the first screen: EN Archivo + Playfair italic (accent); AR Plex Arabic 500 (headings) + Amiri 700 (accent) -#}
+	{%- for _font in (("ibm-plex-sans-arabic-arabic-500-normal.woff2", "amiri-arabic-700-normal.woff2") if lang == "ar" else ("archivo-latin-wdth-normal.woff2", "playfair-display-latin-400-italic.woff2")) %}
+	<link rel="preload" href="{{ _asset|e }}/fonts/{{ _font|e }}" as="font" type="font/woff2" crossorigin>
+	{%- endfor %}
 	<link rel="stylesheet" href="{{ _asset|e }}/css/kenz.css?v={{ _v|e }}">
 	{#- js: enables reveals and the menu button. Safety net: if main.js or the ribbon module has not
 	    started after 4s (blocked, old browser, no WebGL), show everything and the CSS ribbon instead. -#}
@@ -43,19 +49,23 @@
 			r.classList.add("js");
 			if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) r.classList.add("reduced");
 			setTimeout(function () {
-				if (!window.__kcxMain) r.classList.add("no-motion");
+				if (!window.__kcxMain) { r.classList.add("no-motion"); r.classList.add("no-main"); }
 				if (!window.__ribbonReady) r.classList.add("no-webgl");
 			}, 4000);
 		})(document.documentElement);
 	</script>
+	{%- if _ribbon %}
 	<script type="importmap">
 	{"imports": {"three": "{{ _asset|e }}/js/vendor/three-0.160.0/three.module.min.js", "three/addons/": "{{ _asset|e }}/js/vendor/three-0.160.0/addons/"}}
 	</script>
+	{%- endif %}
 	{%- block head_extra %}{% endblock %}
 </head>
 <body class="{{ ('home-page' if page_url == _home else 'inner-page')|e }}">
 	<div class="bg-wash" aria-hidden="true"></div>
+	{%- if _ribbon %}
 	<canvas id="ribbon" aria-hidden="true"></canvas>
+	{%- endif %}
 	<div class="ribbon-fallback" aria-hidden="true"></div>
 	{% include "templates/kenz/header.html" %}
 	<main id="main">
@@ -66,7 +76,9 @@
 	{% include "templates/kenz/whatsapp.html" %}
 	{%- block scripts %}
 	<script src="/assets/kenzcloudx/js/main.js?v={{ (build_version or '')|e }}" defer></script>
+	{%- if _ribbon %}
 	<script type="module" src="/assets/kenzcloudx/js/ribbon.js?v={{ (build_version or '')|e }}"></script>
+	{%- endif %}
 	{%- endblock %}
 </body>
 </html>
