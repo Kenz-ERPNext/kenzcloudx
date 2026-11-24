@@ -4,6 +4,11 @@
    - reveals: .reveal gets .in when it enters the viewport; stagger with style="--d:N" (90ms steps)
    - count-up: [data-count="87"] inside a .reveal counts from 0 when revealed (Western digits, as before)
    - accordion: button.faq-q[aria-controls] inside .faq-item toggles .open + aria-expanded
+   - country tabs ([data-tabs], templates/kenz/pages/_country_tabs.html): the server sends in-page links and
+     visible panels (works without JS); here they become a tablist with roving tabindex, arrow keys that follow
+     the reading direction (in RTL ArrowLeft moves to the next tab), Home/End, an animated panel switch,
+     a sliding indicator and deep links (#saudi-arabia, #india, #uae, #oman; also on hashchange)
+   - timeline (.tl-card): the progress line and the step dots follow the scroll position
    prefers-reduced-motion: everything is shown at once, numbers are not animated. */
 (function () {
 	"use strict";
@@ -86,6 +91,114 @@
 			q.setAttribute("aria-expanded", String(open));
 		});
 	});
+
+	/* ---- country tabs ---- */
+	var rtl = (root.getAttribute("dir") || "").toLowerCase() === "rtl";
+	document.querySelectorAll("[data-tabs]").forEach(function (wrap) {
+		var list = wrap.querySelector('[role="tablist"]');
+		if (!list) return;
+		var tabs = Array.prototype.slice.call(list.querySelectorAll('[role="tab"]'));
+		if (!tabs.length) return;
+		var ind = list.querySelector(".tab-ind");
+		var current = null;
+		function panelOf(tab) { return document.getElementById(tab.getAttribute("aria-controls")); }
+		function moveInd() {
+			if (!ind || !current) return;
+			ind.style.left = current.offsetLeft + "px";
+			ind.style.top = current.offsetTop + "px";
+			ind.style.width = current.offsetWidth + "px";
+			ind.style.height = current.offsetHeight + "px";
+		}
+		function select(tab, opts) {
+			opts = opts || {};
+			current = tab;
+			tabs.forEach(function (t) {
+				var on = t === tab;
+				var panel = panelOf(t);
+				t.setAttribute("aria-selected", String(on));
+				t.tabIndex = on ? 0 : -1;
+				if (!panel) return;
+				if (on) {
+					var wasHidden = panel.hidden;
+					panel.hidden = false;
+					if (wasHidden && opts.animate !== false && !reduced) {
+						panel.classList.remove("enter");
+						void panel.offsetWidth;
+						panel.classList.add("enter");
+					}
+				} else {
+					panel.hidden = true;
+				}
+			});
+			moveInd();
+			if (opts.focus) tab.focus();
+			if (opts.hash && window.history && history.replaceState) {
+				history.replaceState(null, "", "#" + tab.getAttribute("aria-controls"));
+			}
+		}
+		function fromHash() {
+			var id = "";
+			try { id = decodeURIComponent((location.hash || "").slice(1)); } catch (e) { return null; }
+			for (var k = 0; k < tabs.length; k++) {
+				if (tabs[k].getAttribute("aria-controls") === id) return tabs[k];
+			}
+			return null;
+		}
+		tabs.forEach(function (t, i) {
+			t.addEventListener("click", function (e) {
+				e.preventDefault();
+				select(t, { hash: true });
+			});
+			t.addEventListener("keydown", function (e) {
+				var nextKey = rtl ? "ArrowLeft" : "ArrowRight";
+				var prevKey = rtl ? "ArrowRight" : "ArrowLeft";
+				var n = null;
+				if (e.key === nextKey) n = tabs[(i + 1) % tabs.length];
+				else if (e.key === prevKey) n = tabs[(i - 1 + tabs.length) % tabs.length];
+				else if (e.key === "Home") n = tabs[0];
+				else if (e.key === "End") n = tabs[tabs.length - 1];
+				else if (e.key === " " || e.key === "Spacebar") n = t; // links do not react to Space on their own
+				if (n) {
+					e.preventDefault();
+					select(n, { focus: true, hash: true });
+				}
+			});
+		});
+		var linked = fromHash();
+		var initial = linked || tabs.filter(function (t) { return t.getAttribute("aria-selected") === "true"; })[0] || tabs[0];
+		select(initial, { animate: false });
+		wrap.classList.add("tabs-ready");
+		if (linked) {
+			// the browser jumped to the (then still visible) panel; show the tabs instead
+			requestAnimationFrame(function () { wrap.scrollIntoView({ block: "start" }); });
+		}
+		window.addEventListener("hashchange", function () {
+			var t = fromHash();
+			if (!t) return;
+			select(t);
+			wrap.scrollIntoView({ block: "start", behavior: reduced ? "auto" : "smooth" });
+		});
+		window.addEventListener("resize", moveInd);
+		if (document.fonts && document.fonts.ready) document.fonts.ready.then(moveInd);
+	});
+
+	/* ---- timeline progress ---- */
+	var tl = document.querySelector(".tl-card");
+	if (tl) {
+		var tlLine = tl.querySelector(".tl-line i");
+		var tlSteps = tl.querySelectorAll(".tl-step");
+		var tlUpdate = function () {
+			var r = tl.getBoundingClientRect();
+			var vh = window.innerHeight || 1;
+			var p = reduced ? 1 : Math.max(0, Math.min(1, (vh * 0.8 - r.top) / (vh * 0.45)));
+			if (tlLine) tlLine.style.setProperty("--p", p.toFixed(3));
+			var last = Math.max(1, tlSteps.length - 1);
+			tlSteps.forEach(function (s, i) { s.classList.toggle("on", p > 0.02 && p >= i / last - 0.001); });
+		};
+		window.addEventListener("scroll", tlUpdate, { passive: true });
+		window.addEventListener("resize", tlUpdate);
+		tlUpdate();
+	}
 
 	root.classList.remove("no-motion");
 })();

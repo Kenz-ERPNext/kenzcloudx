@@ -89,11 +89,12 @@ class TestChromeMarkup(FrappeTestCase):
 		en, ar = load_content("en")["common"], load_content("ar")["common"]
 		_, h = html("/plans")
 		header = h[h.index('<header class="nav"') : h.index("</header>")]
-		for href in ('href="/erpnext"', 'href="/zatca"', 'href="/#how"', 'href="/plans"', 'href="/about"', 'href="/demo"', 'href="/login"'):
+		for href in ('href="/erpnext"', 'href="/compliance"', 'href="/#how"', 'href="/plans"', 'href="/about"', 'href="/demo"', 'href="/login"'):
 			self.assertIn(href, header, href)
 		self.assertIn(f">{en['nav']['compliance']}<", header)
 		self.assertIn(f">{en['nav']['how']}<", header)
 		self.assertIn('aria-current="page"', header)
+		self.assertNotIn('href="/zatca"', header)  # Compliance now has its own page (task B)
 		# language switch: a real link to the Arabic version of the same page
 		self.assertRegex(header, r'<a [^>]*href="/ar/plans"[^>]*hreflang="ar"[^>]*lang="ar"[^>]*>عربي</a>')
 		_, h = html("/")

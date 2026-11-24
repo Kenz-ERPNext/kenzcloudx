@@ -6,7 +6,7 @@ from frappe.utils import set_request
 from frappe.website.serve import get_response
 
 SETTINGS = "KenzCloudX Settings"
-ROUTES = ["/", "/erpnext", "/zatca", "/plans", "/about", "/demo", "/privacy", "/terms"]
+ROUTES = ["/", "/erpnext", "/zatca", "/compliance", "/plans", "/about", "/demo", "/privacy", "/terms"]
 
 
 def response(path):
@@ -47,7 +47,7 @@ class TestPages(FrappeTestCase):
 		self.assertEqual(code, 200)
 		self.assertIn('lang="en"', h)
 		self.assertIn('dir="ltr"', h)
-		self.assertIn("hosted and run by people you can call", h)
+		self.assertIn("ERPNext, hosted and run", h)
 		self.assertIn('hreflang="ar"', h)
 		self.assertIn('href="/ar"', h)
 
@@ -56,7 +56,7 @@ class TestPages(FrappeTestCase):
 		self.assertEqual(code, 200)
 		self.assertIn('lang="ar"', h)
 		self.assertIn('dir="rtl"', h)
-		self.assertIn("يمكنك التواصل معه", h)
+		self.assertIn("نيابةً عنك", h)
 		self.assertIn('href="/"', h)
 
 	def test_no_frappe_and_no_cdn(self):
@@ -81,37 +81,17 @@ class TestPages(FrappeTestCase):
 			self.assertIn(f'<link rel="canonical" href="{canonical}">', h, p)
 			self.assertIn(f"/assets/kenzcloudx/images/og-{lang}.png", h, p)
 
-	def test_home_sections_in_order(self):
+	def test_home_links_to_demo_and_how(self):
+		# section order and content: see test_home.TestHomePage
 		_, h = html("/")
-		markers = [
-			'<section class="hero"',
-			"zatca-invoice",
-			'<dl class="proof"',
-			"what-we-do",
-			"how-it-works",
-			'<section class="demo-band"',
-			'<footer class="site-footer"',
-		]
-		positions = [h.find(m) for m in markers]
-		self.assertNotIn(-1, positions, dict(zip(markers, positions, strict=True)))
-		self.assertEqual(positions, sorted(positions))
 		self.assertIn('href="/demo"', h)
 		self.assertIn('href="/plans"', h)
+		self.assertIn('href="#how"', h)
 
 	def test_nav_links_every_page_in_language(self):
 		_, h = html("/ar")
-		for stem in ("erpnext", "zatca", "plans", "about", "demo", "privacy", "terms"):
+		for stem in ("erpnext", "zatca", "compliance", "plans", "about", "demo", "privacy", "terms"):
 			self.assertIn(f'href="/ar/{stem}"', h, stem)
-
-	def test_proof_numbers_from_settings(self):
-		old = frappe.get_single(SETTINGS)
-		try:
-			set_settings(stat_live_sites=91, stat_zatca_customers=23)
-			_, h = html("/")
-			self.assertIn(">91<", h)
-			self.assertIn(">23+<", h)
-		finally:
-			set_settings(stat_live_sites=old.stat_live_sites, stat_zatca_customers=old.stat_zatca_customers)
 
 	def test_whatsapp_button(self):
 		old = frappe.get_single(SETTINGS)
@@ -181,6 +161,9 @@ class TestPages(FrappeTestCase):
 				self.assertIn('dir="rtl"' if p.startswith("/ar") else 'dir="ltr"', h, p)
 
 	def test_plans_no_prices(self):
+		"""No prices or currencies on the plans page. The home page's plans teaser is checked in
+		test_home (scoped to its section only): the country mock invoices elsewhere on the home page and
+		on /compliance legitimately show SAR/INR/AED/OMR amounts, so a whole-page check cannot apply there."""
 		for p in ("/plans", "/ar/plans"):
 			_, h = html(p)
 			self.assertNotIn("SAR", h, p)
@@ -219,7 +202,7 @@ class TestPages(FrappeTestCase):
 		_, h = html("/sitemap.xml")
 		self.assertIn("/ar/zatca", h)
 		self.assertIn("/zatca", h)
-		for stem in ("erpnext", "zatca", "plans", "about", "demo", "privacy", "terms"):
+		for stem in ("erpnext", "zatca", "compliance", "plans", "about", "demo", "privacy", "terms"):
 			self.assertIn(f"/{stem}</loc>", h, stem)
 			self.assertIn(f"/ar/{stem}</loc>", h, stem)
 		self.assertNotIn("404</loc>", h)

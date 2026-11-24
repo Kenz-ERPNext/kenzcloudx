@@ -1,71 +1,204 @@
+{#- Home page (redesign v2): the 13 sections of the approved prototype. Content: t = home, plus countries/tabs
+    (compliance.countries) and plans (plans.items) from build_page_context. data-pose steers the ribbon.
+    The closing CTA is the shared demo band (t.demo_band, accent heading), then the footer. -#}
+{%- from "templates/kenz/pages/_macros.html" import acc_heading -%}
 {%- set lp = "/ar" if lang == "ar" else "" -%}
 {%- set h = t.hero -%}
-<section class="hero">
-	<div class="container hero-grid">
-		<div class="hero-copy">
-			<p class="tag">{{ h.tag|e }}</p>
-			<h1>{{ h.h1|e }}</h1>
-			<p class="lead">{{ h.subline|e }}</p>
+{%- set s = t.stats -%}
+
+<section class="home-hero wrap" id="top" data-pose="hero" aria-labelledby="hero-heading">
+	<p class="hero-tag reveal" style="--d:2">{{ h.tag|e }}</p>
+	<div class="hero-main">
+		<h1 class="h1 reveal" id="hero-heading">{% call acc_heading(h.h1) %}{% endcall %}</h1>
+		<div class="hero-sub reveal" style="--d:3">
+			<p class="lede">{{ h.subline|e }}</p>
 			<div class="btn-row">
-				<a class="btn btn-primary" href="{{ lp|e }}/demo">{{ h.cta_primary|e }}</a>
-				<a class="btn btn-outline" href="{{ lp|e }}/plans">{{ h.cta_secondary|e }}</a>
+				<a class="btn btn-dark" href="{{ lp|e }}/demo">{{ h.cta_primary|e }}</a>
+				<a class="btn btn-ghost" href="#how">{{ h.cta_secondary|e }}</a>
 			</div>
 		</div>
-		<figure class="invoice-card zatca-invoice" role="img" aria-label="{{ h.invoice_alt|e }}">
-			{% include "kenzcloudx/public/images/zatca-invoice.svg" %}
+	</div>
+	<a class="scroll-cue" href="#stats" aria-label="{{ h.scroll|e }}">
+		<span aria-hidden="true">{{ h.scroll|e }}</span>
+		<svg viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false"><path d="M4 6.5 10 13l6-6.5M7 4.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+	</a>
+</section>
+
+<section class="stats wrap" id="stats" aria-label="{{ s.label|e }}">
+	<div class="stats-bar glass reveal">
+		{%- if settings.stat_live_sites %}
+		<div class="stat"><span class="stat-num" dir="ltr"><span data-count="{{ settings.stat_live_sites|e }}">{{ settings.stat_live_sites|e }}</span><span class="unit">+</span></span><span class="stat-label">{{ s.live_sites_label|e }}</span></div>
+		{%- endif %}
+		<div class="stat"><span class="stat-num"><span data-count="{{ s.countries_value|e }}">{{ s.countries_value|e }}</span></span><span class="stat-label">{{ s.countries_label|e }}</span></div>
+		<div class="stat"><span class="stat-num">{{ s.backups_value|e }}</span><span class="stat-label">{{ s.backups_label|e }}</span></div>
+		<div class="stat"><span class="stat-num stat-words">{{ s.languages_a|e }} <span class="unit">+</span> {{ s.languages_b|e }}</span><span class="stat-label">{{ s.languages_label|e }}</span></div>
+	</div>
+</section>
+
+<section class="section wrap" id="benefits" data-pose="benefits" aria-labelledby="benefits-heading">
+	<div class="head reveal">
+		<h2 class="h2" id="benefits-heading">{% call acc_heading(t.benefits.heading) %}{% endcall %}</h2>
+	</div>
+	<div class="grid-3">
+		{%- for item in t.benefits["items"] %}
+		<article class="card glass lift reveal" style="--d:{{ loop.index0|e }}">
+			<div class="icon-tile" aria-hidden="true">
+				{%- if item.key == "hosting" %}
+				<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="5" y="6" width="22" height="8" rx="2.5"/><rect x="5" y="18" width="22" height="8" rx="2.5"/><circle cx="10" cy="10" r=".8" fill="currentColor"/><circle cx="10" cy="22" r=".8" fill="currentColor"/><path d="M15 10h7M15 22h7"/></svg>
+				{%- elif item.key == "tax" %}
+				<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M9 4h11l5 5v19H9z"/><path d="M20 4v5h5"/><path d="M13 15h8M13 19h8M13 23h4"/></svg>
+				{%- else %}
+				<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M5 11h17l-4-4M27 21H10l4 4"/></svg>
+				{%- endif %}
+			</div>
+			<h3>{{ item.title|e }}</h3>
+			<p>{{ item.body|e }}</p>
+		</article>
+		{%- endfor %}
+	</div>
+</section>
+
+<section class="section wrap" id="erpnext" data-pose="erp" aria-labelledby="erp-heading">
+	<div class="head reveal">
+		<h2 class="h2" id="erp-heading">{% call acc_heading(t.erp.heading) %}{% endcall %}</h2>
+		<p class="lede">{{ t.erp.intro|e }}</p>
+	</div>
+	{% include "templates/kenz/pages/_erp_mock.html" %}
+</section>
+
+<section class="section wrap" id="compliance" data-pose="compliance" aria-labelledby="compliance-heading">
+	<div class="head reveal">
+		<h2 class="h2" id="compliance-heading">{% call acc_heading(t.compliance.heading) %}{% endcall %}</h2>
+		<p class="lede">{{ t.compliance.intro|e }}</p>
+	</div>
+	{% include "templates/kenz/pages/_country_tabs.html" %}
+	<p class="more-link reveal"><a class="link-accent" href="{{ lp|e }}/compliance">{{ t.compliance.more|e }}<svg class="icon-dir" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a></p>
+</section>
+
+{%- set lk = t.looks %}
+<section class="section wrap" data-pose="looks" aria-labelledby="looks-heading">
+	<div class="head reveal">
+		<h2 class="h2" id="looks-heading">{% call acc_heading(lk.heading) %}{% endcall %}</h2>
+	</div>
+	<div class="looks">
+		<div class="look look-1 reveal" style="--d:0">
+			<p class="look-label">{{ lk.invoice.label|e }}</p>
+			<div class="ui" aria-hidden="true">
+				<div class="ui-h">{{ lk.invoice.title|e }} <span>{{ lk.invoice.tag|e }}</span></div>
+				{%- for row in lk.invoice.fields|batch(2) %}
+				<div class="form-row">
+					{%- for f in row %}
+					<div class="ui-field"><small>{{ f.label|e }}</small><b>{{ f.value|e }}</b></div>
+					{%- endfor %}
+				</div>
+				{%- endfor %}
+				<table class="items">
+					<thead><tr>{% for c in lk.invoice.columns %}<th{% if not loop.first %} class="r"{% endif %}>{{ c|e }}</th>{% endfor %}</tr></thead>
+					<tbody>
+						{%- for r in lk.invoice.rows %}
+						<tr>{% for v in r %}<td{% if not loop.first %} class="r"{% endif %}>{{ v|e }}</td>{% endfor %}</tr>
+						{%- endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="look look-2 reveal" style="--d:1">
+			<p class="look-label">{{ lk.stock.label|e }}</p>
+			<div class="ui" aria-hidden="true">
+				<div class="ui-h">{{ lk.stock.title|e }} <span>{{ lk.stock.tag|e }}</span></div>
+				<div class="stock">
+					{%- for r in lk.stock.rows %}
+					<div class="stock-row"><b>{{ r.name|e }}</b><span>{{ r.qty|e }}{% if r.low %} · {{ lk.stock.reorder|e }}{% endif %}</span><div class="bar{% if r.low %} low{% endif %}"><i style="--w:{{ r.level|int|e }}%"></i></div></div>
+					{%- endfor %}
+				</div>
+			</div>
+		</div>
+		<div class="look look-3 reveal" style="--d:2">
+			<p class="look-label">{{ lk.pos.label|e }}</p>
+			<div class="ui" aria-hidden="true">
+				<div class="ui-h">{{ lk.pos.title|e }} <span>{{ lk.pos.tag|e }}</span></div>
+				<div class="pos">
+					{%- for l in lk.pos.lines %}
+					<div class="cart-line"><span>{{ l.label|e }}</span><span>{{ l.amount|e }}</span></div>
+					{%- endfor %}
+					<div class="pos-total"><span>{{ lk.pos.total_label|e }}</span><span>{{ lk.pos.total|e }}</span></div>
+					<div class="keypad" dir="ltr">{% for n in range(1, 7) %}<span>{{ n|e }}</span>{% endfor %}</div>
+					<div class="pay">{{ lk.pos.pay|e }}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section class="section wrap" id="how" data-pose="how" aria-labelledby="how-heading">
+	<div class="head reveal">
+		<h2 class="h2" id="how-heading">{% call acc_heading(t.how.heading) %}{% endcall %}</h2>
+		<p class="lede">{{ t.how.intro|e }}</p>
+	</div>
+	<div class="tl-card glass reveal">
+		<div class="tl-line" aria-hidden="true"><i></i></div>
+		<ol class="timeline">
+			{%- for step in t.how.steps %}
+			<li class="tl-step reveal" style="--d:{{ loop.index0|e }}"><span class="dot" aria-hidden="true"></span><span class="num" dir="ltr">{{ ("%02d" % loop.index)|e }}</span><h3>{{ step.title|e }}</h3><p>{{ step.body|e }}</p></li>
+			{%- endfor %}
+		</ol>
+	</div>
+</section>
+
+{%- set pt = t.plans %}
+<section class="section wrap" id="plans" data-pose="plans" aria-labelledby="plans-heading">
+	<div class="head reveal">
+		<h2 class="h2" id="plans-heading">{% call acc_heading(pt.heading) %}{% endcall %}</h2>
+		<p class="lede">{{ pt.intro|e }}</p>
+	</div>
+	<div class="grid-3 plan-cards">
+		{%- for plan in plans["items"] %}
+		{%- set featured = plan.key == pt.featured %}
+		<article class="plan-card glass lift reveal{% if featured %} featured{% endif %}" style="--d:{{ loop.index0|e }}">
+			{%- if featured %}
+			<span class="badge">{{ pt.badge|e }}</span>
+			{%- endif %}
+			<h3>{{ plan.name|e }}</h3>
+			<p class="for">{{ plan.tagline|replace("[PLACEHOLDER] ", "")|e }}</p>
+			<div class="price-line"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="7.5"/><path d="M10 6v4l2.5 2"/></svg>{{ pt.price_line|e }}</div>
+			<ul class="checks">
+				{%- for feature in plan.features[:4] %}
+				<li><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m3.5 9.5 3.5 3.5 7.5-8"/></svg><span>{{ feature|e }}</span></li>
+				{%- endfor %}
+			</ul>
+			<a class="btn {{ ('btn-dark' if featured else 'btn-ghost')|e }}" href="{{ lp|e }}/demo?plan={{ plan.key|e }}">{{ plans.button|e }}</a>
+		</article>
+		{%- endfor %}
+	</div>
+	<p class="more-link reveal"><a class="link-accent" href="{{ lp|e }}/plans">{{ pt.more|e }}<svg class="icon-dir" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a></p>
+</section>
+
+<section class="section wrap" data-pose="quotes" aria-labelledby="quotes-heading">
+	<div class="head reveal">
+		<h2 class="h2" id="quotes-heading">{% call acc_heading(t.quotes.heading) %}{% endcall %}</h2>
+	</div>
+	<div class="grid-3">
+		{%- for q in t.quotes["items"] %}
+		<figure class="quote glass lift reveal" style="--d:{{ loop.index0|e }}">
+			<div class="quote-top"><span class="qmark" aria-hidden="true">{{ ('”' if lang == 'ar' else '“')|e }}</span><span class="sample">{{ t.quotes.sample|e }}</span></div>
+			<blockquote>{{ q.quote|e }}</blockquote>
+			<figcaption><span class="qav qa{{ loop.index|e }}" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" focusable="false"><circle cx="10" cy="7" r="3"/><path d="M4 17c.8-3 3.2-4.5 6-4.5s5.2 1.5 6 4.5"/></svg></span><span><b>{{ q.name|e }}</b><span>{{ q.role|e }}</span></span></figcaption>
 		</figure>
-	</div>
-	<div class="container">
-		<dl class="proof">
-			{%- if settings.stat_live_sites %}
-			<div class="proof-item">
-				<dt>{{ t.proof.live_sites_label|e }}</dt>
-				<dd>{{ settings.stat_live_sites|e }}</dd>
-			</div>
-			{%- endif %}
-			{%- if settings.stat_zatca_customers %}
-			<div class="proof-item">
-				<dt>{{ t.proof.zatca_customers_label|e }}</dt>
-				<dd>{{ settings.stat_zatca_customers|e }}+</dd>
-			</div>
-			{%- endif %}
-			<div class="proof-item">
-				<dt>{{ t.proof.backups_label|e }}</dt>
-				<dd>{{ t.proof.backups_value|e }}</dd>
-			</div>
-		</dl>
+		{%- endfor %}
 	</div>
 </section>
 
-<section class="section what-we-do" aria-labelledby="what-we-do-heading">
-	<div class="container split">
-		<header class="section-head">
-			<h2 id="what-we-do-heading">{{ t.what_we_do.heading|e }}</h2>
-			<p class="lead">{{ t.what_we_do.intro|e }}</p>
-		</header>
-		<ol class="numbered-blocks">
-			{%- for item in t.what_we_do["items"] %}
-			<li class="numbered-block" id="{{ item.key|e }}">
-				<span class="numeral" aria-hidden="true">{{ ("%02d" % loop.index)|e }}</span>
-				<h3>{{ item.title|e }}</h3>
-				<p>{{ item.body|e }}</p>
-			</li>
-			{%- endfor %}
-		</ol>
+<section class="section wrap" id="faq" data-pose="faq" aria-labelledby="faq-heading">
+	<div class="faq-head reveal">
+		<h2 class="h2" id="faq-heading">{% call acc_heading(t.faq.heading) %}{% endcall %}</h2>
+		<a class="round-btn" href="#demo-band-heading" aria-label="{{ t.faq.to_demo|e }}"><svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M11 4v14M5 12l6 6 6-6"/></svg></a>
 	</div>
-</section>
-
-<section class="section section-mint how-it-works" id="how" aria-labelledby="how-heading">
-	<div class="container">
-		<h2 id="how-heading">{{ t.how_it_works.heading|e }}</h2>
-		<ol class="steps">
-			{%- for step in t.how_it_works.steps %}
-			<li class="step">
-				<span class="step-dot" aria-hidden="true">{{ loop.index|e }}</span>
-				<h3>{{ step.title|e }}</h3>
-				<p>{{ step.body|e }}</p>
-			</li>
-			{%- endfor %}
-		</ol>
+	<div class="qa reveal">
+		{%- for item in t.faq["items"] %}
+		<details class="qa-item"{% if loop.first %} open{% endif %}>
+			<summary><h3>{{ item.q|e }}</h3><span class="pm" aria-hidden="true"></span></summary>
+			<div class="qa-a"><p>{{ item.a|e }}</p></div>
+		</details>
+		{%- endfor %}
 	</div>
 </section>

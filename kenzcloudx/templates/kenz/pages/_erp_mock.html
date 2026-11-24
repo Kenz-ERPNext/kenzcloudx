@@ -1,0 +1,73 @@
+{#- Generic ERP dashboard illustration (home page). Decorative: the whole window is aria-hidden and the
+    data is invented and tagged "Demo data". Labels come from t.erp.mock so the Arabic page is a mirrored,
+    Arabic UI. -#}
+{%- set m = t.erp.mock -%}
+<div class="panel glass reveal">
+	<div class="win" aria-hidden="true">
+		<div class="win-bar">
+			<div class="dots"><i></i><i></i><i></i></div>
+			<span class="crumb">{{ m.crumb|e }}</span>
+			<div class="search"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" focusable="false"><circle cx="6" cy="6" r="4.5"/><path d="m9.5 9.5 3 3"/></svg>{{ m.search|e }}</div>
+			<span class="avatar"></span>
+		</div>
+		<div class="erp">
+			<div class="side">
+				<div class="side-label">{{ m.modules_label|e }}</div>
+				{%- for name in m.modules %}
+				<div class="side-item{% if loop.first %} active{% endif %}">
+					{%- if loop.index == 1 %}<svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" focusable="false"><rect x="3" y="2.5" width="12" height="13" rx="2"/><path d="M6 6.5h6M6 9.5h6M6 12.5h3"/></svg>
+					{%- elif loop.index == 2 %}<svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M3 13 7.5 8.5l3 3L15 6"/><path d="M11 6h4v4"/></svg>
+					{%- elif loop.index == 3 %}<svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M2.5 3h2l1.6 8.2h8.4L16 5.5H5.2"/><circle cx="7" cy="14.5" r="1"/><circle cx="13" cy="14.5" r="1"/></svg>
+					{%- elif loop.index == 4 %}<svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" focusable="false"><path d="M9 2 15.5 5.5v7L9 16l-6.5-3.5v-7z"/><path d="M2.5 5.5 9 9l6.5-3.5M9 9v7"/></svg>
+					{%- elif loop.index == 5 %}<svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" focusable="false"><circle cx="9" cy="6" r="3"/><path d="M3.5 15.5c.8-3 3-4.5 5.5-4.5s4.7 1.5 5.5 4.5"/></svg>
+					{%- elif loop.index == 6 %}<svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" focusable="false"><rect x="2.5" y="3" width="13" height="9" rx="1.5"/><path d="M6 15.5h6M9 12v3.5"/></svg>
+					{%- else %}<svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" focusable="false"><path d="M4 15V9M9 15V4M14 15v-4"/></svg>
+					{%- endif %}{{ name|e }}</div>
+				{%- endfor %}
+			</div>
+			<div class="main">
+				<div class="main-top">
+					<div><h3>{{ m.title|e }}</h3><small>{{ m.subtitle|e }}</small></div>
+					<div class="seg">{% for p in m.periods %}<span{% if loop.index == 2 %} class="on"{% endif %}>{{ p|e }}</span>{% endfor %}</div>
+				</div>
+				<div class="kpis">
+					{%- for k in m.kpis %}
+					<div class="kpi"><div class="k">{{ k.label|e }}</div><div class="v">{{ k.value|e }}</div><div class="d {{ k.kind|e }}">{{ k.delta|e }}</div></div>
+					{%- endfor %}
+				</div>
+				<div class="erp-row">
+					<div class="box">
+						<div class="box-h">{{ m.invoices_title|e }} <span class="demo-tag">{{ m.demo_tag|e }}</span></div>
+						<table class="inv">
+							<thead><tr>
+								{%- for c in m.columns %}
+								<th{% if loop.index == 2 %} class="hide-xs"{% elif loop.index == 3 %} class="hide-sm"{% elif loop.index == 4 %} class="amt"{% endif %}>{{ c|e }}</th>
+								{%- endfor %}
+							</tr></thead>
+							<tbody>
+								{%- for r in m.rows %}
+								<tr><td>{{ r.no|e }}</td><td class="hide-xs">{{ r.customer|e }}</td><td class="hide-sm">{{ r.date|e }}</td><td class="amt">{{ r.amount|e }}</td><td><span class="pill p-{{ r.kind|e }}">{{ r.status|e }}</span></td></tr>
+								{%- endfor %}
+							</tbody>
+						</table>
+					</div>
+					<div class="box chart">
+						<div class="box-h">{{ m.chart_title|e }} <span>{{ m.chart_range|e }}</span></div>
+						<svg viewBox="0 0 300 150" preserveAspectRatio="none" focusable="false">
+							<defs>
+								<linearGradient id="gIn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7FD3E0" stop-opacity=".45"/><stop offset="1" stop-color="#7FD3E0" stop-opacity="0"/></linearGradient>
+								<linearGradient id="gOut" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8C7BF0" stop-opacity=".3"/><stop offset="1" stop-color="#8C7BF0" stop-opacity="0"/></linearGradient>
+							</defs>
+							<g stroke="rgba(28,28,31,.06)"><path d="M0 30h300M0 70h300M0 110h300"/></g>
+							<path d="M0 105 C40 95 60 70 100 74 S160 50 200 46 S260 28 300 22 V150 H0Z" fill="url(#gIn)"/>
+							<path d="M0 105 C40 95 60 70 100 74 S160 50 200 46 S260 28 300 22" fill="none" stroke="#5FC4D6" stroke-width="2"/>
+							<path d="M0 120 C40 116 70 100 110 104 S170 86 210 90 S265 70 300 66 V150 H0Z" fill="url(#gOut)"/>
+							<path d="M0 120 C40 116 70 100 110 104 S170 86 210 90 S265 70 300 66" fill="none" stroke="#8C7BF0" stroke-width="2"/>
+						</svg>
+						<div class="legend"><span><i class="key-in"></i>{{ m.money_in|e }}</span><span><i class="key-out"></i>{{ m.money_out|e }}</span></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
