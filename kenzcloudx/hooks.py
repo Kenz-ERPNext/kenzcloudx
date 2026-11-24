@@ -1,14 +1,15 @@
 app_name = "kenzcloudx"
-app_title = "Kenzcloudx"
-app_publisher = "sammish"
-app_description = "kenzcloudx"
-app_email = "sammish.thundiyil@gmail.com"
+app_title = "KenzCloudX"
+app_publisher = "Kenz Technology"
+app_description = "The KenzCloudX public website (English and Arabic) and demo request form, built on ERPNext"
+app_email = "hello@kenzcloudx.com"
 app_license = "mit"
 
 # Apps
 # ------------------
 
-# required_apps = []
+# the demo form creates ERPNext Leads, and the fixtures add fields to Lead
+required_apps = ["frappe/erpnext"]
 
 # Each item in the list will be shown as an app in the apps page
 # add_to_apps_screen = [
@@ -196,7 +197,8 @@ home_page = "index"
 
 # Request Events
 # ----------------
-# before_request = ["kenzcloudx.utils.before_request"]
+# 301 from alias hosts (www., app., kenzweb.) to site_config "kcx_canonical_host"; off when it is unset
+before_request = ["kenzcloudx.redirects.canonical_host"]
 # after_request = ["kenzcloudx.utils.after_request"]
 
 # Job Events
@@ -258,4 +260,10 @@ fixtures = [
 website_redirects = [
 	{"source": "/contact", "target": "/about", "redirect_http_status": 301},
 	{"source": "/ar/contact", "target": "/ar/about", "redirect_http_status": 301},
+	# stock public pages that would show the framework's branding: send visitors to the home page
+	{"source": r"/blog(/.*)?", "target": "/", "redirect_http_status": 301},
+	{"source": "/support", "target": "/", "redirect_http_status": 301},
+	{"source": "/partners", "target": "/", "redirect_http_status": 301},
+	{"source": "/search_help", "target": "/", "redirect_http_status": 301},
+	{"source": "/help", "target": "/", "redirect_http_status": 301},
 ]
