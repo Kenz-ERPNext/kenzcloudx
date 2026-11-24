@@ -28,7 +28,7 @@
 		},
 		"whatsapp_label": "Chat on WhatsApp",
 		"footer": {
-			"tagline": "ERPNext hosting, set-up and support for businesses in Saudi Arabia, the UAE, Oman, the wider Gulf and India.",
+			"tagline": "ERPNext hosting, set‑up and support for businesses in Saudi Arabia, the UAE, Oman, the wider Gulf and India.",
 			"ask": "Ask us a question",
 			"product_heading": "Product",
 			"company_heading": "Company",
@@ -348,7 +348,7 @@
 					"body": "See ERPNext with your own use cases."
 				},
 				{
-					"title": "Set-up",
+					"title": "Set‑up",
 					"body": "We configure your company, taxes and users."
 				},
 				{
@@ -407,7 +407,7 @@
 			"to_demo": "Go to the demo request form",
 			"items": [
 				{
-					"q": "How long does set-up take?",
+					"q": "How long does set‑up take?",
 					"a": "It depends on your modules and how much data you bring with you. After the demo we give you a written timeline, so you know each step before we start."
 				},
 				{
@@ -428,7 +428,7 @@
 				},
 				{
 					"q": "What happens if we need help?",
-					"a": "Call, email or message us on WhatsApp. A person who knows your set-up picks it up and keeps you posted until it is fixed."
+					"a": "Call, email or message us on WhatsApp. A person who knows your set‑up picks it up and keeps you posted until it is fixed."
 				}
 			]
 		},
@@ -444,20 +444,29 @@
 	},
 	"erpnext": {
 		"meta": {
-			"title": "ERPNext for Saudi businesses – KenzCloudX",
-			"description": "Accounting, inventory, sales, purchasing, HR and payroll, and point of sale in one system, set up for Saudi VAT and ZATCA e-invoicing."
+			"title": "ERPNext, hosted and set up for your business – KenzCloudX",
+			"description": "Accounting, inventory, sales, purchasing, HR and payroll, and point of sale in one system, set up for the tax rules of Saudi Arabia, the UAE, Oman or India, then hosted and maintained for you."
 		},
 		"hero": {
-			"h1": "One system for your accounts, stock and sales",
-			"intro": "ERPNext is open-source business software used by companies around the world. We set it up for Saudi VAT, ZATCA e-invoicing and Arabic documents, then host and maintain it for you."
+			"eyebrow": "ERPNext",
+			"h1": {
+				"pre": "One system for your accounts, stock and ",
+				"acc": "sales",
+				"post": ""
+			},
+			"intro": "ERPNext is open-source business software used by companies around the world. We set it up for the VAT or GST and e-invoicing rules of your country, in Arabic and English, then host and maintain it for you."
 		},
 		"modules": {
-			"heading": "What is included",
+			"heading": {
+				"pre": "What is ",
+				"acc": "included",
+				"post": ""
+			},
 			"items": [
 				{
 					"key": "accounting",
 					"title": "Accounting",
-					"body": "Chart of accounts, journal entries, bank reconciliation, VAT reports and financial statements. Multi-company and multi-currency."
+					"body": "Chart of accounts, journal entries, bank reconciliation, VAT and GST reports, and financial statements. Multi-company and multi-currency."
 				},
 				{
 					"key": "inventory",
@@ -482,36 +491,93 @@
 				{
 					"key": "pos",
 					"title": "Point of sale",
-					"body": "A point-of-sale screen for shops and counters. Simplified tax invoices carry the ZATCA QR code and are reported automatically."
+					"body": "A point-of-sale screen for shops and counters. Receipts follow the tax rules of your country; in Saudi Arabia, simplified tax invoices carry the ZATCA QR code and are reported automatically."
 				}
-			]
+			],
+			"intro": "Six modules that share one set of data, so a sale updates your stock and your accounts at the same time."
 		},
 		"hosting": {
-			"heading": "What we look after",
+			"heading": {
+				"pre": "Hosting, ",
+				"acc": "handled",
+				"post": ""
+			},
+			"intro": "Your ERPNext runs on our servers. We keep it fast, safe and up to date, so your team only needs a browser.",
 			"points": [
 				"Hosting, security updates and ERPNext version upgrades",
 				"Daily off-site backups",
 				"Monitoring, so we often see a problem before you do",
-				"Support from people who know your set-up"
+				"Support from people who know your set‑up"
 			]
 		},
 		"cta": {
-			"heading": "Want to see the modules you need?",
+			"heading": {
+				"pre": "See the modules ",
+				"acc": "you",
+				"post": " need"
+			},
 			"body": "Tell us what your business does and we will show you the parts that matter to you.",
 			"button": "Request a demo"
+		},
+		"countries": {
+			"heading": {
+				"pre": "Set up for ",
+				"acc": "your",
+				"post": " country"
+			},
+			"intro": "Tax and invoicing rules differ in every country we work in. We set ERPNext up for yours and keep it current when the rules change.",
+			"items": [
+				{
+					"key": "saudi-arabia",
+					"code": "KSA",
+					"name": "Saudi Arabia",
+					"rule": "ZATCA Phase 2 e-invoicing and VAT"
+				},
+				{
+					"key": "uae",
+					"code": "AE",
+					"name": "United Arab Emirates",
+					"rule": "VAT, with tax invoices in Arabic and English"
+				},
+				{
+					"key": "oman",
+					"code": "OM",
+					"name": "Oman",
+					"rule": "VAT, with amounts to three decimal places"
+				},
+				{
+					"key": "india",
+					"code": "IN",
+					"name": "India",
+					"rule": "GST, e-invoices and e-way bills"
+				}
+			],
+			"more": "See what we set up in each country"
 		}
 	},
 	"zatca": {
 		"meta": {
-			"title": "ZATCA Phase 2 e-invoicing with ERPNext – KenzCloudX",
-			"description": "What ZATCA Phase 2 requires, how we onboard your ERPNext (CSID, certificates, QR code, clearance and reporting), and answers to common questions."
+			"title": "ZATCA Phase 2 e-invoicing in Saudi Arabia – KenzCloudX",
+			"description": "For businesses in Saudi Arabia: what ZATCA Phase 2 requires, how we connect your ERPNext (CSID, certificates, QR code, clearance and reporting), and answers to common questions."
 		},
 		"hero": {
-			"h1": "ZATCA Phase 2, handled for you",
-			"intro": "We connect your ERPNext to the ZATCA Fatoora platform and make sure every invoice is cleared or reported correctly."
+			"eyebrow": "Saudi Arabia · E-invoicing",
+			"h1": {
+				"pre": "ZATCA Phase 2, ",
+				"acc": "handled",
+				"post": " for you"
+			},
+			"intro": "For businesses in Saudi Arabia: we connect your ERPNext to the ZATCA Fatoora platform and make sure every invoice is cleared or reported correctly.",
+			"customers_label": "customers already on ZATCA Phase 2",
+			"other": "Not in Saudi Arabia?",
+			"other_link": "See what we set up in the UAE, Oman and India"
 		},
 		"phase2": {
-			"heading": "What Phase 2 means",
+			"heading": {
+				"pre": "What Phase 2 ",
+				"acc": "means",
+				"post": ""
+			},
 			"body": "In Phase 2 (the integration phase), your invoicing system must send every e-invoice to ZATCA. ZATCA tells each business when its wave starts, with at least six months' notice.",
 			"points": [
 				"Invoices are generated as structured XML and signed by your system.",
@@ -522,7 +588,11 @@
 			]
 		},
 		"onboarding": {
-			"heading": "How onboarding works",
+			"heading": {
+				"pre": "How ",
+				"acc": "onboarding",
+				"post": " works"
+			},
 			"intro": "Most of this happens on our side. We need your VAT number, a one-time password from the Fatoora portal and an hour of your time to test.",
 			"steps": [
 				{
@@ -548,7 +618,11 @@
 			]
 		},
 		"faq": {
-			"heading": "Common questions",
+			"heading": {
+				"pre": "Common ",
+				"acc": "questions",
+				"post": ""
+			},
 			"items": [
 				{
 					"q": "When does Phase 2 apply to my business?",
@@ -573,7 +647,11 @@
 			]
 		},
 		"cta": {
-			"heading": "Got your ZATCA wave notice?",
+			"heading": {
+				"pre": "Got your ZATCA ",
+				"acc": "wave",
+				"post": " notice?"
+			},
 			"body": "Send it to us. We will tell you what needs to be ready and by when.",
 			"button": "Request a demo"
 		}
@@ -851,11 +929,16 @@
 	"plans": {
 		"meta": {
 			"title": "Plans – KenzCloudX",
-			"description": "Three ERPNext hosting and support plans for Saudi businesses. Every plan includes ZATCA Phase 2 e-invoicing and daily backups. Ask us for a quote."
+			"description": "Three ERPNext hosting and support plans for businesses in Saudi Arabia, the UAE, Oman, India and the wider Gulf. Every plan includes e-invoicing and tax set‑up for your country and daily backups. Ask us for a quote."
 		},
 		"hero": {
-			"h1": "Plans",
-			"intro": "Every plan includes hosting, ZATCA Phase 2 e-invoicing, daily off-site backups and support. We quote after a short call, based on your number of users and what you need set up."
+			"eyebrow": "Plans",
+			"h1": {
+				"pre": "Plans that fit ",
+				"acc": "your",
+				"post": " business"
+			},
+			"intro": "Every plan includes hosting, e-invoicing and tax set‑up for your country, daily off-site backups and support. We quote after a short call, based on your number of users and what you need set up."
 		},
 		"items": [
 			{
@@ -865,7 +948,7 @@
 				"tagline": "[PLACEHOLDER] For small businesses with one company and a few users.",
 				"features": [
 					"Accounting, sales, purchasing and inventory",
-					"E-invoicing and VAT or GST set-up for your country",
+					"E-invoicing and VAT or GST set‑up for your country",
 					"Arabic and English tax invoices",
 					"Daily off-site backups",
 					"Support by phone and WhatsApp during business hours"
@@ -898,68 +981,204 @@
 				]
 			}
 		],
-		"note": "We do not publish prices because set-up work differs between businesses. Request a quote and we will reply with a monthly price for your set-up.",
-		"button": "Request a quote"
+		"note": "We do not publish prices because set‑up work differs between businesses. Request a quote and we will reply with a monthly price for your set‑up.",
+		"button": "Request a quote",
+		"badge": "Most chosen",
+		"featured": "business",
+		"quote_line": "Priced for your users and modules",
+		"includes": {
+			"heading": {
+				"pre": "In ",
+				"acc": "every",
+				"post": " plan"
+			},
+			"items": [
+				{
+					"key": "hosting",
+					"title": "Hosting and updates",
+					"body": "Your ERPNext on our servers, with security updates and version upgrades done for you."
+				},
+				{
+					"key": "tax",
+					"title": "Tax set‑up for your country",
+					"body": "ZATCA e-invoicing in Saudi Arabia, VAT in the UAE and Oman, GST in India."
+				},
+				{
+					"key": "backups",
+					"title": "Daily off-site backups",
+					"body": "A copy of your data every day, kept away from the server it runs on."
+				},
+				{
+					"key": "support",
+					"title": "Support in two languages",
+					"body": "Help in Arabic and English by phone, email and WhatsApp."
+				}
+			]
+		},
+		"cta": {
+			"heading": {
+				"pre": "Not sure which plan ",
+				"acc": "fits",
+				"post": "?"
+			},
+			"body": "Tell us about your business and we will suggest a plan and send you a quote.",
+			"button": "Request a quote"
+		}
 	},
 	"about": {
 		"meta": {
 			"title": "About Kenz Technology – KenzCloudX",
-			"description": "KenzCloudX is run by Kenz Technology, a Saudi-registered company that hosts and supports ERPNext for businesses in the Kingdom."
+			"description": "KenzCloudX is run by Kenz Technology, which hosts, sets up and supports ERPNext for businesses in Saudi Arabia, the UAE, Oman, India and the wider Gulf."
 		},
 		"hero": {
-			"h1": "About us",
-			"intro": "KenzCloudX is a service of Kenz Technology, a company registered in Saudi Arabia. We host, set up and support ERPNext for Saudi businesses, many of them already on ZATCA Phase 2."
+			"eyebrow": "About us",
+			"h1": {
+				"pre": "We host, set up and ",
+				"acc": "support",
+				"post": " ERPNext"
+			},
+			"intro": "KenzCloudX is a service of Kenz Technology. We work with businesses across the Gulf and India, and many of our Saudi customers already issue ZATCA Phase 2 e-invoices from ERPNext."
 		},
 		"company": {
-			"heading": "Kenz Technology",
-			"body": "Kenz Technology is a Saudi-registered company that implements and supports ERPNext. KenzCloudX is our hosted service: we keep the servers, backups, updates and ZATCA connection in order, so your team can get on with the work."
+			"heading": {
+				"pre": "Kenz ",
+				"acc": "Technology",
+				"post": ""
+			},
+			"body": "Kenz Technology is a company registered in Saudi Arabia that implements and supports ERPNext. KenzCloudX is our hosted service: we look after the servers, backups, updates and the tax set‑up for your country, so your team can get on with the work."
 		},
 		"team": {
-			"heading": "Our team",
+			"heading": {
+				"pre": "Meet the ",
+				"acc": "team",
+				"post": ""
+			},
 			"body": "[PLACEHOLDER] Our team includes accountants and engineers who work with ERPNext every day. Names and photos to be added."
 		},
 		"contact": {
-			"heading": "Contact us",
+			"heading": {
+				"pre": "Contact ",
+				"acc": "us",
+				"post": ""
+			},
 			"phone_label": "Phone",
 			"whatsapp_label": "WhatsApp",
 			"email_label": "Email",
 			"address_label": "Office",
 			"cr_label": "Commercial registration",
 			"vat_label": "VAT number"
+		},
+		"regions": {
+			"heading": {
+				"pre": "Where we ",
+				"acc": "work",
+				"post": ""
+			},
+			"intro": "Businesses in these countries run ERPNext with us, in Arabic and English.",
+			"items": [
+				{
+					"key": "sa",
+					"name": "Saudi Arabia",
+					"body": "ZATCA Phase 2 e-invoicing and VAT"
+				},
+				{
+					"key": "ae",
+					"name": "United Arab Emirates",
+					"body": "VAT"
+				},
+				{
+					"key": "om",
+					"name": "Oman",
+					"body": "VAT"
+				},
+				{
+					"key": "in",
+					"name": "India",
+					"body": "GST and e-invoicing"
+				},
+				{
+					"key": "gulf",
+					"name": "The wider Gulf",
+					"body": "Ask us about your country"
+				}
+			]
+		},
+		"cta": {
+			"heading": {
+				"pre": "Let's talk about ",
+				"acc": "your",
+				"post": " business"
+			},
+			"body": "Tell us what you do and where you operate. We will call you to arrange a demo.",
+			"button": "Request a demo"
 		}
 	},
 	"demo": {
 		"meta": {
 			"title": "Request a demo – KenzCloudX",
-			"description": "Book a demo of ERPNext with ZATCA Phase 2 e-invoicing. We will call you, show the system and send a quote."
+			"description": "Book a demo of ERPNext, set up for the tax rules of your country. We will call you, show you the system and send a quote."
 		},
 		"hero": {
-			"h1": "Request a demo",
+			"eyebrow": "Demo and quote",
+			"h1": {
+				"pre": "Request a ",
+				"acc": "demo",
+				"post": ""
+			},
 			"intro": "Tell us a little about your business. We will call you to arrange a time that suits you."
 		},
 		"form": {
 			"full_name": "Full name",
 			"company": "Company name",
+			"country": "Country",
+			"country_placeholder": "Select your country",
+			"countries": [
+				{
+					"key": "sa",
+					"label": "Saudi Arabia"
+				},
+				{
+					"key": "ae",
+					"label": "United Arab Emirates"
+				},
+				{
+					"key": "om",
+					"label": "Oman"
+				},
+				{
+					"key": "in",
+					"label": "India"
+				},
+				{
+					"key": "gulf",
+					"label": "Other Gulf country"
+				},
+				{
+					"key": "other",
+					"label": "Other"
+				}
+			],
 			"phone": "Mobile number",
-			"phone_hint": "Saudi mobile, for example 05XXXXXXXX",
+			"phone_hint": "Include the country code. For Saudi Arabia, the UAE, Oman and India a local number also works.",
 			"email": "Work email",
 			"users": "Number of users",
-			"zatca_required": "Do you need ZATCA Phase 2 e-invoicing?",
+			"zatca_required": "Do you need ZATCA Phase 2 e-invoicing? (Saudi Arabia)",
 			"zatca_yes": "Yes",
 			"zatca_no": "No",
 			"plan": "Plan you are interested in",
 			"plan_none": "Not sure yet",
 			"message": "Anything else we should know?",
-			"message_hint": "For example: your current system, number of branches, or your ZATCA wave date.",
+			"message_hint": "For example: your current system, number of branches, or your e-invoicing deadline.",
 			"required_note": "Fields marked * are required.",
 			"privacy_note": "We use your details only to contact you about this request.",
 			"submit": "Send request",
-			"sending": "Sending…"
+			"sending": "Sending…",
+			"phone_placeholder": "+971 50 123 4567"
 		},
 		"errors": {
 			"required": "Please fill in this field.",
 			"email": "Please enter a valid email address.",
-			"phone": "Please enter a Saudi mobile number, for example 0551234567.",
+			"phone": "Please enter a valid mobile number with the country code, or a local number if you chose Saudi Arabia, the UAE, Oman or India.",
 			"users": "Please enter a number of users of 1 or more.",
 			"rate_limited": "We have received several requests from you. Please try again in an hour, or contact us on WhatsApp.",
 			"generic": "Something went wrong and your request was not sent. Please try again, or contact us on WhatsApp."
@@ -967,6 +1186,14 @@
 		"thanks": {
 			"heading": "Thank you. We have your request.",
 			"body": "We will call you soon to arrange the demo. If it is urgent, message us on WhatsApp."
+		},
+		"next": {
+			"heading": "What happens next",
+			"steps": [
+				"We call you to understand your business and the tax rules of your country.",
+				"We show you ERPNext with the modules you need.",
+				"You receive a written quote and a plan for going live."
+			]
 		}
 	},
 	"privacy": {
@@ -975,7 +1202,12 @@
 			"description": "How Kenz Technology collects, uses and protects personal data on the KenzCloudX website and service."
 		},
 		"hero": {
-			"h1": "Privacy policy",
+			"eyebrow": "Legal",
+			"h1": {
+				"pre": "Privacy ",
+				"acc": "policy",
+				"post": ""
+			},
 			"updated": "[PLACEHOLDER] Last updated: date to be confirmed"
 		},
 		"sections": [
@@ -1007,13 +1239,18 @@
 			"description": "The terms that apply to the KenzCloudX website and ERPNext hosting service provided by Kenz Technology."
 		},
 		"hero": {
-			"h1": "Terms of service",
+			"eyebrow": "Legal",
+			"h1": {
+				"pre": "Terms of ",
+				"acc": "service",
+				"post": ""
+			},
 			"updated": "[PLACEHOLDER] Last updated: date to be confirmed"
 		},
 		"sections": [
 			{
 				"heading": "The service",
-				"body": "[PLACEHOLDER] Description of the hosting, set-up and support services provided by Kenz Technology."
+				"body": "[PLACEHOLDER] Description of the hosting, set‑up and support services provided by Kenz Technology."
 			},
 			{
 				"heading": "Your account and data",
@@ -1042,8 +1279,14 @@
 			"title": "Page not found – KenzCloudX",
 			"description": "The page you are looking for does not exist or has moved."
 		},
-		"h1": "We could not find that page",
+		"eyebrow": "Error 404",
+		"h1": {
+			"pre": "We could not find ",
+			"acc": "that",
+			"post": " page"
+		},
 		"body": "The link may be old, or the address may have a typing mistake. Try the home page, or tell us what you were looking for.",
-		"home": "Go to the home page"
+		"home": "Go to the home page",
+		"links_label": "Or go to"
 	}
 }

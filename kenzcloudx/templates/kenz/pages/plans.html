@@ -1,23 +1,43 @@
-{#- No prices and no currency on this page, by design: every button asks for a quote. -#}
+{#- /plans. No prices and no currency on this page, by design: every button asks for a quote
+    (tests/test_pages.test_plans_no_prices also forbids any "price" class here). -#}
+{%- from "templates/kenz/pages/_macros.html" import acc_heading -%}
 {%- set lp = "/ar" if lang == "ar" else "" -%}
 {% include "templates/kenz/pages/_page_hero.html" %}
 
-<section class="section">
-	<div class="container">
-		<ul class="plans">
-			{%- for plan in t["items"] %}
-			<li class="plan" id="plan-{{ plan.key|e }}">
-				<h2 id="plan-{{ plan.key|e }}-name">{{ plan.name|e }}</h2>
-				<p class="plan-tagline">{{ plan.tagline|e }}</p>
-				<ul class="point-list">
-					{%- for feature in plan.features %}
-					<li>{{ feature|e }}</li>
-					{%- endfor %}
-				</ul>
-				<a class="btn btn-outline" href="{{ lp|e }}/demo?plan={{ plan.key|e }}" aria-describedby="plan-{{ plan.key|e }}-name">{{ t.button|e }}</a>
-			</li>
-			{%- endfor %}
-		</ul>
-		<p class="plans-note">{{ t.note|e }}</p>
+<section class="section wrap plans-section" aria-label="{{ t.hero.eyebrow|e }}">
+	<div class="grid-3 plan-cards">
+		{%- for plan in t["items"] %}
+		{%- set featured = plan.key == t.featured %}
+		<article class="plan-card glass lift reveal{% if featured %} featured{% endif %}" id="plan-{{ plan.key|e }}" style="--d:{{ loop.index0|e }}">
+			{%- if featured %}
+			<span class="badge">{{ t.badge|e }}</span>
+			{%- endif %}
+			<h2 class="plan-name" id="plan-{{ plan.key|e }}-name">{{ plan.name|e }}</h2>
+			<p class="for">{{ plan.tagline|e }}</p>
+			<div class="quote-line"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="7.5"/><path d="M10 6v4l2.5 2"/></svg>{{ t.quote_line|e }}</div>
+			<ul class="checks">
+				{%- for feature in plan.features %}
+				<li><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m3.5 9.5 3.5 3.5 7.5-8"/></svg><span>{{ feature|e }}</span></li>
+				{%- endfor %}
+			</ul>
+			<a class="btn {{ ('btn-dark' if featured else 'btn-ghost')|e }}" href="{{ lp|e }}/demo?plan={{ plan.key|e }}" aria-describedby="plan-{{ plan.key|e }}-name">{{ t.button|e }}</a>
+		</article>
+		{%- endfor %}
+	</div>
+	<p class="plans-note veil reveal">{{ t.note|e }}</p>
+</section>
+
+<section class="section wrap" id="every-plan" aria-labelledby="includes-heading">
+	<div class="head reveal">
+		<h2 class="h2" id="includes-heading">{% call acc_heading(t.includes.heading) %}{% endcall %}</h2>
+	</div>
+	<div class="grid-4">
+		{%- for item in t.includes["items"] %}
+		<article class="mini-card glass reveal" style="--d:{{ loop.index0|e }}">
+			<span class="mini-num" dir="ltr" aria-hidden="true">{{ ("%02d" % loop.index)|e }}</span>
+			<h3>{{ item.title|e }}</h3>
+			<p>{{ item.body|e }}</p>
+		</article>
+		{%- endfor %}
 	</div>
 </section>

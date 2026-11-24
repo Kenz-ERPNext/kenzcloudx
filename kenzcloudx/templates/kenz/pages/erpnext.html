@@ -1,30 +1,71 @@
+{#- /erpnext: hero, the six modules (glass cards), set up for your country (links into /compliance), hosting,
+    then the demo band (t.cta). -#}
+{%- from "templates/kenz/pages/_macros.html" import acc_heading -%}
+{%- set lp = "/ar" if lang == "ar" else "" -%}
 {% include "templates/kenz/pages/_page_hero.html" %}
 
-<section class="section" aria-labelledby="modules-heading">
-	<div class="container split">
-		<header class="section-head">
-			<h2 id="modules-heading">{{ t.modules.heading|e }}</h2>
-		</header>
-		<ol class="numbered-blocks">
-			{%- for item in t.modules["items"] %}
-			<li class="numbered-block" id="module-{{ item.key|e }}">
-				<span class="numeral" aria-hidden="true">{{ ("%02d" % loop.index)|e }}</span>
-				<h3>{{ item.title|e }}</h3>
-				<p>{{ item.body|e }}</p>
-			</li>
-			{%- endfor %}
-		</ol>
+<section class="section wrap" id="modules" aria-labelledby="modules-heading">
+	<div class="head reveal">
+		<h2 class="h2" id="modules-heading">{% call acc_heading(t.modules.heading) %}{% endcall %}</h2>
+		<p class="lede">{{ t.modules.intro|e }}</p>
 	</div>
+	<ol class="grid-3 mod-grid">
+		{%- for item in t.modules["items"] %}
+		<li class="mod-card glass lift reveal" id="module-{{ item.key|e }}" style="--d:{{ (loop.index0 % 3)|e }}">
+			<div class="mod-top">
+				<span class="mod-icon" aria-hidden="true">
+					{%- if item.key == "accounting" %}
+					<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="6" y="5" width="20" height="22" rx="3"/><path d="M11 11h10M11 16h10M11 21h5"/></svg>
+					{%- elif item.key == "inventory" %}
+					<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="m16 4 11 6v12l-11 6-11-6V10z"/><path d="m5 10 11 6 11-6M16 16v12"/></svg>
+					{%- elif item.key == "sales" %}
+					<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M5 24 12 16l5 5 10-12"/><path d="M20 9h7v7"/></svg>
+					{%- elif item.key == "purchasing" %}
+					<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M4 6h4l3 14h14l3-10H10"/><circle cx="13" cy="25" r="1.6"/><circle cx="23" cy="25" r="1.6"/></svg>
+					{%- elif item.key == "hr_payroll" %}
+					<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="12" cy="11" r="4"/><path d="M4 26c.8-4.5 4-7 8-7s7.2 2.5 8 7"/><circle cx="23" cy="12" r="3"/><path d="M22 19c3.2 0 5.4 2 6 5.5"/></svg>
+					{%- else %}
+					<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="6" y="4" width="20" height="16" rx="3"/><path d="M11 9h10M11 14h6M9 20l-2 8h18l-2-8"/></svg>
+					{%- endif %}
+				</span>
+				<span class="mini-num" dir="ltr" aria-hidden="true">{{ ("%02d" % loop.index)|e }}</span>
+			</div>
+			<h3>{{ item.title|e }}</h3>
+			<p>{{ item.body|e }}</p>
+		</li>
+		{%- endfor %}
+	</ol>
 </section>
 
-<section class="section section-mint" aria-labelledby="hosting-heading">
-	<div class="container split">
-		<header class="section-head">
-			<h2 id="hosting-heading">{{ t.hosting.heading|e }}</h2>
-		</header>
-		<ul class="point-list point-list-2">
+<section class="section wrap" id="countries" aria-labelledby="countries-heading">
+	<div class="head reveal">
+		<h2 class="h2" id="countries-heading">{% call acc_heading(t.countries.heading) %}{% endcall %}</h2>
+		<p class="lede">{{ t.countries.intro|e }}</p>
+	</div>
+	<ul class="grid-4 country-grid">
+		{%- for c in t.countries["items"] %}
+		<li class="reveal" style="--d:{{ loop.index0|e }}">
+			<a class="country-card glass lift" href="{{ lp|e }}/compliance#{{ c.key|e }}">
+				<span class="cc-chip" dir="ltr">{{ c.code|e }}</span>
+				<span class="country-name">{{ c.name|e }}</span>
+				<span class="country-rule">{{ c.rule|e }}</span>
+				<svg class="icon-dir country-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+			</a>
+		</li>
+		{%- endfor %}
+	</ul>
+	<p class="more-link reveal"><a class="link-accent" href="{{ lp|e }}/compliance">{{ t.countries.more|e }}<svg class="icon-dir" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a></p>
+</section>
+
+<section class="section wrap" id="hosting" aria-labelledby="hosting-heading">
+	<div class="split-card glass reveal">
+		<div class="split-copy">
+			<h2 class="h2" id="hosting-heading">{% call acc_heading(t.hosting.heading) %}{% endcall %}</h2>
+			<p class="lede">{{ t.hosting.intro|e }}</p>
+		</div>
+		<ul class="checks">
 			{%- for point in t.hosting.points %}
-			<li>{{ point|e }}</li>
+			<li><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m3.5 9.5 3.5 3.5 7.5-8"/></svg><span>{{ point|e }}</span></li>
 			{%- endfor %}
 		</ul>
 	</div>

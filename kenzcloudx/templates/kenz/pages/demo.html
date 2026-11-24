@@ -1,14 +1,24 @@
 {#- Demo / quote request form. Server-side validation in kenzcloudx.api.demo is the source of truth;
     public/js/demo.js only improves the experience (inline errors, fetch, thank-you without reload).
     selected_plan is already validated against PLAN_KEYS in build_demo_context; the raw ?plan= value
-    is never rendered. Localised strings reach the script through escaped data-* attributes. -#}
+    is never rendered. Localised strings reach the script through escaped data-* attributes.
+    Country: no country is preselected (placeholder option); the keys are fixed (kenzcloudx.api.demo.COUNTRIES). -#}
 {%- set f = t.form -%}
 {%- set err = t.errors -%}
 {% include "templates/kenz/pages/_page_hero.html" %}
 
-<div class="section demo-section">
-	<div class="container">
-		<div class="demo-panel">
+<section class="section wrap demo-section" aria-label="{{ t.hero.eyebrow|e }}">
+	<div class="demo-layout">
+		<aside class="demo-aside reveal" aria-labelledby="demo-next-heading">
+			<h2 class="demo-aside-h" id="demo-next-heading">{{ t.next.heading|e }}</h2>
+			<ol class="next-steps">
+				{%- for step in t.next.steps %}
+				<li><span class="step-n" dir="ltr" aria-hidden="true">{{ ("%02d" % loop.index)|e }}</span><p>{{ step|e }}</p></li>
+				{%- endfor %}
+			</ol>
+		</aside>
+
+		<div class="demo-panel glass reveal" style="--d:1">
 			<form class="demo-form" id="demo-form" method="post" action="/api/method/kenzcloudx.api.demo.submit_demo_request"
 				data-csrf="{{ (csrf_token or '')|e }}"
 				data-msg-required="{{ err.required|e }}"
@@ -36,24 +46,37 @@
 
 				<div class="field-row">
 					<div class="field">
-						<label for="df-phone">{{ f.phone|e }} <span class="req" aria-hidden="true">*</span></label>
-						<input type="tel" id="df-phone" name="phone" required maxlength="20" inputmode="tel" autocomplete="tel" dir="ltr" aria-describedby="df-phone-hint df-phone-error">
-						<p class="field-hint" id="df-phone-hint">{{ f.phone_hint|e }}</p>
-						<p class="field-error" id="df-phone-error"></p>
+						<label for="df-country">{{ f.country|e }} <span class="req" aria-hidden="true">*</span></label>
+						<select id="df-country" name="country" required autocomplete="country" aria-describedby="df-country-error">
+							<option value="" disabled selected>{{ f.country_placeholder|e }}</option>
+							{%- for option in f.countries %}
+							<option value="{{ option.key|e }}">{{ option.label|e }}</option>
+							{%- endfor %}
+						</select>
+						<p class="field-error" id="df-country-error"></p>
 					</div>
 					<div class="field">
-						<label for="df-email">{{ f.email|e }} <span class="req" aria-hidden="true">*</span></label>
-						<input type="email" id="df-email" name="email" required maxlength="140" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" dir="ltr" aria-describedby="df-email-error">
-						<p class="field-error" id="df-email-error"></p>
+						<label for="df-phone">{{ f.phone|e }} <span class="req" aria-hidden="true">*</span></label>
+						<input type="tel" id="df-phone" name="phone" required maxlength="24" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="{{ f.phone_placeholder|e }}" aria-describedby="df-phone-hint df-phone-error">
+						<p class="field-hint" id="df-phone-hint">{{ f.phone_hint|e }}</p>
+						<p class="field-error" id="df-phone-error"></p>
 					</div>
 				</div>
 
 				<div class="field-row">
 					<div class="field">
+						<label for="df-email">{{ f.email|e }} <span class="req" aria-hidden="true">*</span></label>
+						<input type="email" id="df-email" name="email" required maxlength="140" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" dir="ltr" aria-describedby="df-email-error">
+						<p class="field-error" id="df-email-error"></p>
+					</div>
+					<div class="field">
 						<label for="df-users">{{ f.users|e }}</label>
 						<input type="text" id="df-users" name="users" maxlength="6" inputmode="numeric" autocomplete="off" aria-describedby="df-users-error">
 						<p class="field-error" id="df-users-error"></p>
 					</div>
+				</div>
+
+				<div class="field-row">
 					<div class="field">
 						<label for="df-plan">{{ f.plan|e }}</label>
 						<select id="df-plan" name="plan">
@@ -63,15 +86,14 @@
 							{%- endfor %}
 						</select>
 					</div>
+					<fieldset class="field choice">
+						<legend>{{ f.zatca_required|e }}</legend>
+						<div class="choice-options">
+							<label><input type="radio" name="zatca_required" value="1"> {{ f.zatca_yes|e }}</label>
+							<label><input type="radio" name="zatca_required" value="0"> {{ f.zatca_no|e }}</label>
+						</div>
+					</fieldset>
 				</div>
-
-				<fieldset class="field choice">
-					<legend>{{ f.zatca_required|e }}</legend>
-					<div class="choice-options">
-						<label><input type="radio" name="zatca_required" value="1"> {{ f.zatca_yes|e }}</label>
-						<label><input type="radio" name="zatca_required" value="0"> {{ f.zatca_no|e }}</label>
-					</div>
-				</fieldset>
 
 				<div class="field">
 					<label for="df-message">{{ f.message|e }}</label>
@@ -85,7 +107,7 @@
 				</div>
 
 				<div class="form-actions">
-					<button type="submit" class="btn btn-primary">{{ f.submit|e }}</button>
+					<button type="submit" class="btn btn-dark">{{ f.submit|e }}</button>
 					<p class="form-note">{{ f.privacy_note|e }}</p>
 				</div>
 				<p class="form-status" id="demo-status" role="status" aria-live="polite"></p>
@@ -97,4 +119,4 @@
 			</div>
 		</div>
 	</div>
-</div>
+</section>

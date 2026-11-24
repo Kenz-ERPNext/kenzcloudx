@@ -1,9 +1,15 @@
-{#- Shared hero for inner pages: t.hero.h1 plus t.hero.intro (or t.hero.updated on legal pages). -#}
-<section class="hero page-hero">
-	<div class="container">
-		<h1>{{ t.hero.h1|e }}</h1>
+{#- Shared top of the inner pages (same look as /compliance): eyebrow, h1 with one accent word, then
+    t.hero.intro (or t.hero.updated on the legal pages). t.hero.h1 is {"pre", "acc", "post"} (pages/_macros.html).
+    The ribbon uses its calm inner-page preset ("page" pose) behind it. -#}
+{%- from "templates/kenz/pages/_macros.html" import acc_heading -%}
+<section class="page-top wrap" aria-labelledby="page-h1">
+	<div class="page-top-copy veil reveal">
+		{%- if t.hero.eyebrow %}
+		<p class="eyebrow">{{ t.hero.eyebrow|e }}</p>
+		{%- endif %}
+		<h1 class="h1" id="page-h1">{% call acc_heading(t.hero.h1) %}{% endcall %}</h1>
 		{%- if t.hero.intro %}
-		<p class="lead">{{ t.hero.intro|e }}</p>
+		<p class="lede">{{ t.hero.intro|e }}</p>
 		{%- endif %}
 		{%- if t.hero.updated %}
 		<p class="page-updated">{{ t.hero.updated|e }}</p>

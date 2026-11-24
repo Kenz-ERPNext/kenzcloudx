@@ -1,51 +1,64 @@
-{% include "templates/kenz/pages/_page_hero.html" %}
-
-<section class="section" aria-labelledby="phase2-heading">
-	<div class="container split">
-		<header class="section-head">
-			<h2 id="phase2-heading">{{ t.phase2.heading|e }}</h2>
-		</header>
-		<div class="prose">
-			<p>{{ t.phase2.body|e }}</p>
-			<ul class="point-list">
-				{%- for point in t.phase2.points %}
-				<li>{{ point|e }}</li>
-				{%- endfor %}
-			</ul>
+{#- /zatca: the detailed SAUDI ARABIA e-invoicing page. Other countries are on /compliance (linked from the hero).
+    Hero, what Phase 2 means, onboarding steps (vertical numbered list in a glass card), FAQ, demo band (t.cta). -#}
+{%- from "templates/kenz/pages/_macros.html" import acc_heading -%}
+{%- set lp = "/ar" if lang == "ar" else "" -%}
+{%- set h = t.hero -%}
+<section class="page-top wrap" aria-labelledby="page-h1">
+	<div class="page-top-copy veil reveal">
+		<p class="eyebrow">{{ h.eyebrow|e }}</p>
+		<h1 class="h1" id="page-h1">{% call acc_heading(h.h1) %}{% endcall %}</h1>
+		<p class="lede">{{ h.intro|e }}</p>
+		<div class="page-top-meta">
+			{%- if settings.stat_zatca_customers %}
+			<p class="meta-stat"><b dir="ltr">{{ settings.stat_zatca_customers|e }}+</b> <span>{{ h.customers_label|e }}</span></p>
+			{%- endif %}
+			<p class="meta-other">{{ h.other|e }} <a class="link-accent" href="{{ lp|e }}/compliance">{{ h.other_link|e }}<svg class="icon-dir" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a></p>
 		</div>
 	</div>
 </section>
 
-<section class="section section-mint" aria-labelledby="onboarding-heading">
-	<div class="container split">
-		<header class="section-head">
-			<h2 id="onboarding-heading">{{ t.onboarding.heading|e }}</h2>
-			<p class="lead">{{ t.onboarding.intro|e }}</p>
-		</header>
-		<ol class="steps steps-vertical">
-			{%- for step in t.onboarding.steps %}
-			<li class="step">
-				<span class="step-dot" aria-hidden="true">{{ loop.index|e }}</span>
+<section class="section wrap" id="phase2" aria-labelledby="phase2-heading">
+	<div class="split-card glass reveal">
+		<div class="split-copy">
+			<h2 class="h2" id="phase2-heading">{% call acc_heading(t.phase2.heading) %}{% endcall %}</h2>
+			<p class="lede">{{ t.phase2.body|e }}</p>
+		</div>
+		<ul class="checks">
+			{%- for point in t.phase2.points %}
+			<li><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m3.5 9.5 3.5 3.5 7.5-8"/></svg><span>{{ point|e }}</span></li>
+			{%- endfor %}
+		</ul>
+	</div>
+</section>
+
+<section class="section wrap" id="onboarding" aria-labelledby="onboarding-heading">
+	<div class="head reveal">
+		<h2 class="h2" id="onboarding-heading">{% call acc_heading(t.onboarding.heading) %}{% endcall %}</h2>
+		<p class="lede">{{ t.onboarding.intro|e }}</p>
+	</div>
+	<ol class="steps-v glass reveal">
+		{%- for step in t.onboarding.steps %}
+		<li class="step-v reveal" style="--d:{{ loop.index0|e }}">
+			<span class="step-n" dir="ltr" aria-hidden="true">{{ ("%02d" % loop.index)|e }}</span>
+			<div>
 				<h3>{{ step.title|e }}</h3>
 				<p>{{ step.body|e }}</p>
-			</li>
-			{%- endfor %}
-		</ol>
-	</div>
+			</div>
+		</li>
+		{%- endfor %}
+	</ol>
 </section>
 
-<section class="section" aria-labelledby="faq-heading">
-	<div class="container split">
-		<header class="section-head">
-			<h2 id="faq-heading">{{ t.faq.heading|e }}</h2>
-		</header>
-		<div class="faq">
-			{%- for item in t.faq["items"] %}
-			<details class="faq-item">
-				<summary><h3>{{ item.q|e }}</h3></summary>
-				<p>{{ item.a|e }}</p>
-			</details>
-			{%- endfor %}
-		</div>
+<section class="section wrap" id="faq" aria-labelledby="faq-heading">
+	<div class="faq-head reveal">
+		<h2 class="h2" id="faq-heading">{% call acc_heading(t.faq.heading) %}{% endcall %}</h2>
+	</div>
+	<div class="qa reveal">
+		{%- for item in t.faq["items"] %}
+		<details class="qa-item"{% if loop.first %} open{% endif %}>
+			<summary><h3>{{ item.q|e }}</h3><span class="pm" aria-hidden="true"></span></summary>
+			<div class="qa-a"><p>{{ item.a|e }}</p></div>
+		</details>
+		{%- endfor %}
 	</div>
 </section>

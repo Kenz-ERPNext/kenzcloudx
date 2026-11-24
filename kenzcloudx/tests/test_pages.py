@@ -175,7 +175,10 @@ class TestPages(FrappeTestCase):
 				self.assertIn(f'href="{lp}/demo?plan={key}"', h, (p, key))
 			self.assertIn("/demo?plan=business", h.replace("/ar/demo", "/demo"))
 		_, h = html("/plans")
-		self.assertEqual(h.count(">Request a quote<"), 3)
+		# one per plan card; the closing demo band adds a fourth, plan-less one
+		cards = h[: h.index('<section class="demo-band"')]
+		self.assertEqual(cards.count(">Request a quote<"), 3)
+		self.assertEqual(h.count(">Request a quote<"), 4)
 
 	def test_404_branded_by_lang(self):
 		code, h = html("/ar/does-not-exist")
@@ -209,7 +212,7 @@ class TestPages(FrappeTestCase):
 
 	def test_zatca_steps_and_faq(self):
 		_, h = html("/zatca")
-		self.assertEqual(h.count('class="step"'), 5)
+		self.assertEqual(h.count('class="step-v'), 5)
 		self.assertEqual(h.count("<details"), 5)
 		self.assertEqual(h.count("<summary"), 5)
 		self.assertIn("Do I need new hardware?", h)
@@ -217,7 +220,7 @@ class TestPages(FrappeTestCase):
 
 	def test_erpnext_modules(self):
 		_, h = html("/ar/erpnext")
-		self.assertEqual(h.count('class="numbered-block"'), 6)
+		self.assertEqual(h.count('class="mod-card '), 6)
 		self.assertIn('href="/ar/demo"', h)
 
 	def test_legal_pages_are_placeholders(self):
@@ -231,7 +234,7 @@ class TestPages(FrappeTestCase):
 			_, h = html(p)
 			self.assertNotIn('<section class="demo-band"', h, p)
 		_, h = html("/demo")
-		self.assertIn("Request a demo</h1>", h)
+		self.assertIn('Request a <span class="acc">demo</span></h1>', h)
 
 	def test_about_contact_from_settings(self):
 		fields = (
@@ -302,13 +305,13 @@ class TestPages(FrappeTestCase):
 
 	def test_zatca_phase_2_heading_does_not_break(self):
 		_, h = html("/zatca")
-		self.assertIn("What Phase\u00a02 means", h)
+		self.assertIn('What Phase\u00a02 <span class="acc">means</span>', h)
 		_, h = html("/ar/zatca")
-		self.assertIn("ماذا تعني المرحلة\u00a0الثانية", h)  # noqa: RUF001
+		self.assertIn('ماذا تعني <span class="acc">المرحلة\u00a0الثانية</span>', h)  # noqa: RUF001
 
 	def test_erpnext_module_ids_prefixed(self):
 		_, h = html("/erpnext")
-		ids = re.findall(r'<li class="numbered-block" id="([^"]+)"', h)
+		ids = re.findall(r'<li class="mod-card [^"]*" id="([^"]+)"', h)
 		self.assertEqual(len(ids), 6)
 		for i in ids:
 			self.assertTrue(i.startswith("module-"), i)

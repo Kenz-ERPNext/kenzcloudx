@@ -1,12 +1,22 @@
+{#- Branded 404 (www/404.html; language from the URL, never cached). -#}
+{%- from "templates/kenz/pages/_macros.html" import acc_heading -%}
 {%- set lp = "/ar" if lang == "ar" else "" -%}
-<section class="hero page-hero not-found">
-	<div class="container">
-		<p class="not-found-code" aria-hidden="true">404</p>
-		<h1>{{ t.h1|e }}</h1>
-		<p class="lead">{{ t.body|e }}</p>
+<section class="page-top wrap nf" aria-labelledby="page-h1">
+	<p class="nf-code" dir="ltr" aria-hidden="true">404</p>
+	<div class="page-top-copy veil reveal">
+		<p class="eyebrow">{{ t.eyebrow|e }}</p>
+		<h1 class="h1" id="page-h1">{% call acc_heading(t.h1) %}{% endcall %}</h1>
+		<p class="lede">{{ t.body|e }}</p>
 		<div class="btn-row">
-			<a class="btn btn-primary" href="{{ (lp or '/')|e }}">{{ t.home|e }}</a>
-			<a class="btn btn-outline" href="{{ lp|e }}/demo">{{ common.cta_demo|e }}</a>
+			<a class="btn btn-dark" href="{{ (lp or '/')|e }}">{{ t.home|e }}</a>
+			<a class="btn btn-ghost" href="{{ lp|e }}/demo">{{ common.cta_demo|e }}</a>
 		</div>
+		<nav class="nf-links" aria-label="{{ t.links_label|e }}">
+			<span>{{ t.links_label|e }}</span>
+			<a class="link-accent" href="{{ lp|e }}/erpnext">{{ common.nav.erpnext|e }}</a>
+			<a class="link-accent" href="{{ lp|e }}/compliance">{{ common.nav.compliance|e }}</a>
+			<a class="link-accent" href="{{ lp|e }}/plans">{{ common.nav.plans|e }}</a>
+			<a class="link-accent" href="{{ lp|e }}/about">{{ common.nav.about|e }}</a>
+		</nav>
 	</div>
 </section>
