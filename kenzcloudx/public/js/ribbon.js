@@ -41,7 +41,7 @@ const POSES = {
 /* Narrow screens: keep the ribbon off the headlines (top band only). */
 const POSES_MOBILE_OVERRIDE = {
   hero: [[-1.7, 1.25, -2.0], [-0.85, 0.92, -0.2], [0.0, 0.72, 0.8], [0.72, 0.50, 0.6], [1.10, 0.10, 0.0], [1.60, -0.35, -2.0]],
-  page: [[-1.7, 1.30, -2.0], [-0.80, 1.02, -0.2], [0.05, 0.86, 0.6], [0.78, 0.70, 0.5], [1.15, 0.40, 0.0], [1.65, 0.05, -2.0]],
+  page: [[-1.7, 1.40, -2.0], [-0.80, 1.12, -0.2], [0.05, 0.98, 0.5], [0.80, 0.90, 0.4], [1.30, 0.72, 0.0], [1.75, 0.50, -2.0]],
 };
 /* On phones, passes along the inline-end edge move further out so they do not sit under body text. */
 const MOBILE_PUSH = new Set(['erp', 'plans', 'faq', 'cta', 'footer', 'page-body']);

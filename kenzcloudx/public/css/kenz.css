@@ -125,10 +125,16 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .reduced #ribbon { position: absolute; block-size: 100vh; }
 .no-webgl #ribbon { display: none; }
 
-/* CSS stand-in for the ribbon: no JS, no WebGL, or the module failed to load. */
+/* CSS stand-in for the ribbon: no JS, no WebGL, or the module failed to load.
+   The shape is a pseudo-element inside a clipped, full-width box so it can never widen the page
+   (in RTL an overflow to the left would shift the whole viewport). */
 .ribbon-fallback { display: none; }
 :root:not(.js) .ribbon-fallback, .no-webgl .ribbon-fallback {
 	display: block; position: absolute; z-index: -1; pointer-events: none;
+	inset-block-start: 0; inset-inline: 0; block-size: 100vh; overflow: hidden;
+}
+.ribbon-fallback::before {
+	content: ""; position: absolute;
 	inset-block-start: -8vh; inset-inline-end: -14vw; inline-size: 92vw; block-size: 70vh;
 	transform: rotate(-24deg) skewX(-12deg);
 	border-radius: 40px;
@@ -143,8 +149,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 	mask: radial-gradient(70% 34% at 50% 50%, #000 55%, transparent 100%);
 	opacity: .8;
 }
-[dir=rtl] .ribbon-fallback { transform: scaleX(-1) rotate(-24deg) skewX(-12deg); }
-:root:not(.js) .inner-page .ribbon-fallback, .no-webgl .inner-page .ribbon-fallback { opacity: .5; block-size: 52vh; inset-inline-end: -30vw; }
+[dir=rtl] .ribbon-fallback::before { transform: scaleX(-1) rotate(-24deg) skewX(-12deg); }
+.inner-page .ribbon-fallback::before { opacity: .5; block-size: 52vh; inset-inline-end: -30vw; }
 
 /* ---------- Layout ---------- */
 .wrap { inline-size: min(var(--wrap), 100% - 2 * var(--gutter)); margin-inline: auto; }
@@ -388,6 +394,7 @@ h3 { font-size: 22px; line-height: 1.3; font-weight: 500; letter-spacing: -0.02e
 
 /* ---------- Legacy page bodies (Tasks B/C re-skin these; kept so every page reads well now) ---------- */
 .hero, .page-hero { padding-block: var(--nav-space) clamp(40px, 6vw, 80px); }
+.page-hero { padding-block-end: clamp(24px, 3vw, 48px); }
 .page-hero h1 { font-size: clamp(44px, 5.6vw, 80px); max-inline-size: 15em; }
 .page-hero .container, .hero-copy { position: relative; }
 .page-hero .container::before, .hero-copy::before {
@@ -396,6 +403,7 @@ h3 { font-size: 22px; line-height: 1.3; font-weight: 500; letter-spacing: -0.02e
 }
 .page-hero .lead { margin-block-start: 26px; max-inline-size: 40em; }
 .page-updated { margin-block-start: 1rem; color: var(--muted); font-size: 15px; }
+.page-hero + .section { padding-block-start: clamp(24px, 4vw, 56px); }
 .lead { font-size: clamp(17px, 1.3vw, 19px); max-inline-size: 36em; }
 .tag {
 	display: inline-flex; align-items: center; gap: .5rem;
@@ -404,7 +412,7 @@ h3 { font-size: 22px; line-height: 1.3; font-weight: 500; letter-spacing: -0.02e
 	font-size: 13px; font-weight: 600; color: var(--ink-2);
 }
 .tag::before { content: ""; inline-size: 7px; block-size: 7px; border-radius: 50%; background: var(--accent); }
-.section-mint { background: rgba(255, 255, 255, .42); border-block: 1px solid rgba(255, 255, 255, .7); }
+.section-mint { background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .5) 22%, rgba(255, 255, 255, .5) 78%, rgba(255, 255, 255, 0)); }
 .section > .container > h2, .section-head h2 { font-size: clamp(34px, 3.6vw, 52px); line-height: 1.08; }
 [dir=rtl] .section > .container > h2, [dir=rtl] .section-head h2 { line-height: 1.4; }
 .section > .container > h2 { max-inline-size: 16em; }
@@ -583,7 +591,7 @@ h3 { font-size: 22px; line-height: 1.3; font-weight: 500; letter-spacing: -0.02e
 	.mobile-panel {
 		display: grid; position: absolute; inset-block-start: calc(100% + 10px); inset-inline: 0;
 		padding: 18px; gap: 6px; border-radius: 22px;
-		background: rgba(250, 250, 252, .985); border: 1px solid rgba(255, 255, 255, .9);
+		background: #FAFAFC; border: 1px solid rgba(255, 255, 255, .9);
 		box-shadow: 0 30px 60px -30px rgba(42, 40, 90, .35);
 		opacity: 0; transform: translateY(-8px); pointer-events: none; visibility: hidden;
 		transition: opacity .35s var(--ease), transform .4s var(--ease), visibility 0s .4s;
@@ -605,6 +613,8 @@ h3 { font-size: 22px; line-height: 1.3; font-weight: 500; letter-spacing: -0.02e
 	.footer-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); padding-block-start: 50px; }
 	.footer-col li a { display: inline-block; padding-block: 6px; }
 	.footer-bottom { flex-direction: column; }
+	.site-footer { padding-block-end: 88px; } /* clear the floating WhatsApp button */
+	:root { --nav-space: calc(var(--nav-top) + var(--nav-h) + 40px); }
 	.whatsapp { inline-size: 48px; block-size: 48px; inset-block-end: 14px; inset-inline-end: 14px; }
 	.cta .btn-row { inline-size: 100%; }
 	.cta .btn-row .btn { flex: 1 1 auto; }
