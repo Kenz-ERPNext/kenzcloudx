@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!-- Social image template (1200x630) for render.mjs. Text is filled in from the content JSON by render.mjs.
+     Fonts are the app's own files; the glass ribbon is drawn with plain CSS shapes. -->
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<style>
+@font-face { font-family: "Archivo"; font-weight: 100 900; font-stretch: 62% 125%; src: url("../../kenzcloudx/public/fonts/archivo-latin-wdth-normal.woff2") format("woff2"); }
+@font-face { font-family: "Playfair Display"; font-style: italic; font-weight: 400; src: url("../../kenzcloudx/public/fonts/playfair-display-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: "Amiri"; font-weight: 700; src: url("../../kenzcloudx/public/fonts/amiri-arabic-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "IBM Plex Sans Arabic"; font-weight: 500; src: url("../../kenzcloudx/public/fonts/ibm-plex-sans-arabic-arabic-500-normal.woff2") format("woff2"); }
+* { box-sizing: border-box; margin: 0; }
+html, body { inline-size: 1200px; block-size: 630px; overflow: hidden; }
+body {
+	position: relative; font-family: "Archivo", sans-serif; color: #1C1C1F;
+	background:
+		radial-gradient(60% 60% at 12% 20%, rgba(255, 255, 255, .95), transparent 70%),
+		radial-gradient(50% 50% at 88% 90%, rgba(255, 255, 255, .7), transparent 70%),
+		linear-gradient(115deg, #EFEFF2 0%, #F4F4F6 45%, #EDEDF1 100%);
+}
+[dir=rtl] body { font-family: "IBM Plex Sans Arabic", "Archivo", sans-serif; }
+.ribbon { position: absolute; inset-block-start: -60px; inset-inline-end: -40px; inline-size: 560px; block-size: 760px; }
+[dir=rtl] .ribbon { transform: scaleX(-1); }
+.tile {
+	position: absolute; inline-size: 210px; block-size: 132px; border-radius: 22px;
+	background: linear-gradient(135deg, rgba(191, 226, 246, .92), rgba(189, 237, 232, .85) 55%, rgba(185, 169, 242, .9));
+	border: 1.5px solid rgba(255, 255, 255, .85);
+	box-shadow: inset 0 0 0 1px rgba(91, 69, 230, .12), 0 20px 40px -22px rgba(42, 40, 90, .45), inset 6px 0 0 rgba(200, 170, 245, .7);
+}
+.brand { position: absolute; inset-block-start: 56px; inset-inline-start: 72px; display: flex; align-items: center; gap: 14px; font-family: "Archivo", sans-serif; font-size: 30px; font-weight: 600; letter-spacing: -0.02em; }
+[dir=rtl] .brand svg { transform: scaleX(-1); }
+.copy { position: absolute; inset-inline-start: 72px; inset-block-end: 92px; inline-size: 820px; }
+h1 { font-size: 80px; line-height: 1.02; font-weight: 400; letter-spacing: -0.04em; font-stretch: 96%; }
+[dir=rtl] h1 { font-size: 66px; line-height: 1.3; letter-spacing: 0; font-weight: 500; }
+.acc { font-family: "Playfair Display", serif; font-style: italic; color: #5B45E6; letter-spacing: -0.01em; }
+[dir=rtl] .acc { font-family: "Amiri", serif; font-style: normal; font-weight: 700; font-size: 1.08em; }
+.tag { margin-block-start: 26px; font-size: 25px; color: #55555F; letter-spacing: -0.01em; }
+[dir=rtl] .tag { letter-spacing: 0; }
+.url { position: absolute; inset-block-end: 40px; inset-inline-start: 72px; font-family: "Archivo", sans-serif; font-size: 20px; color: #5B45E6; letter-spacing: .02em; }
+</style>
+</head>
+<body>
+<div class="ribbon" id="ribbon"></div>
+<div class="brand"><svg width="40" height="32" viewBox="0 0 28 22" fill="none"><path d="M13 3 5 11l8 8M23 3l-8 8 8 8" stroke="#5B45E6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><bdi dir="ltr">KenzCloudX</bdi></div>
+<div class="copy"><h1 id="h1"></h1><p class="tag" id="tag"></p></div>
+<div class="url"><bdi dir="ltr">kenzcloudx.com</bdi></div>
+<script>
+// a sweep of glass tiles along a curve (the site's ribbon, simplified)
+const r = document.getElementById("ribbon");
+for (let i = 0; i < 26; i++) {
+	const t = i / 25;
+	const x = 330 - Math.sin(t * Math.PI * 0.95) * 300;
+	const y = -40 + t * 700;
+	const el = document.createElement("div");
+	el.className = "tile";
+	el.style.insetInlineStart = x + "px";
+	el.style.insetBlockStart = y + "px";
+	el.style.transform = `rotate(${-38 + t * 70}deg) skewX(-10deg)`;
+	el.style.opacity = (0.55 + 0.45 * Math.sin(t * Math.PI)).toFixed(2);
+	r.appendChild(el);
+}
+</script>
+</body>
+</html>

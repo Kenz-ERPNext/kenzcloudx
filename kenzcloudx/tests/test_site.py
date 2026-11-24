@@ -21,6 +21,8 @@ from kenzcloudx.tests.test_pages import response
 
 SETTINGS = "KenzCloudX Settings"
 APP_ROOT = os.path.dirname(frappe.get_app_path("kenzcloudx"))
+# sha1 of the phase-1 navy/mint social images, which must not come back
+OLD_OG_SHA1 = ("a1cd661619ba410068e59a6c92714ab59e3b3e66", "af06420a61881edc5e35151c4cffb591c1a05209")
 
 
 class TestSettingsClearCache(FrappeTestCase):
@@ -277,3 +279,18 @@ class TestAppMetadata(FrappeTestCase):
 			readme = f.read()
 		self.assertIn("run-tests", readme)
 		self.assertIn("production", readme)
+
+	def test_social_images_are_regenerated_and_reproducible(self):
+		import hashlib
+		import struct
+
+		for lang in ("en", "ar"):
+			path = frappe.get_app_path("kenzcloudx", "public", "images", f"og-{lang}.png")
+			with open(path, "rb") as f:
+				head = f.read(24)
+			self.assertEqual(head[:8], b"\x89PNG\r\n\x1a\n")
+			self.assertEqual(struct.unpack(">II", head[16:24]), (1200, 630), lang)
+			with open(path, "rb") as f:
+				self.assertNotIn(hashlib.sha1(f.read()).hexdigest(), OLD_OG_SHA1, lang)
+		for name in ("render.mjs", "og.html"):
+			self.assertTrue(os.path.exists(os.path.join(APP_ROOT, "scripts", "og", name)), name)
