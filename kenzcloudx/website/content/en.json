@@ -54,74 +54,391 @@
 	},
 	"home": {
 		"meta": {
-			"title": "KenzCloudX – ERPNext hosting and ZATCA e-invoicing in Saudi Arabia",
-			"description": "We set up and run ERPNext for Saudi businesses: ZATCA Phase 2 e-invoicing, data migration, daily backups and support in Arabic and English."
+			"title": "KenzCloudX – ERPNext hosting and tax compliance for the Gulf and India",
+			"description": "We host, set up and run ERPNext for businesses in Saudi Arabia, the UAE, Oman, the wider Gulf and India: local tax compliance, data migration, daily backups and support in Arabic and English."
 		},
 		"hero": {
-			"tag": "ZATCA Phase 2 · Integrated",
-			"h1": "ERPNext for Saudi businesses, hosted and run by people you can call.",
-			"subline": "We set up your ERPNext, connect it to ZATCA, move your data, and keep it running. Daily backups, Arabic invoices, one monthly bill.",
+			"tag": "Cloud ERP for growing businesses in the Gulf and India",
+			"h1": {
+				"pre": "ERPNext, hosted and run\n",
+				"acc": "for you",
+				"post": ""
+			},
+			"subline": "We set it up, move your data, keep it compliant with local tax rules, and look after it every day.",
 			"cta_primary": "Request a demo",
-			"cta_secondary": "See plans",
-			"invoice_alt": "Sample tax invoice in Arabic and English: two line items, VAT 15%, total in SAR, ZATCA QR code, status: cleared by ZATCA."
+			"cta_secondary": "See how it works",
+			"scroll": "Scroll down"
 		},
-		"proof": {
+		"stats": {
+			"label": "KenzCloudX at a glance",
 			"live_sites_label": "live ERPNext sites",
-			"zatca_customers_label": "customers on ZATCA Phase 2",
+			"countries_value": 4,
+			"countries_label": "countries served",
 			"backups_value": "Daily",
 			"backups_label": "off-site backups",
-			"support_label": "support in Arabic and English"
+			"languages_a": "Arabic",
+			"languages_b": "English",
+			"languages_label": "support"
 		},
-		"what_we_do": {
-			"heading": "What we do",
-			"intro": "You run your business. We look after the system.",
+		"benefits": {
+			"heading": {
+				"pre": "Key ",
+				"acc": "benefits",
+				"post": "\nof working with us"
+			},
 			"items": [
 				{
-					"key": "setup",
-					"title": "Set-up",
-					"body": "We create your company, chart of accounts, VAT settings, users and print formats. Your tax invoices come out in Arabic and English from day one."
+					"key": "hosting",
+					"title": "Managed hosting",
+					"body": "Your ERPNext on fast cloud servers, updated, monitored and backed up off-site every day."
 				},
 				{
-					"key": "zatca",
-					"title": "ZATCA onboarding",
-					"body": "We register your system with ZATCA, install the certificates and test the first invoices with you. B2B invoices are cleared, B2C invoices are reported."
+					"key": "tax",
+					"title": "Local tax compliance",
+					"body": "E-invoicing and VAT or GST set up for your country: ZATCA in Saudi Arabia, GST in India, VAT in the UAE and Oman."
 				},
 				{
 					"key": "migration",
-					"title": "Data migration",
-					"body": "We move your customers, suppliers, items, opening balances and open invoices from spreadsheets or your old system, and check the totals with you."
-				},
-				{
-					"key": "support",
-					"title": "Support",
-					"body": "Call us or message us on WhatsApp, in Arabic or English. We handle updates, backups and monitoring so you do not have to."
+					"title": "Migration and support",
+					"body": "We move your data from spreadsheets or your old system, train your team, and answer by phone or WhatsApp."
 				}
 			]
 		},
-		"how_it_works": {
-			"heading": "How it works",
+		"erp": {
+			"heading": {
+				"pre": "One ",
+				"acc": "system",
+				"post": "\nfor everything you run"
+			},
+			"intro": "Accounts, sales, purchasing, stock, payroll and your shop counter work from the same records, so nobody re-types an invoice into another tool.",
+			"mock": {
+				"crumb": "your-company.kenzcloudx.com / Accounting",
+				"search": "Search or type a command",
+				"modules_label": "Modules",
+				"modules": [
+					"Accounting",
+					"Selling",
+					"Buying",
+					"Stock",
+					"HR & Payroll",
+					"POS",
+					"Reports"
+				],
+				"title": "Accounting overview",
+				"subtitle": "Demo Trading LLC · this month",
+				"periods": [
+					"Week",
+					"Month",
+					"Year"
+				],
+				"kpis": [
+					{
+						"label": "Sales",
+						"value": "482,300",
+						"delta": "▲ 8.2% vs last month",
+						"kind": "up"
+					},
+					{
+						"label": "Receivable",
+						"value": "126,940",
+						"delta": "▼ 14 unpaid",
+						"kind": "down"
+					},
+					{
+						"label": "Output VAT",
+						"value": "72,345",
+						"delta": "Due on the 30th",
+						"kind": "flat"
+					},
+					{
+						"label": "Stock value",
+						"value": "913,600",
+						"delta": "▲ 2.4%",
+						"kind": "up"
+					}
+				],
+				"invoices_title": "Sales invoices",
+				"demo_tag": "Demo data",
+				"columns": [
+					"Invoice",
+					"Customer",
+					"Date",
+					"Amount",
+					"Status"
+				],
+				"rows": [
+					{
+						"no": "INV-0418",
+						"customer": "Demo Foods",
+						"date": "21 Nov",
+						"amount": "18,450.00",
+						"status": "Paid",
+						"kind": "paid"
+					},
+					{
+						"no": "INV-0417",
+						"customer": "Sample Contracting",
+						"date": "20 Nov",
+						"amount": "7,920.00",
+						"status": "Unpaid",
+						"kind": "unpaid"
+					},
+					{
+						"no": "INV-0416",
+						"customer": "Example Retail",
+						"date": "19 Nov",
+						"amount": "2,310.50",
+						"status": "Paid",
+						"kind": "paid"
+					},
+					{
+						"no": "INV-0415",
+						"customer": "Test Logistics",
+						"date": "14 Nov",
+						"amount": "11,000.00",
+						"status": "Overdue",
+						"kind": "over"
+					},
+					{
+						"no": "INV-0414",
+						"customer": "Demo Clinics",
+						"date": "13 Nov",
+						"amount": "4,775.00",
+						"status": "Draft",
+						"kind": "draft"
+					}
+				],
+				"chart_title": "Cash flow",
+				"chart_range": "6 months",
+				"money_in": "Money in",
+				"money_out": "Money out"
+			}
+		},
+		"compliance": {
+			"heading": {
+				"pre": "Compliant in ",
+				"acc": "every",
+				"post": "\ncountry you sell in"
+			},
+			"intro": "Tax rules differ across the Gulf and India. We set up ERPNext for the rules that apply to you, and keep it current when they change.",
+			"more": "Compare all four countries"
+		},
+		"looks": {
+			"heading": {
+				"pre": "A closer ",
+				"acc": "look",
+				"post": "\nat daily work"
+			},
+			"invoice": {
+				"label": "Invoicing",
+				"title": "New sales invoice",
+				"tag": "Draft · SAR",
+				"fields": [
+					{
+						"label": "Customer",
+						"value": "Demo Foods"
+					},
+					{
+						"label": "Posting date",
+						"value": "21 Nov 2026"
+					},
+					{
+						"label": "Tax template",
+						"value": "KSA VAT 15%"
+					},
+					{
+						"label": "Payment terms",
+						"value": "Net 30"
+					}
+				],
+				"columns": [
+					"Item",
+					"Qty",
+					"Rate",
+					"Amount"
+				],
+				"rows": [
+					[
+						"Olive oil 1L",
+						"120",
+						"28.00",
+						"3,360.00"
+					],
+					[
+						"Dates 5kg box",
+						"40",
+						"95.00",
+						"3,800.00"
+					],
+					[
+						"Delivery",
+						"1",
+						"150.00",
+						"150.00"
+					]
+				]
+			},
+			"stock": {
+				"label": "Inventory",
+				"title": "Stock levels",
+				"tag": "Main warehouse",
+				"reorder": "reorder",
+				"rows": [
+					{
+						"name": "Olive oil 1L",
+						"qty": "1,240",
+						"level": 82,
+						"low": false
+					},
+					{
+						"name": "Dates 5kg box",
+						"qty": "310",
+						"level": 54,
+						"low": false
+					},
+					{
+						"name": "Rice 10kg",
+						"qty": "62",
+						"level": 14,
+						"low": true
+					},
+					{
+						"name": "Tea 500g",
+						"qty": "890",
+						"level": 68,
+						"low": false
+					},
+					{
+						"name": "Saffron 1g",
+						"qty": "45",
+						"level": 20,
+						"low": true
+					}
+				]
+			},
+			"pos": {
+				"label": "Point of sale",
+				"title": "Counter 2",
+				"tag": "Open",
+				"lines": [
+					{
+						"label": "Tea 500g × 2",
+						"amount": "38.00"
+					},
+					{
+						"label": "Dates 5kg box",
+						"amount": "95.00"
+					}
+				],
+				"total_label": "Total incl. VAT",
+				"total": "152.95",
+				"pay": "Card · Pay"
+			}
+		},
+		"how": {
+			"heading": {
+				"pre": "How we get you ",
+				"acc": "live",
+				"post": ""
+			},
+			"intro": "Four steps, one team. You always know what happens next and who is doing it.",
 			"steps": [
 				{
 					"title": "Demo",
-					"body": "A short call where we show ERPNext with your kind of transactions and answer your questions."
+					"body": "See ERPNext with your own use cases."
 				},
 				{
 					"title": "Set-up",
-					"body": "We configure the system, move your data and connect it to ZATCA."
+					"body": "We configure your company, taxes and users."
 				},
 				{
-					"title": "Training",
-					"body": "We train your team on the screens they will use every day, in Arabic or English."
+					"title": "Migration and training",
+					"body": "Your data moves over and your team learns the system."
 				},
 				{
-					"title": "Live",
-					"body": "You start issuing real invoices. We stay on call and keep the system backed up and updated."
+					"title": "Go live",
+					"body": "We stay with you, with support in Arabic and English."
+				}
+			]
+		},
+		"plans": {
+			"heading": {
+				"pre": "Plans that ",
+				"acc": "fit",
+				"post": "\nyour size"
+			},
+			"intro": "Every plan includes hosting, updates and off-site backups. We quote after the demo, once we know your users and modules.",
+			"badge": "Most chosen",
+			"featured": "business",
+			"price_line": "Priced for your users and modules",
+			"more": "Compare plans"
+		},
+		"quotes": {
+			"heading": {
+				"pre": "What customers ",
+				"acc": "say",
+				"post": ""
+			},
+			"sample": "Sample",
+			"items": [
+				{
+					"quote": "Our invoices clear with ZATCA without anyone touching them, and month-end closes days earlier than before.",
+					"name": "Sample customer",
+					"role": "Trading company, Riyadh"
+				},
+				{
+					"quote": "They moved ten years of stock and customer records from our old system. Production planning now runs from one screen.",
+					"name": "Sample customer",
+					"role": "Manufacturer, Muscat"
+				},
+				{
+					"quote": "Every shop counter, the warehouse and GST filing now use the same numbers. When we need help, someone answers on WhatsApp.",
+					"name": "Sample customer",
+					"role": "Retail chain, Kochi"
+				}
+			]
+		},
+		"faq": {
+			"heading": {
+				"pre": "Still have\n",
+				"acc": "questions?",
+				"post": ""
+			},
+			"to_demo": "Go to the demo request form",
+			"items": [
+				{
+					"q": "How long does set-up take?",
+					"a": "It depends on your modules and how much data you bring with you. After the demo we give you a written timeline, so you know each step before we start."
+				},
+				{
+					"q": "Can you move our existing data?",
+					"a": "Yes. We import customers, suppliers, items, opening balances and open invoices from spreadsheets or from your current system, and check the figures with you before go-live."
+				},
+				{
+					"q": "Which countries' tax rules do you support?",
+					"a": "Saudi Arabia (ZATCA e-invoicing), India (GST, e-invoicing and e-way bills), the UAE (VAT) and Oman (VAT). If you trade somewhere else, ask us and we will tell you plainly what is possible."
+				},
+				{
+					"q": "Where is our data hosted and backed up?",
+					"a": "On our cloud servers, with daily backups kept off-site. If you have specific data-location requirements, tell us during the demo and we will confirm where your data will be stored."
+				},
+				{
+					"q": "Do you support Arabic?",
+					"a": "Yes. ERPNext can run in Arabic, invoices can be printed in Arabic and English, and our team supports you in both languages."
+				},
+				{
+					"q": "What happens if we need help?",
+					"a": "Call, email or message us on WhatsApp. A person who knows your set-up picks it up and keeps you posted until it is fixed."
 				}
 			]
 		},
 		"demo_band": {
-			"heading": "See it with your own data",
-			"body": "Book a demo. We will show you invoicing, VAT returns and stock for a business like yours, and give you a quote after the call.",
+			"heading": {
+				"pre": "Request your\n",
+				"acc": "demo",
+				"post": " today"
+			},
+			"body": "Tell us about your business and we will show you ERPNext set up for it.",
 			"button": "Request a demo"
 		}
 	},
@@ -261,6 +578,272 @@
 			"button": "Request a demo"
 		}
 	},
+	"compliance": {
+		"meta": {
+			"title": "Tax compliance in Saudi Arabia, India, the UAE and Oman – KenzCloudX",
+			"description": "How we set up ERPNext for ZATCA e-invoicing in Saudi Arabia, GST e-invoicing and e-way bills in India, and VAT in the UAE and Oman."
+		},
+		"hero": {
+			"eyebrow": "Compliance",
+			"h1": {
+				"pre": "One system,\n",
+				"acc": "four",
+				"post": " sets of tax rules"
+			},
+			"intro": "Saudi Arabia, India, the UAE and Oman each have their own tax and invoicing rules. Choose your country to see what we set up in ERPNext for you."
+		},
+		"tabs": {
+			"label": "Country",
+			"note": "Country not listed?",
+			"note_link": "Ask us.",
+			"details_heading": "Good to know",
+			"zatca_customers_label": "customers already on ZATCA Phase 2",
+			"sample": "Sample invoice"
+		},
+		"countries": [
+			{
+				"key": "saudi-arabia",
+				"code": "KSA",
+				"name": "Saudi Arabia",
+				"eyebrow": "Saudi Arabia",
+				"heading": "ZATCA Phase 2 e-invoicing",
+				"intro": "Invoices are generated, signed and shared with ZATCA from inside ERPNext.",
+				"points": [
+					"Onboarding of your invoicing units with ZATCA",
+					"Clearance of standard (B2B) tax invoices before they reach the buyer",
+					"Reporting of simplified (B2C) invoices within 24 hours",
+					"A QR code on every invoice, printed in Arabic and English"
+				],
+				"details": [
+					"From you we need your VAT number, a one-time password from the Fatoora portal and an hour of your time for testing.",
+					"Credit and debit notes follow the same rules as the invoice they correct.",
+					"If ZATCA rejects an invoice, it is flagged in ERPNext with the reason so it can be corrected and sent again."
+				],
+				"more_stem": "zatca",
+				"more": "Read more about ZATCA",
+				"invoice": {
+					"title": "Tax Invoice",
+					"title_alt": "فاتورة ضريبية",
+					"number": "INV-SA-2026-0418 · 21 Nov 2026",
+					"tax_label": "VAT No.",
+					"tax_id": "3XXXXXXXXXXXXX3",
+					"status": "Cleared",
+					"status_kind": "paid",
+					"lines": [
+						{
+							"label": "Office chairs × 12",
+							"amount": "7,200.00"
+						},
+						{
+							"label": "Delivery and assembly",
+							"amount": "450.00"
+						},
+						{
+							"label": "VAT 15%",
+							"amount": "1,147.50"
+						}
+					],
+					"total_label": "Total",
+					"currency": "SAR",
+					"total": "8,797.50",
+					"foot": "Cleared by ZATCA · UUID and hash stored",
+					"ref": "uuid 5e1b…a07c",
+					"alt": "Sample Saudi tax invoice in English and Arabic: two lines, VAT 15%, total SAR 8,797.50, status cleared, with a QR code."
+				}
+			},
+			{
+				"key": "india",
+				"code": "IN",
+				"name": "India",
+				"eyebrow": "India",
+				"heading": "GST, e-invoicing and e-way bills",
+				"intro": "GST invoices with an IRN, reports ready for your returns, and e-way bills from the same delivery note.",
+				"points": [
+					"E-invoices with an IRN and the signed QR code",
+					"E-way bill generation",
+					"Reports ready for your GSTR returns",
+					"CGST, SGST and IGST worked out on every line"
+				],
+				"details": [
+					"E-invoicing applies once your turnover is above the limit set under the GST rules; we check with you whether it applies to your business.",
+					"E-way bills are created from the invoice or delivery note when goods are moved.",
+					"The place of supply decides whether CGST and SGST or IGST applies, and ERPNext works it out from the addresses."
+				],
+				"more_stem": "",
+				"more": "",
+				"invoice": {
+					"title": "Tax Invoice",
+					"title_alt": "",
+					"number": "INV-IN-2026-0291 · 21 Nov 2026",
+					"tax_label": "GSTIN",
+					"tax_id": "27XXXXX0000X1Z5",
+					"status": "IRN generated",
+					"status_kind": "violet",
+					"lines": [
+						{
+							"label": "Steel brackets × 400",
+							"amount": "48,000.00"
+						},
+						{
+							"label": "CGST 9%",
+							"amount": "4,320.00"
+						},
+						{
+							"label": "SGST 9%",
+							"amount": "4,320.00"
+						}
+					],
+					"total_label": "Total",
+					"currency": "INR",
+					"total": "56,640.00",
+					"foot": "IRN and signed QR received · e-way bill ready",
+					"ref": "IRN 8f3c…91de",
+					"alt": "Sample Indian GST invoice: one line, CGST 9% and SGST 9%, total INR 56,640.00, status IRN generated, with a QR code."
+				}
+			},
+			{
+				"key": "uae",
+				"code": "AE",
+				"name": "UAE",
+				"eyebrow": "United Arab Emirates",
+				"heading": "VAT invoices and returns",
+				"intro": "UAE VAT set up correctly from the first invoice, and a plan for e-invoicing when it applies to you.",
+				"points": [
+					"Tax invoices with your TRN, in Arabic and English if you need it",
+					"VAT return figures by emirate",
+					"Reverse charge on imports",
+					"We follow the announced e-invoicing rollout and plan the change with you"
+				],
+				"details": [
+					"Tax invoices show your TRN, the date of supply and the VAT amount.",
+					"We prepare the return figures from your books; you file them with the Federal Tax Authority.",
+					"The UAE has announced e-invoicing for the coming years. We will tell you when it applies to your business and what has to change."
+				],
+				"more_stem": "",
+				"more": "",
+				"invoice": {
+					"title": "Tax Invoice",
+					"title_alt": "فاتورة ضريبية",
+					"number": "INV-AE-2026-0733 · 21 Nov 2026",
+					"tax_label": "TRN",
+					"tax_id": "100XXXXXXXXXXX3",
+					"status": "Tax invoice",
+					"status_kind": "violet",
+					"lines": [
+						{
+							"label": "Maintenance contract (Q4)",
+							"amount": "9,600.00"
+						},
+						{
+							"label": "Spare parts",
+							"amount": "1,240.00"
+						},
+						{
+							"label": "VAT 5%",
+							"amount": "542.00"
+						}
+					],
+					"total_label": "Total",
+					"currency": "AED",
+					"total": "11,382.00",
+					"foot": "VAT return line: standard-rated supplies, Dubai",
+					"ref": "ref 7a20…c4e1",
+					"alt": "Sample UAE tax invoice in English and Arabic: two lines, VAT 5%, total AED 11,382.00."
+				}
+			},
+			{
+				"key": "oman",
+				"code": "OM",
+				"name": "Oman",
+				"eyebrow": "Oman",
+				"heading": "VAT invoices and returns",
+				"intro": "Oman VAT handled in ERPNext, with invoices your customers can read in Arabic and English.",
+				"points": [
+					"VAT tax invoices in Arabic and English",
+					"VAT return figures from your books",
+					"Amounts in OMR to three decimal places"
+				],
+				"details": [
+					"VAT in Oman is charged at a standard rate of 5%.",
+					"We prepare the return figures from your books; you file them with the Oman Tax Authority.",
+					"Tax invoices show your VAT registration number."
+				],
+				"more_stem": "",
+				"more": "",
+				"invoice": {
+					"title": "Tax Invoice",
+					"title_alt": "فاتورة ضريبية",
+					"number": "INV-OM-2026-0152 · 21 Nov 2026",
+					"tax_label": "VATIN",
+					"tax_id": "OM11XXXXXXXX",
+					"status": "Tax invoice",
+					"status_kind": "violet",
+					"lines": [
+						{
+							"label": "Cement bags × 300",
+							"amount": "540.000"
+						},
+						{
+							"label": "Transport",
+							"amount": "35.000"
+						},
+						{
+							"label": "VAT 5%",
+							"amount": "28.750"
+						}
+					],
+					"total_label": "Total",
+					"currency": "OMR",
+					"total": "603.750",
+					"foot": "Bilingual tax invoice · VAT return ready",
+					"ref": "ref 41d9…0b7a",
+					"alt": "Sample Oman tax invoice in English and Arabic: two lines, VAT 5%, total OMR 603.750."
+				}
+			}
+		],
+		"countries_section": {
+			"heading": "Choose your country"
+		},
+		"same": {
+			"heading": {
+				"pre": "What stays the ",
+				"acc": "same",
+				"post": "\nin every country"
+			},
+			"intro": "The tax rules change from country to country. The way we look after your system does not.",
+			"items": [
+				{
+					"key": "hosting",
+					"title": "Hosting",
+					"body": "Your ERPNext on managed cloud servers, kept updated and monitored."
+				},
+				{
+					"key": "backups",
+					"title": "Daily backups",
+					"body": "A copy of your data is taken every day and kept off-site."
+				},
+				{
+					"key": "languages",
+					"title": "Arabic and English",
+					"body": "Screens, invoices and reports in Arabic and English."
+				},
+				{
+					"key": "support",
+					"title": "Support",
+					"body": "One team you can reach by phone, email or WhatsApp, in Arabic or English."
+				}
+			]
+		},
+		"demo_band": {
+			"heading": {
+				"pre": "Country not listed?\n",
+				"acc": "Ask",
+				"post": " us"
+			},
+			"body": "Tell us where you trade and what you need. We will tell you what ERPNext can do there and what it would take.",
+			"button": "Ask us"
+		}
+	},
 	"plans": {
 		"meta": {
 			"title": "Plans – KenzCloudX",
@@ -278,7 +861,7 @@
 				"tagline": "[PLACEHOLDER] For small businesses with one company and a few users.",
 				"features": [
 					"Accounting, sales, purchasing and inventory",
-					"ZATCA Phase 2 clearance and reporting",
+					"E-invoicing and VAT or GST set-up for your country",
 					"Arabic and English tax invoices",
 					"Daily off-site backups",
 					"Support by phone and WhatsApp during business hours"
