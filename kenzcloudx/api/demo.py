@@ -84,9 +84,18 @@ def normalize_ksa_phone(raw) -> str | None:
 	return phone if phone and phone.startswith("+9665") else None
 
 
+# Unicode bidirectional controls (LRM, RLM, embeddings, overrides, isolates): they can reorder what staff
+# read in the Lead, Note, Comment, ToDo and email, so they are removed from every visitor text.
+_BIDI = re.compile("[\u200e\u200f\u202a-\u202e\u2066-\u2069]")
+
+
+def _text(value) -> str:
+	return _BIDI.sub("", str(value or ""))
+
+
 def _line(value, limit=MAX_NAME) -> str:
-	"""Single-line text: whitespace collapsed, trimmed, capped."""
-	return " ".join(str(value or "").split())[:limit]
+	"""Single-line text: bidi controls removed, whitespace collapsed, trimmed, capped."""
+	return " ".join(_text(value).split())[:limit]
 
 
 def _fail(lang: str, key: str):
@@ -130,10 +139,10 @@ def _clean_email(raw, lang: str) -> str:
 @frappe.whitelist(allow_guest=True, methods=["POST"])
 @rate_limit(limit=5, seconds=3600)
 def submit_demo_request(
-	full_name,
-	company,
-	phone,
-	email,
+	full_name=None,
+	company=None,
+	phone=None,
+	email=None,
 	users=None,
 	zatca_required=None,
 	plan=None,
@@ -150,7 +159,7 @@ def submit_demo_request(
 		full_name=_line(full_name),
 		company=_line(company),
 		raw_phone=_line(phone),
-		message=str(message or "").strip()[:MAX_MESSAGE],
+		message=_text(message).strip()[:MAX_MESSAGE],
 		lang=lang,
 		plan=plan if plan in PLAN_KEYS else None,
 		zatca_required=_zatca_answer(zatca_required),

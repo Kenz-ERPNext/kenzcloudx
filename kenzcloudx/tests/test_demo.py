@@ -224,6 +224,36 @@ class TestDemoRequest(FrappeTestCase):
 		submit(email="p@x.sa", plan="<script>")
 		self.assertIsNone(frappe.db.get_value("Lead", {"email_id": "p@x.sa"}, "kcx_plan"))
 
+	def test_bidi_controls_are_stripped_from_text(self):
+		rlo, lri, pdi, lrm, rlm = "\u202e", "\u2066", "\u2069", "\u200e", "\u200f"
+		submit(
+			email="bidi@x.sa",
+			full_name=f"{rlo}علي{pdi} حسن{lrm}",
+			company=f"Nesco{rlm} {lri}Co{pdi}",
+			message=f"line {rlo}one{pdi}\nنحتاج نقاط البيع{lrm}",
+			lang="ar",
+		)
+		lead = lead_for("bidi@x.sa")
+		self.assertEqual(lead.first_name, "علي حسن")
+		self.assertEqual(lead.company_name, "Nesco Co")
+		note = lead.notes[0].note
+		self.assertIn("line one<br>نحتاج نقاط البيع", note)
+		import re as _re
+
+		bidi = _re.compile("[\u200e\u200f\u202a-\u202e\u2066-\u2069]")
+		old = frappe.db.get_single_value(SETTINGS, "notify_emails")
+		with patch("frappe.sendmail") as sendmail:
+			frappe.db.set_single_value(SETTINGS, "notify_emails", "sales@kenz.sa")
+			try:
+				submit(email="bidi@x.sa", company=f"A{rlo}B", message=f"x{lri}y")
+			finally:
+				frappe.db.set_single_value(SETTINGS, "notify_emails", old or "")
+		kw = sendmail.call_args.kwargs
+		self.assertIsNone(bidi.search(kw["subject"] + kw["message"]))
+		comment = comments_on(lead.name)[0]
+		self.assertIsNone(bidi.search(comment))
+		self.assertIn("AB", comment)
+
 	def test_lengths_capped(self):
 		submit(email="long@x.sa", full_name="A" * 500, company="B" * 500, message="C" * 5000)
 		lead = lead_for("long@x.sa")
@@ -895,6 +925,55 @@ class TestDemoHTTP(FrappeTestCase):
 			# a plain delete: delete_doc would leave a Deleted Document and a "Deleted" comment
 			frappe.db.delete("Error Log", {"name": ["in", [row.name for row in new] or [""]]})
 			frappe.db.commit()
+
+	def test_missing_fields_give_the_localized_required_error(self):
+		"""A POST without a field must not crash with TypeError (500): it gets the clean 417."""
+		before = frappe.db.count("Lead")
+		for field in ("full_name", "company", "phone", "email", "country"):
+			frappe.cache.delete_keys(f"rl:{METHOD}")
+			for lang, errors in (("en", ERR_EN), ("ar", ERR_AR)):
+				payload = dict(
+					full_name="HTTP Test",
+					company="HTTP Co",
+					phone="0551234567",
+					email=self.EMAIL,
+					country="sa",
+					lang=lang,
+				)
+				del payload[field]
+				r = self.post_raw(payload)
+				body = r.get_data(as_text=True)
+				self.assertEqual(r.status_code, 417, (field, lang, body[:300]))
+				messages = [json.loads(m)["message"] for m in json.loads(r.json["_server_messages"])]
+				self.assertEqual(messages, [errors["required"]], (field, lang))
+				# no crash: the only exception is our ValidationError. (This test site has the System Setting
+				# "allow_error_traceback" on, so Frappe attaches that traceback to every error response; with
+				# it off, as in production, there is none.)
+				self.assertEqual(r.json["exc_type"], "ValidationError", field)
+				self.assertNotIn("TypeError", body, field)
+				self.assertNotIn("missing 1 required positional argument", body, field)
+		frappe.db.rollback()
+		self.assertEqual(frappe.db.count("Lead"), before)
+		self.assertFalse(frappe.db.exists("Lead", {"email_id": self.EMAIL}))
+
+	def test_missing_fields_with_honeypot_still_look_ok(self):
+		r = self.post_raw({"website": "http://spam"})
+		self.assertEqual(r.status_code, 200)
+		self.assertEqual(r.json["message"], {"ok": True})
+
+	def test_missing_fields_count_towards_the_rate_limit(self):
+		codes = [self.post_raw({"lang": "en"}).status_code for _ in range(6)]
+		self.assertEqual(codes, [417, 417, 417, 417, 417, 429])
+
+	def post_raw(self, payload):
+		from frappe.tests.test_api import make_request
+
+		return make_request(
+			target=self.client.post,
+			args=(f"/api/method/{METHOD}",),
+			kwargs={"data": payload},
+			site=frappe.local.site,
+		)
 
 	def test_rate_limit(self):
 		codes = [self.post(website="bot").status_code for _ in range(6)]
