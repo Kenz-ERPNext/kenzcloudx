@@ -1,9 +1,9 @@
 [project]
 name = "kenzcloudx"
 authors = [
-    { name = "sammish", email = "sammish.thundiyil@gmail.com"}
+    { name = "Kenz Technology", email = "hello@kenzcloudx.com"}
 ]
-description = "kenzcloudx"
+description = "The KenzCloudX public website (English and Arabic) and demo request form, built on ERPNext"
 requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]

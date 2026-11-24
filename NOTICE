@@ -1,0 +1,16 @@
+KenzCloudX
+Copyright (c) 2026 Kenz Technology
+
+The source code of this app is licensed under the MIT licence (see license.txt).
+
+The MIT licence does not cover the brand assets and the website content. The following are
+Copyright (c) 2026 Kenz Technology, all rights reserved, and may not be reused without written permission:
+
+- kenzcloudx/public/images/  (the KenzCloudX name, logo, logo mark, social images and illustrations)
+- kenzcloudx/website/content/  (all English and Arabic page text)
+
+Third-party files keep their own licences:
+
+- kenzcloudx/public/fonts/  Archivo, Playfair Display, Amiri, IBM Plex Sans Arabic: SIL Open Font
+  License 1.1 (kenzcloudx/public/fonts/OFL.txt)
+- kenzcloudx/public/js/vendor/three-0.160.0/  three.js r160: MIT (LICENSE in that folder)
