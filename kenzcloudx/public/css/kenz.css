@@ -824,7 +824,7 @@ h3 { font-size: 22px; line-height: 1.3; font-weight: 500; letter-spacing: -0.02e
 
 /* country cards (erpnext) and region cards (about) */
 .country-grid, .region-grid { list-style: none; margin: 0; padding: 0; }
-.country-card { position: relative; display: grid; gap: 10px; block-size: 100%; padding-block: 28px 30px; padding-inline: 26px; color: var(--ink); }
+.country-card { position: relative; display: grid; align-content: start; gap: 10px; block-size: 100%; padding-block: 28px 30px; padding-inline: 26px; color: var(--ink); }
 .cc-chip {
 	justify-self: start; padding-block: 4px; padding-inline: 10px; border-radius: 999px;
 	background: var(--accent-soft); color: var(--accent); font-family: var(--sans); font-size: 11.5px; font-weight: 600; letter-spacing: .12em;
@@ -958,6 +958,7 @@ h3 { font-size: 22px; line-height: 1.3; font-weight: 500; letter-spacing: -0.02e
 	.legal-sec h2 { font-size: 22px; }
 	/* the floating WhatsApp button must never cover the last field, the submit button or the privacy note */
 	.demo-section { padding-block-end: 96px; }
+	.nf-code { display: none; }
 	.form-actions .btn { inline-size: 100%; }
 }
 

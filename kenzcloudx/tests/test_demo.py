@@ -96,6 +96,19 @@ class TestDemoRequest(FrappeTestCase):
 		self.assertEqual(len(lead.notes), 1)
 		self.assertIn("<b>ZATCA Phase 2 needed:</b> Not answered", lead.notes[0].note)
 
+	def test_zatca_not_sent_at_all_is_not_answered(self):
+		"""A browser sends no zatca_required field when no radio is picked (found in the visual pass)."""
+		frappe.local.request = None
+		frappe.set_user("Guest")
+		try:
+			submit_demo_request(
+				full_name="No Radio", company="Co", phone="0551234567", email="z-absent@x.sa", country="sa"
+			)
+		finally:
+			frappe.set_user("Administrator")
+		note = lead_for("z-absent@x.sa").notes[0].note
+		self.assertIn("<b>ZATCA Phase 2 needed:</b> Not answered<", note)
+
 	def test_zatca_answer_is_tri_state(self):
 		for email, value, stored, text in (
 			("z-yes@x.sa", "1", 1, "Yes"),

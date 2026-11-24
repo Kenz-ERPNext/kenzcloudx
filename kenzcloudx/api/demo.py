@@ -135,7 +135,7 @@ def submit_demo_request(
 	phone,
 	email,
 	users=None,
-	zatca_required=0,
+	zatca_required=None,
 	plan=None,
 	message=None,
 	lang="en",
