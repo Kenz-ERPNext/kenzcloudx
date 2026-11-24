@@ -60,14 +60,15 @@ class TestInnerContent(FrappeTestCase):
 		self.assertNotIn("Set-up", raw)
 		self.assertIn("set\u2011up", raw)
 
-	def test_legal_bodies_keep_their_placeholders(self):
+	def test_legal_bodies_and_team_are_final(self):
+		# pre-launch pass: the placeholder markers were replaced by final text
 		for lang in ("en", "ar"):
 			for stem in ("privacy", "terms"):
 				page = load_content(lang)[stem]
-				self.assertTrue(page["hero"]["updated"].startswith("[PLACEHOLDER]"), (lang, stem))
+				self.assertNotIn("PLACEHOLDER", page["hero"]["updated"], (lang, stem))
 				for s in page["sections"]:
-					self.assertTrue(s["body"].startswith("[PLACEHOLDER]"), (lang, stem, s["heading"]))
-			self.assertTrue(load_content(lang)["about"]["team"]["body"].startswith("[PLACEHOLDER]"), lang)
+					self.assertNotIn("PLACEHOLDER", s["body"], (lang, stem, s["heading"]))
+			self.assertNotIn("PLACEHOLDER", load_content(lang)["about"]["team"]["body"], lang)
 
 
 class TestInnerPages(FrappeTestCase):
@@ -123,7 +124,7 @@ class TestInnerPages(FrappeTestCase):
 			self.assertEqual(h.count('<span class="badge">'), 1, path)
 			self.assertIn('id="plan-business"', h)
 			self.assertEqual(h.count('class="mini-card glass'), 4, path)
-			self.assertIn("[PLACEHOLDER]", h, path)  # taglines still await the owner
+			self.assertNotIn("PLACEHOLDER", h, path)
 			self.assertIn('<section class="demo-band"', h, path)
 			for currency in ("SAR", "AED", "OMR", "INR", "₹"):
 				self.assertNotIn(currency, h, (path, currency))
@@ -143,10 +144,10 @@ class TestInnerPages(FrappeTestCase):
 		old = frappe.get_single(SETTINGS)
 		try:
 			set_settings(**{f: "" for f in fields})
-			for path, _lang in _both("about"):
+			for path, lang in _both("about"):
 				_, h = html(path)
 				self.assertEqual(h.count('class="region-card glass'), 5, path)
-				self.assertIn("[PLACEHOLDER]", h, path)
+				self.assertIn(load_content(lang)["about"]["team"]["body"], h, path)
 				self.assertNotIn('id="contact-heading"', h, path)
 				self.assertIn('<section class="demo-band"', h, path)
 			set_settings(email="hello@kenzcloudx.com")
@@ -164,7 +165,7 @@ class TestInnerPages(FrappeTestCase):
 				self.assertEqual(
 					h.count('<section class="legal-sec"'), len(load_content(lang)[stem]["sections"])
 				)
-				self.assertIn('class="page-updated">[PLACEHOLDER]', h, path)
+				self.assertIn(f'class="page-updated">{load_content(lang)[stem]["hero"]["updated"]}<', h, path)
 
 	def test_404_new_look_both_languages(self):
 		for path, lang in (("/nope-c", "en"), ("/ar/nope-c", "ar")):

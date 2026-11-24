@@ -223,10 +223,10 @@ class TestPages(FrappeTestCase):
 		self.assertEqual(h.count('class="mod-card '), 6)
 		self.assertIn('href="/ar/demo"', h)
 
-	def test_legal_pages_are_placeholders(self):
+	def test_legal_pages_have_final_text(self):
 		for p in ("/privacy", "/terms", "/ar/privacy", "/ar/terms"):
 			_, h = html(p)
-			self.assertIn("[PLACEHOLDER]", h, p)
+			self.assertNotIn("PLACEHOLDER", h, p)
 			self.assertGreaterEqual(h.count("<h2"), 5, p)
 
 	def test_demo_skeleton_has_no_demo_band(self):

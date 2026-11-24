@@ -177,7 +177,7 @@
 					},
 					{
 						"no": "INV-0417",
-						"customer": "Sample Contracting",
+						"customer": "Demo Contracting",
 						"date": "20 Nov",
 						"amount": "7,920.00",
 						"status": "Unpaid",
@@ -185,7 +185,7 @@
 					},
 					{
 						"no": "INV-0416",
-						"customer": "Example Retail",
+						"customer": "Demo Retail",
 						"date": "19 Nov",
 						"amount": "2,310.50",
 						"status": "Paid",
@@ -193,7 +193,7 @@
 					},
 					{
 						"no": "INV-0415",
-						"customer": "Test Logistics",
+						"customer": "Demo Logistics",
 						"date": "14 Nov",
 						"amount": "11,000.00",
 						"status": "Overdue",
@@ -372,31 +372,6 @@
 			"featured": "business",
 			"price_line": "Priced for your users and modules",
 			"more": "Compare plans"
-		},
-		"quotes": {
-			"heading": {
-				"pre": "What customers ",
-				"acc": "say",
-				"post": ""
-			},
-			"sample": "Sample",
-			"items": [
-				{
-					"quote": "Our invoices clear with ZATCA without anyone touching them, and month-end closes days earlier than before.",
-					"name": "Sample customer",
-					"role": "Trading company, Riyadh"
-				},
-				{
-					"quote": "They moved ten years of stock and customer records from our old system. Production planning now runs from one screen.",
-					"name": "Sample customer",
-					"role": "Manufacturer, Muscat"
-				},
-				{
-					"quote": "Every shop counter, the warehouse and GST filing now use the same numbers. When we need help, someone answers on WhatsApp.",
-					"name": "Sample customer",
-					"role": "Retail chain, Kochi"
-				}
-			]
 		},
 		"faq": {
 			"heading": {
@@ -675,8 +650,7 @@
 			"note": "Country not listed?",
 			"note_link": "Ask us.",
 			"details_heading": "Good to know",
-			"zatca_customers_label": "customers already on ZATCA Phase 2",
-			"sample": "Sample invoice"
+			"zatca_customers_label": "customers already on ZATCA Phase 2"
 		},
 		"countries": [
 			{
@@ -727,7 +701,7 @@
 					"total": "8,797.50",
 					"foot": "Cleared by ZATCA · UUID and hash stored",
 					"ref": "uuid 5e1b…a07c",
-					"alt": "Sample Saudi tax invoice in English and Arabic: two lines, VAT 15%, total SAR 8,797.50, status cleared, with a QR code."
+					"alt": "Example Saudi tax invoice in English and Arabic: two lines, VAT 15%, total SAR 8,797.50, status cleared, with a QR code."
 				}
 			},
 			{
@@ -778,7 +752,7 @@
 					"total": "56,640.00",
 					"foot": "IRN and signed QR received · e-way bill ready",
 					"ref": "IRN 8f3c…91de",
-					"alt": "Sample Indian GST invoice: one line, CGST 9% and SGST 9%, total INR 56,640.00, status IRN generated, with a QR code."
+					"alt": "Example Indian GST invoice: one line, CGST 9% and SGST 9%, total INR 56,640.00, status IRN generated, with a QR code."
 				}
 			},
 			{
@@ -829,7 +803,7 @@
 					"total": "11,382.00",
 					"foot": "VAT return line: standard-rated supplies, Dubai",
 					"ref": "ref 7a20…c4e1",
-					"alt": "Sample UAE tax invoice in English and Arabic: two lines, VAT 5%, total AED 11,382.00."
+					"alt": "Example UAE tax invoice in English and Arabic: two lines, VAT 5%, total AED 11,382.00."
 				}
 			},
 			{
@@ -879,7 +853,7 @@
 					"total": "603.750",
 					"foot": "Bilingual tax invoice · VAT return ready",
 					"ref": "ref 41d9…0b7a",
-					"alt": "Sample Oman tax invoice in English and Arabic: two lines, VAT 5%, total OMR 603.750."
+					"alt": "Example Oman tax invoice in English and Arabic: two lines, VAT 5%, total OMR 603.750."
 				}
 			}
 		],
@@ -942,10 +916,9 @@
 		},
 		"items": [
 			{
-				"_placeholder": true,
 				"key": "starter",
 				"name": "Starter",
-				"tagline": "[PLACEHOLDER] For small businesses with one company and a few users.",
+				"tagline": "For small businesses with one company and a small team.",
 				"features": [
 					"Accounting, sales, purchasing and inventory",
 					"E-invoicing and VAT or GST set‑up for your country",
@@ -955,10 +928,9 @@
 				]
 			},
 			{
-				"_placeholder": true,
 				"key": "business",
 				"name": "Business",
-				"tagline": "[PLACEHOLDER] For growing businesses with more users, branches or warehouses.",
+				"tagline": "For growing businesses with more users, branches or warehouses.",
 				"features": [
 					"Everything in Starter",
 					"HR and payroll",
@@ -968,10 +940,9 @@
 				]
 			},
 			{
-				"_placeholder": true,
 				"key": "enterprise",
 				"name": "Enterprise",
-				"tagline": "[PLACEHOLDER] For groups with several companies or custom requirements.",
+				"tagline": "For groups with several companies, countries or custom requirements.",
 				"features": [
 					"Everything in Business",
 					"Multiple companies and branches",
@@ -1053,7 +1024,7 @@
 				"acc": "team",
 				"post": ""
 			},
-			"body": "[PLACEHOLDER] Our team includes accountants and engineers who work with ERPNext every day. Names and photos to be added."
+			"body": "Our team includes accountants and engineers who work with ERPNext every day. They set up your system, move your data, train your staff and answer your support requests, in Arabic or English."
 		},
 		"contact": {
 			"heading": {
@@ -1208,28 +1179,56 @@
 				"acc": "policy",
 				"post": ""
 			},
-			"updated": "[PLACEHOLDER] Last updated: date to be confirmed"
+			"updated": "Last updated: 24 November 2026"
 		},
 		"sections": [
 			{
 				"heading": "Who we are",
-				"body": "[PLACEHOLDER] KenzCloudX is a service of Kenz Technology, registered in Saudi Arabia. Legal name, CR number and address to be confirmed."
+				"body": "This website and the KenzCloudX service are operated by Kenz Technology, a company registered in the Kingdom of Saudi Arabia. In this policy, “we” and “us” mean Kenz Technology. This policy explains how we handle personal data collected through this website."
 			},
 			{
 				"heading": "What we collect",
-				"body": "[PLACEHOLDER] When you request a demo or quote we collect your name, company, mobile number, email and the details you give us in the form."
+				"body": "When you send the demo or quote form we collect the details you enter: your name, company name, mobile number, work email, country, number of users, the plan you are interested in, whether you need ZATCA Phase 2 e-invoicing, and your message. We also record the language of the page you used. We do not ask for payment details or identity documents on this website. Like most websites, our servers keep technical logs of requests (such as IP address, date and time, and the page requested) to keep the site secure and working."
 			},
 			{
 				"heading": "How we use it",
-				"body": "[PLACEHOLDER] We use these details only to reply to your request and, if you become a customer, to provide the service. We do not sell your data."
+				"body": "We use your details to reply to your request, to contact you to arrange a demo and to prepare a quote. We use technical logs to protect the website and prevent misuse. We do not use your details for automated decisions or profiling."
 			},
 			{
-				"heading": "Customer data in ERPNext",
-				"body": "[PLACEHOLDER] Data you enter in your ERPNext system belongs to you. Hosting location, retention and backup terms to be confirmed."
+				"heading": "Legal basis",
+				"body": "We process the details you send because you ask us to contact you, on the basis of your consent and the steps you ask us to take before a possible contract. We process technical logs because we have a legitimate interest in keeping the website secure. You can withdraw your consent at any time; this does not affect processing carried out before you withdraw it."
 			},
 			{
-				"heading": "Your rights and contact",
-				"body": "[PLACEHOLDER] Text to be reviewed against the Saudi Personal Data Protection Law. Contact details for privacy requests to be added."
+				"heading": "Who can see your data",
+				"body": "Only the members of our team who handle sales and support. We do not sell or rent your personal data, and we do not share it for advertising. We use service providers only to host this website and to send email; they process data on our behalf and only for that purpose. We may disclose data where the law requires it."
+			},
+			{
+				"heading": "Where your data is stored",
+				"body": "Your request is stored on our servers, which are located in Germany. Because these servers are outside the Kingdom of Saudi Arabia, your data is transferred abroad; we protect it with the measures described in this policy."
+			},
+			{
+				"heading": "How long we keep it",
+				"body": "We keep your data for as long as we need it to deal with your request and to keep our business records. After that it is deleted or anonymised."
+			},
+			{
+				"heading": "Your rights",
+				"body": "You can ask to access your data, correct it, delete it, object to its processing or withdraw your consent. To do so, contact us through the contact details on this site or through the demo request form. We may ask you to confirm your identity before we act on a request, and we answer within the time set by the applicable law. You can also complain to the competent data protection authority."
+			},
+			{
+				"heading": "Cookies",
+				"body": "This website does not use advertising or tracking cookies and does not use analytics tools. It sets only the technical cookies the platform needs to run the site, such as a session cookie. For visitors who are not signed in these cookies hold no personal data, and they are never used for marketing. When customers sign in, the same cookies keep them signed in."
+			},
+			{
+				"heading": "Security",
+				"body": "We use encrypted connections (HTTPS), limit access to the team members who need it, and keep our systems updated and backed up. No way of sending or storing data is completely secure, but we work to protect your data."
+			},
+			{
+				"heading": "Children",
+				"body": "This website is for businesses and is not directed at children. We do not knowingly collect data from anyone under 18."
+			},
+			{
+				"heading": "Changes to this policy",
+				"body": "We may update this policy from time to time. The date at the top of this page shows when it was last changed."
 			}
 		]
 	},
@@ -1245,32 +1244,52 @@
 				"acc": "service",
 				"post": ""
 			},
-			"updated": "[PLACEHOLDER] Last updated: date to be confirmed"
+			"updated": "Last updated: 24 November 2026"
 		},
 		"sections": [
 			{
-				"heading": "The service",
-				"body": "[PLACEHOLDER] Description of the hosting, set‑up and support services provided by Kenz Technology."
+				"heading": "About these terms",
+				"body": "These terms apply to your use of the KenzCloudX website, which is operated by Kenz Technology, a company registered in the Kingdom of Saudi Arabia. By using the website you accept these terms. If you do not accept them, please do not use the website."
 			},
 			{
-				"heading": "Your account and data",
-				"body": "[PLACEHOLDER] Customer responsibilities, ownership of data and access to your ERPNext system."
+				"heading": "Information on this website",
+				"body": "The content of this website is general information about our services. It is not a binding offer, and it is not tax, legal or accounting advice. We try to keep it accurate and up to date, but we do not guarantee that it is complete or current. Tax and e-invoicing rules change, so please check the requirements that apply to your business with your adviser or the competent authority."
 			},
 			{
-				"heading": "Fees and payment",
-				"body": "[PLACEHOLDER] Monthly billing, payment terms and VAT."
+				"heading": "Requests and agreements",
+				"body": "Sending a demo or quote request does not create a contract. A quote becomes binding only when both parties sign a written agreement. The KenzCloudX service itself is governed by that agreement, not by these terms."
 			},
 			{
-				"heading": "Availability and backups",
-				"body": "[PLACEHOLDER] Service availability, maintenance windows and backup commitments."
+				"heading": "Using the request form",
+				"body": "Please give accurate information and use the form only to contact us about our services. Do not send false, abusive or automated submissions, or content that is unlawful or harmful. We may ignore or delete such submissions and block their source."
 			},
 			{
-				"heading": "Ending the service",
-				"body": "[PLACEHOLDER] Notice period and how you receive a full copy of your data."
+				"heading": "Acceptable use",
+				"body": "Do not try to disrupt the website, to gain unauthorised access to it or to the systems behind it, or to copy it by automated means."
+			},
+			{
+				"heading": "Intellectual property",
+				"body": "The content of this website, including its text, images and the KenzCloudX name and logo, belongs to Kenz Technology or is used with permission. You may view and print pages for your own use, but you may not copy, publish or use them commercially without our written permission. ERPNext is a trademark of its owner and is used here to describe the software we host."
+			},
+			{
+				"heading": "Links to other websites",
+				"body": "Links to other websites, such as WhatsApp, are provided for convenience. We are not responsible for the content of those websites or for their privacy practices."
+			},
+			{
+				"heading": "Limitation of liability",
+				"body": "The website is provided “as is”. To the extent permitted by law, Kenz Technology is not liable for any loss arising from the use of the website, from being unable to use it, or from relying on its content. Nothing in these terms limits any liability that cannot be limited by law."
+			},
+			{
+				"heading": "Changes to these terms",
+				"body": "We may change these terms at any time. The date at the top of this page shows when they were last updated."
 			},
 			{
 				"heading": "Governing law",
-				"body": "[PLACEHOLDER] These terms are governed by the laws of the Kingdom of Saudi Arabia. Final text to be reviewed by a lawyer."
+				"body": "These terms are governed by the laws of the Kingdom of Saudi Arabia."
+			},
+			{
+				"heading": "Contact",
+				"body": "Questions about these terms can be sent through the contact details on this site or through the demo request form."
 			}
 		]
 	},
