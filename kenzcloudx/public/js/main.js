@@ -4,8 +4,8 @@
    - reveals: .reveal gets .in when it enters the viewport; stagger with style="--d:N" (90ms steps)
    - count-up: [data-count="87"] inside a .reveal counts from 0 when revealed (Western digits, as before)
    - accordion: button.faq-q[aria-controls] inside .faq-item toggles .open + aria-expanded
-   - country tabs ([data-tabs], templates/kenz/pages/_country_tabs.html): the server sends in-page links and
-     visible panels (works without JS); here they become a tablist with roving tabindex, arrow keys that follow
+   - country tabs ([data-tabs], templates/kenz/pages/_country_tabs.html): the server sends plain in-page links and
+     visible panels with no tab semantics (works without JS); here they get the ARIA roles and become a tablist with roving tabindex, arrow keys that follow
      the reading direction (in RTL ArrowLeft moves to the next tab), Home/End, an animated panel switch,
      a sliding indicator and deep links (#saudi-arabia, #india, #uae, #oman; also on hashchange)
    - timeline (.tl-card): the progress line and the step dots follow the scroll position
@@ -95,10 +95,24 @@
 	/* ---- country tabs ---- */
 	var rtl = (root.getAttribute("dir") || "").toLowerCase() === "rtl";
 	document.querySelectorAll("[data-tabs]").forEach(function (wrap) {
-		var list = wrap.querySelector('[role="tablist"]');
+		var list = wrap.querySelector(".tabs");
 		if (!list) return;
-		var tabs = Array.prototype.slice.call(list.querySelectorAll('[role="tab"]'));
+		var tabs = Array.prototype.slice.call(list.querySelectorAll("a.tab"));
 		if (!tabs.length) return;
+		// the HTML is plain in-page navigation; the tab semantics are added here, once the script runs
+		list.setAttribute("role", "tablist");
+		tabs.forEach(function (t) {
+			var id = (t.getAttribute("href") || "").slice(1);
+			var panel = document.getElementById(id);
+			t.setAttribute("role", "tab");
+			t.setAttribute("aria-controls", id);
+			t.setAttribute("aria-selected", "false");
+			if (panel) {
+				panel.setAttribute("role", "tabpanel");
+				panel.setAttribute("aria-labelledby", t.id);
+				panel.tabIndex = 0;
+			}
+		});
 		var ind = list.querySelector(".tab-ind");
 		var current = null;
 		function panelOf(tab) { return document.getElementById(tab.getAttribute("aria-controls")); }
@@ -165,7 +179,7 @@
 			});
 		});
 		var linked = fromHash();
-		var initial = linked || tabs.filter(function (t) { return t.getAttribute("aria-selected") === "true"; })[0] || tabs[0];
+		var initial = linked || tabs[0];
 		select(initial, { animate: false });
 		wrap.classList.add("tabs-ready");
 		if (linked) {

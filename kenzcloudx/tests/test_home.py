@@ -189,20 +189,18 @@ class TestHomePage(FrappeTestCase):
 
 class TestCountryTabs(FrappeTestCase):
 	def test_tabs_markup(self):
+		"""Fix wave: without JS the HTML is plain in-page navigation (no tab semantics claiming 3 hidden
+		panels while all 4 are shown); main.js adds role=tablist/tab/tabpanel and the aria-* on init."""
 		for p in TAB_PAGES:
 			_, h = html(p)
-			self.assertEqual(h.count('role="tablist"'), 1, p)
-			self.assertEqual(h.count('role="tab"'), 4, p)
-			self.assertEqual(h.count('role="tabpanel"'), 4, p)
-			self.assertEqual(h.count('aria-selected="true"'), 1, p)
-			self.assertEqual(h.count('aria-selected="false"'), 3, p)
+			for attr in ('role="tablist"', 'role="tab"', 'role="tabpanel"', "aria-selected", 'aria-controls="saudi'):
+				self.assertNotIn(attr, h, (p, attr))
+			self.assertEqual(len(re.findall(r'<nav class="tabs reveal" aria-label="[^"]+"', h)), 1, p)
 			for cid in COUNTRY_IDS:
-				# no-JS: the tab is an in-page link to its panel; JS turns it into a real tab
-				self.assertRegex(h, rf'<a [^>]*role="tab"[^>]*href="#{cid}"[^>]*aria-controls="{cid}"', (p, cid))
-				self.assertRegex(h, rf'<div [^>]*id="{cid}"[^>]*role="tabpanel"[^>]*aria-labelledby="tab-{cid}"', (p, cid))
-				self.assertIn(f'id="tab-{cid}"', h, (p, cid))
-			# panels are not hidden in the HTML: without JS they are all shown, stacked
-			self.assertNotRegex(h, r'role="tabpanel"[^>]*hidden', p)
+				# no-JS: each tab is an in-page link to its panel, every panel is shown
+				self.assertRegex(h, rf'<a class="tab" id="tab-{cid}" href="#{cid}">', (p, cid))
+				self.assertRegex(h, rf'<div class="tabpanel glass" id="{cid}">', (p, cid))
+			self.assertNotRegex(h, r'class="tabpanel[^"]*"[^>]*hidden', p)
 			for cur in CURRENCIES:
 				self.assertIn(cur, h, (p, cur))
 			start = h.index('id="saudi-arabia"')
@@ -225,7 +223,10 @@ class TestCountryTabs(FrappeTestCase):
 	def test_tab_script_is_shipped(self):
 		with open(os.path.join(APP, "public", "js", "main.js"), encoding="utf-8") as f:
 			js = f.read()
-		for needle in ('[role="tablist"]', "ArrowLeft", "ArrowRight", "Home", "End", "hashchange", "rtl", "aria-selected", "tabIndex"):
+		for needle in ("ArrowLeft", "ArrowRight", "Home", "End", "hashchange", "rtl", "aria-selected", "tabIndex"):
+			self.assertIn(needle, js, needle)
+		# the tab semantics are added by the script, not sent in the HTML
+		for needle in ('"role", "tablist"', '"role", "tab"', '"role", "tabpanel"', '"aria-controls"', '"aria-labelledby"'):
 			self.assertIn(needle, js, needle)
 
 

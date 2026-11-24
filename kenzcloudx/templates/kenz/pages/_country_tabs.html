@@ -2,22 +2,23 @@
     Context (build_page_context, TAB_PAGES): countries + tabs (content compliance.countries / compliance.tabs),
     qr_path(key) for the decorative QR-like block, settings, lang. Set tabs_expanded = true before the include
     to show each country's details (the /compliance page).
-    Without JS: the tabs are in-page links (#saudi-arabia, #india, #uae, #oman) and every panel is shown, stacked.
-    With JS (public/js/main.js): a real tablist with roving tabindex, arrow keys (mirrored in RTL), Home/End,
+    Without JS: plain in-page navigation (#saudi-arabia, #india, #uae, #oman), every panel shown, stacked, and
+    no tab semantics in the HTML. With JS (public/js/main.js) it becomes a real tablist (the script adds
+    role=tablist/tab/tabpanel, aria-selected/controls/labelledby and tabindex) with roving tabindex, arrow keys (mirrored in RTL), Home/End,
     an animated panel switch, and deep links by hash. -#}
 {%- set lp = "/ar" if lang == "ar" else "" -%}
 {%- set other_lang = "en" if lang == "ar" else "ar" -%}
 <div class="tabs-wrap" data-tabs>
-	<div class="tabs reveal" role="tablist" aria-label="{{ tabs.label|e }}">
+	<nav class="tabs reveal" aria-label="{{ tabs.label|e }}">
 		<span class="tab-ind" aria-hidden="true"></span>
 		{%- for c in countries %}
-		<a class="tab" role="tab" id="tab-{{ c.key|e }}" href="#{{ c.key|e }}" aria-controls="{{ c.key|e }}" aria-selected="{{ ('true' if loop.first else 'false')|e }}"{% if not loop.first %} tabindex="-1"{% endif %}>{{ c.name|e }} <span class="cc" dir="ltr">{{ c.code|e }}</span></a>
+		<a class="tab" id="tab-{{ c.key|e }}" href="#{{ c.key|e }}">{{ c.name|e }} <span class="cc" dir="ltr">{{ c.code|e }}</span></a>
 		{%- endfor %}
-	</div>
+	</nav>
 	<div class="tab-stage reveal">
 		{%- for c in countries %}
 		{%- set inv = c.invoice %}
-		<div class="tabpanel glass" id="{{ c.key|e }}" role="tabpanel" aria-labelledby="tab-{{ c.key|e }}" tabindex="0">
+		<div class="tabpanel glass" id="{{ c.key|e }}">
 			<div class="tab-copy">
 				<span class="eyebrow">{{ c.eyebrow|e }}</span>
 				<h3>{{ c.heading|e }}</h3>
