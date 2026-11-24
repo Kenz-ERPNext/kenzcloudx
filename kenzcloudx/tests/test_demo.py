@@ -342,7 +342,7 @@ class TestDemoRequest(FrappeTestCase):
 		for country, raw in bad:
 			self.assertIsNone(normalize_phone(raw, country), (country, raw))
 		# whatever comes in, only "+" and ASCII digits ever come out
-		for country, raw, expected in ok:
+		for country, raw, _expected in ok:
 			self.assertRegex(normalize_phone(raw, country), r"^\+[1-9][0-9]{7,14}$")
 
 	def test_international_forms_create_leads(self):
@@ -495,10 +495,12 @@ class TestDemoPage(FrappeTestCase):
 			self.assertEqual(
 				re.findall(r'<option value="([^"]*)"', country), ["", "sa", "ae", "om", "in", "gulf", "other"]
 			)
-			self.assertIn(f'<option value="" disabled selected>{form["country_placeholder"]}</option>', country)
+			self.assertIn(
+				f'<option value="" disabled selected>{form["country_placeholder"]}</option>', country
+			)
 			self.assertNotIn('value="sa" selected', country)
 			for option in form["countries"]:
-				self.assertIn(f'>{option["label"]}</option>', country)
+				self.assertIn(f">{option['label']}</option>", country)
 			self.assertIn(f'placeholder="{form["phone_placeholder"]}"', h)
 			self.assertIn('data-msg-phone="', h)
 			self.assertIn('<option value="">', h)

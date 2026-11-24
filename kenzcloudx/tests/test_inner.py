@@ -58,7 +58,7 @@ class TestInnerContent(FrappeTestCase):
 		raw = json.dumps(load_content("en"), ensure_ascii=False)
 		self.assertNotIn("set-up", raw)
 		self.assertNotIn("Set-up", raw)
-		self.assertIn("set‑up", raw)
+		self.assertIn("set\u2011up", raw)
 
 	def test_legal_bodies_keep_their_placeholders(self):
 		for lang in ("en", "ar"):
@@ -73,13 +73,19 @@ class TestInnerContent(FrappeTestCase):
 class TestInnerPages(FrappeTestCase):
 	def test_new_hero_on_every_inner_page(self):
 		for stem in INNER:
-			for path, lang in _both(stem):
+			for path, _lang in _both(stem):
 				code, h = html(path)
 				self.assertEqual(code, 200, path)
 				self.assertIn('<section class="page-top wrap"', h, path)
 				self.assertRegex(h, r'<h1 class="h1" id="page-h1">[^<]*<span class="acc">', path)
 				self.assertNotIn('class="hero page-hero"', h, path)
-				for legacy in ("section-mint", "point-list", "numbered-block", 'class="container split"', 'class="prose'):
+				for legacy in (
+					"section-mint",
+					"point-list",
+					"numbered-block",
+					'class="container split"',
+					'class="prose',
+				):
 					self.assertNotIn(legacy, h, (path, legacy))
 
 	def test_erpnext_modules_countries_hosting(self):
@@ -111,7 +117,7 @@ class TestInnerPages(FrappeTestCase):
 			set_settings(stat_zatca_customers=old)
 
 	def test_plans_cards_and_every_plan(self):
-		for path, lang in _both("plans"):
+		for path, _lang in _both("plans"):
 			_, h = html(path)
 			self.assertEqual(h.count('class="plan-card glass lift'), 3, path)
 			self.assertEqual(h.count('<span class="badge">'), 1, path)
@@ -122,14 +128,22 @@ class TestInnerPages(FrappeTestCase):
 			for currency in ("SAR", "AED", "OMR", "INR", "₹"):
 				self.assertNotIn(currency, h, (path, currency))
 		_, h = html("/plans")
-		self.assertIn("e-invoicing and tax set‑up for your country", h)
+		self.assertIn("e-invoicing and tax set\u2011up for your country", h)
 
 	def test_about_regions_team_and_contact_only_when_set(self):
-		fields = ("phone", "email", "whatsapp_number", "office_address_en", "office_address_ar", "cr_number", "vat_number")
+		fields = (
+			"phone",
+			"email",
+			"whatsapp_number",
+			"office_address_en",
+			"office_address_ar",
+			"cr_number",
+			"vat_number",
+		)
 		old = frappe.get_single(SETTINGS)
 		try:
 			set_settings(**{f: "" for f in fields})
-			for path, lang in _both("about"):
+			for path, _lang in _both("about"):
 				_, h = html(path)
 				self.assertEqual(h.count('class="region-card glass'), 5, path)
 				self.assertIn("[PLACEHOLDER]", h, path)
@@ -147,7 +161,9 @@ class TestInnerPages(FrappeTestCase):
 			for path, lang in _both(stem):
 				_, h = html(path)
 				self.assertIn('class="legal-card glass', h, path)
-				self.assertEqual(h.count('<section class="legal-sec"'), len(load_content(lang)[stem]["sections"]))
+				self.assertEqual(
+					h.count('<section class="legal-sec"'), len(load_content(lang)[stem]["sections"])
+				)
 				self.assertIn('class="page-updated">[PLACEHOLDER]', h, path)
 
 	def test_404_new_look_both_languages(self):
@@ -164,14 +180,23 @@ class TestInnerPages(FrappeTestCase):
 		for path, lang in _both("demo"):
 			_, h = html(path)
 			self.assertIn('class="demo-panel glass', h, path)
-			self.assertEqual(h.count("<li><span class=\"step-n\""), 3, path)
+			self.assertEqual(h.count('<li><span class="step-n"'), 3, path)
 			self.assertIn(load_content(lang)["demo"]["next"]["heading"], h, path)
 
 
 class TestInnerCss(FrappeTestCase):
 	def test_legacy_shims_removed(self):
 		css = _css()
-		for selector in (".section-mint", ".point-list", ".numbered-block", ".page-hero", ".hero-grid", ".invoice-card", ".proof {", ".faq-item summary"):
+		for selector in (
+			".section-mint",
+			".point-list",
+			".numbered-block",
+			".page-hero",
+			".hero-grid",
+			".invoice-card",
+			".proof {",
+			".faq-item summary",
+		):
 			self.assertNotIn(selector, css, selector)
 
 	def test_whatsapp_focus_ring(self):

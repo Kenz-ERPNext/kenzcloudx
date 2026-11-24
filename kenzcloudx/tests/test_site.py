@@ -102,7 +102,7 @@ class TestPageCacheOn(FrappeTestCase):
 
 
 class TestCanonicalHost(FrappeTestCase):
-	CANONICAL = {"kcx_canonical_host": "kenzcloudx.com"}
+	CANONICAL = {"kcx_canonical_host": "kenzcloudx.com"}  # noqa: RUF012
 
 	def tearDown(self):
 		frappe.local.request = None
@@ -153,7 +153,9 @@ class TestCanonicalHost(FrappeTestCase):
 			self.assertRedirect(self.run_hook(host, "/about"), "https://kenzcloudx.com/about")
 
 	def test_head_redirects_but_other_methods_do_not(self):
-		self.assertRedirect(self.run_hook("www.kenzcloudx.com", "/", method="HEAD"), "https://kenzcloudx.com/")
+		self.assertRedirect(
+			self.run_hook("www.kenzcloudx.com", "/", method="HEAD"), "https://kenzcloudx.com/"
+		)
 		for method in ("POST", "PUT", "DELETE", "OPTIONS", "PATCH"):
 			self.assertIsNone(self.run_hook("www.kenzcloudx.com", "/", method=method), method)
 
@@ -179,7 +181,9 @@ class TestCanonicalHost(FrappeTestCase):
 		):
 			self.assertIsNone(self.run_hook("www.kenzcloudx.com", path), path)
 		# only whole path segments are excluded
-		self.assertRedirect(self.run_hook("www.kenzcloudx.com", "/apps-list"), "https://kenzcloudx.com/apps-list")
+		self.assertRedirect(
+			self.run_hook("www.kenzcloudx.com", "/apps-list"), "https://kenzcloudx.com/apps-list"
+		)
 
 	def test_unknown_hosts_are_never_redirected(self):
 		"""Host header injection: only listed alias hosts redirect, and only ever to the configured host."""
@@ -203,7 +207,10 @@ class TestCanonicalHost(FrappeTestCase):
 		self.assertNotIn("<", r.headers["Location"])
 
 	def test_alias_hosts_from_config(self):
-		conf = {"kcx_canonical_host": "kenzcloudx.com", "kcx_alias_hosts": ["old.example.com", "KenzCloudX.com"]}
+		conf = {
+			"kcx_canonical_host": "kenzcloudx.com",
+			"kcx_alias_hosts": ["old.example.com", "KenzCloudX.com"],
+		}
 		self.assertRedirect(self.run_hook("old.example.com", "/x", conf=conf), "https://kenzcloudx.com/x")
 		# the defaults are replaced, not extended
 		self.assertIsNone(self.run_hook("www.kenzcloudx.com", "/x", conf=conf))
@@ -215,10 +222,18 @@ class TestCanonicalHost(FrappeTestCase):
 	def test_default_aliases_from_a_www_canonical_host(self):
 		conf = {"kcx_canonical_host": "www.kenzcloudx.com"}
 		self.assertIsNone(self.run_hook("www.kenzcloudx.com", "/", conf=conf))
-		self.assertRedirect(self.run_hook("app.kenzcloudx.com", "/", conf=conf), "https://www.kenzcloudx.com/")
+		self.assertRedirect(
+			self.run_hook("app.kenzcloudx.com", "/", conf=conf), "https://www.kenzcloudx.com/"
+		)
 
 	def test_invalid_canonical_host_does_nothing(self):
-		for bad in ("https://kenzcloudx.com", "kenzcloudx.com/x", "kenz cloudx.com", "kenzcloudx.com:8000", "-x.com"):
+		for bad in (
+			"https://kenzcloudx.com",
+			"kenzcloudx.com/x",
+			"kenz cloudx.com",
+			"kenzcloudx.com:8000",
+			"-x.com",
+		):
 			self.assertIsNone(self.run_hook("www.kenzcloudx.com", "/", conf={"kcx_canonical_host": bad}), bad)
 
 
