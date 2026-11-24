@@ -142,7 +142,7 @@ class TestCanonicalHost(FrappeTestCase):
 		self.assertIsNone(self.run_hook("app.kenzcloudx.com", "/", conf={"kcx_canonical_host": ""}))
 
 	def test_alias_hosts_redirect_with_path_and_query(self):
-		for host in ("www.kenzcloudx.com", "app.kenzcloudx.com", "kenzweb.kenzcloudx.com"):
+		for host in ("www.kenzcloudx.com", "kenzweb.kenzcloudx.com"):
 			r = self.run_hook(host, "/plans", query="utm_source=x&a=%C3%A9")
 			self.assertRedirect(r, "https://kenzcloudx.com/plans?utm_source=x&a=%C3%A9")
 		self.assertRedirect(self.run_hook("www.kenzcloudx.com", "/"), "https://kenzcloudx.com/")
@@ -225,8 +225,20 @@ class TestCanonicalHost(FrappeTestCase):
 		conf = {"kcx_canonical_host": "www.kenzcloudx.com"}
 		self.assertIsNone(self.run_hook("www.kenzcloudx.com", "/", conf=conf))
 		self.assertRedirect(
-			self.run_hook("app.kenzcloudx.com", "/", conf=conf), "https://www.kenzcloudx.com/"
+			self.run_hook("kenzweb.kenzcloudx.com", "/", conf=conf), "https://www.kenzcloudx.com/"
 		)
+		self.assertIsNone(self.run_hook("app.kenzcloudx.com", "/", conf=conf))
+
+	def test_app_host_is_never_a_default_alias(self):
+		"""app.kenzcloudx.com is reserved for the customer portal on this site: a cached 301 would bounce it."""
+		from kenzcloudx.redirects import DEFAULT_ALIAS_PREFIXES
+
+		self.assertEqual(DEFAULT_ALIAS_PREFIXES, ("www.", "kenzweb."))
+		for path in ("/", "/plans", "/login"):
+			self.assertIsNone(self.run_hook("app.kenzcloudx.com", path), path)
+		# only when listed explicitly
+		conf = {"kcx_canonical_host": "kenzcloudx.com", "kcx_alias_hosts": ["app.kenzcloudx.com"]}
+		self.assertRedirect(self.run_hook("app.kenzcloudx.com", "/x", conf=conf), "https://kenzcloudx.com/x")
 
 	def test_invalid_canonical_host_does_nothing(self):
 		for bad in (

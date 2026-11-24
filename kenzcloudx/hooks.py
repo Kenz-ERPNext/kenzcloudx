@@ -197,7 +197,7 @@ home_page = "index"
 
 # Request Events
 # ----------------
-# 301 from alias hosts (www., app., kenzweb.) to site_config "kcx_canonical_host"; off when it is unset
+# 301 from alias hosts (www., kenzweb.) to site_config "kcx_canonical_host"; off when it is unset
 before_request = ["kenzcloudx.redirects.canonical_host"]
 # after_request = ["kenzcloudx.utils.after_request"]
 

@@ -32,8 +32,17 @@ Then fill in **KenzCloudX Settings** in the desk (contact details are hidden on 
 | key | what it does |
 | --- | --- |
 | `kcx_canonical_host` | e.g. `"kenzcloudx.com"`. When set, GET/HEAD requests on an alias host get a 301 to `https://<canonical host><path>?<query>`. API, assets, files, `/app` and health checks are never redirected. Unset = off (local development). |
-| `kcx_alias_hosts` | optional list (or comma-separated string) of hosts that redirect. Default: `www.`, `app.` and `kenzweb.` in front of the canonical host's root domain. |
+| `kcx_alias_hosts` | optional list (or comma-separated string) of hosts that redirect; it replaces the default. Default: `www.` and `kenzweb.` in front of the canonical host's root domain. `app.` is never a default: `app.kenzcloudx.com` is reserved for the customer portal on this site (a 301 is cached by browsers). |
 | `host_name` | e.g. `"https://kenzcloudx.com"`, so the sitemap and email links use the public address. |
+
+Deploy (production site only, after the domains are added in Press):
+
+```bash
+bench --site <site> set-config kcx_canonical_host kenzcloudx.com
+# optional, only to change the default list (www.kenzcloudx.com, kenzweb.kenzcloudx.com):
+bench --site <site> set-config --parse kcx_alias_hosts '["www.kenzcloudx.com", "kenzweb.kenzcloudx.com"]'
+bench --site <site> set-config host_name https://kenzcloudx.com
+```
 
 Every alias host must also be added to the site as a domain (and get a certificate), otherwise the request
 never reaches the site.

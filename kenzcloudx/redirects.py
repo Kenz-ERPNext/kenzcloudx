@@ -1,4 +1,4 @@
-"""Canonical host: send visitors on alias hosts (www., app., kenzweb.) to one public address.
+"""Canonical host: send visitors on alias hosts (www., kenzweb.) to one public address.
 
 Runs as a before_request hook (hooks.py). It does nothing unless site_config sets
 
@@ -6,7 +6,7 @@ Runs as a before_request hook (hooks.py). It does nothing unless site_config set
 
 and then answers GET/HEAD requests whose Host is a known alias with a 301 to
 https://<canonical host><same path>?<same query>. The alias list is the optional site_config key
-"kcx_alias_hosts" (a list, or a comma-separated string); by default it is www., app. and kenzweb. in front
+"kcx_alias_hosts" (a list, or a comma-separated string); by default it is www. and kenzweb. in front
 of the canonical host's root domain. The target host only ever comes from site_config, never from the
 request, and an unknown Host is left alone, so a forged Host header cannot steer the redirect. API calls,
 assets, files, the desk, health checks and every non-GET/HEAD request are never redirected.
@@ -19,7 +19,9 @@ import frappe
 from werkzeug.exceptions import HTTPException
 from werkzeug.utils import redirect
 
-DEFAULT_ALIAS_PREFIXES = ("www.", "app.", "kenzweb.")
+# app. is deliberately NOT a default: app.kenzcloudx.com is reserved for the customer portal on this site,
+# and browsers cache a 301 for a long time. List it in kcx_alias_hosts only if that ever changes.
+DEFAULT_ALIAS_PREFIXES = ("www.", "kenzweb.")
 # whole path segments that are never redirected
 EXCLUDED_PREFIXES = (
 	"/api",
