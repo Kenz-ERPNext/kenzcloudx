@@ -10,8 +10,28 @@ from frappe.tests.utils import FrappeTestCase
 from kenzcloudx.tests.test_pages import html
 
 APP = frappe.get_app_path("kenzcloudx")
-RIBBON_ON = ("/", "/ar", "/erpnext", "/ar/erpnext", "/zatca", "/compliance", "/ar/compliance", "/plans", "/about", "/ar/about")
-RIBBON_OFF = ("/demo", "/ar/demo", "/privacy", "/ar/privacy", "/terms", "/ar/terms", "/no-such-page", "/ar/no-such-page")
+RIBBON_ON = (
+	"/",
+	"/ar",
+	"/erpnext",
+	"/ar/erpnext",
+	"/zatca",
+	"/compliance",
+	"/ar/compliance",
+	"/plans",
+	"/about",
+	"/ar/about",
+)
+RIBBON_OFF = (
+	"/demo",
+	"/ar/demo",
+	"/privacy",
+	"/ar/privacy",
+	"/terms",
+	"/ar/terms",
+	"/no-such-page",
+	"/ar/no-such-page",
+)
 
 
 def _read(*parts):
@@ -87,7 +107,10 @@ class TestHero(FrappeTestCase):
 		ar = ("ibm-plex-sans-arabic-arabic-500-normal.woff2", "amiri-arabic-700-normal.woff2")
 		for p, want, not_want in (("/", en, ar), ("/plans", en, ar), ("/ar", ar, en), ("/ar/plans", ar, en)):
 			_, h = html(p)
-			preloads = re.findall(r'<link rel="preload" href="/assets/kenzcloudx/fonts/([^"]+)" as="font" type="font/woff2" crossorigin>', h)
+			preloads = re.findall(
+				r'<link rel="preload" href="/assets/kenzcloudx/fonts/([^"]+)" as="font" type="font/woff2" crossorigin>',
+				h,
+			)
 			self.assertEqual(sorted(preloads), sorted(want), p)
 			for f in not_want:
 				self.assertNotIn(f, preloads, p)

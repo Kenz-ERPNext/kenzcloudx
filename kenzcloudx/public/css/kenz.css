@@ -419,9 +419,11 @@ h3 { font-size: 22px; line-height: 1.3; font-weight: 500; letter-spacing: -0.02e
 	position: relative; justify-self: end; text-align: end; max-inline-size: 15em; margin-block-start: clamp(40px, 9vh, 110px);
 	font-size: clamp(19px, 2vw, 29px); line-height: 1.45; letter-spacing: -0.02em; color: var(--ink-2); text-wrap: balance;
 }
+/* a soft, blurred plate behind the tag line keeps it >= 4.5:1 over the ribbon (measured on the darkest
+   ribbon pixels at 1440 and 390, en and ar) */
 .hero-tag::before {
-	content: ""; position: absolute; inset-block: -40px; inset-inline: -50px; z-index: -1; pointer-events: none; filter: blur(6px);
-	background: radial-gradient(50% 50% at 50% 50%, rgba(243, 243, 245, .92) 30%, rgba(243, 243, 245, 0) 85%);
+	content: ""; position: absolute; inset-block: -22px; inset-inline: -30px; z-index: -1; pointer-events: none;
+	border-radius: 40px; filter: blur(16px); background: rgba(243, 243, 245, .9);
 }
 .hero-main { position: relative; padding-block-end: clamp(110px, 14vh, 150px); }
 .hero-main::before {

@@ -230,7 +230,7 @@ class TestDemoRequest(FrappeTestCase):
 			email="bidi@x.sa",
 			full_name=f"{rlo}علي{pdi} حسن{lrm}",
 			company=f"Nesco{rlm} {lri}Co{pdi}",
-			message=f"line {rlo}one{pdi}\nنحتاج نقاط البيع{lrm}",
+			message=f"line {rlo}one{pdi}\nنحتاج نقاط البيع{lrm}",  # noqa: RUF001
 			lang="ar",
 		)
 		lead = lead_for("bidi@x.sa")

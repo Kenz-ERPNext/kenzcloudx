@@ -236,4 +236,4 @@ class TestArabicTerms(FrappeTestCase):
 		self.assertTrue(load_content("ar")["home"]["stats"]["live_sites_label"].startswith("نظامًا"))
 		self.assertGreaterEqual(raw.count("سند النقل الإلكتروني (e-way bill)"), 4)
 		self.assertIn("إشعار التسليم", raw)
-		self.assertEqual(load_content("ar")["_review"], "Arabic draft – needs native-speaker review")
+		self.assertEqual(load_content("ar")["_review"], "Arabic draft \u2013 needs native-speaker review")
