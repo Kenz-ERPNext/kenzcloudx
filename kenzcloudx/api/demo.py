@@ -14,11 +14,30 @@ CLOSED_STATUSES = ("Converted", "Do Not Contact")
 MAX_NAME = 140
 MAX_MESSAGE = 2000
 
-# spaces (incl. NBSP), dashes, brackets and bidi marks that phones and copy-paste add
-_PHONE_JUNK = re.compile(r"[\s\-\u2010-\u2015()\[\]{}\u200e\u200f\u202a-\u202e\u2066-\u2069]")
-# ASCII digits only ([0-9], not \d, which also matches fullwidth or Devanagari digits).
-# A trunk 0 is allowed after the country code: +966 05XXXXXXXX is a common way to write it.
-_KSA_MOBILE = re.compile(r"(?:\+966|00966|966)?0?(5[0-9]{8})")
+# Countries offered by the form: fixed ASCII keys (stored in Lead.kcx_country) and the English label used
+# in the staff-facing summary, notification and ToDo. The visitor-facing labels live in the content JSON.
+COUNTRIES = {
+	"sa": "Saudi Arabia",
+	"ae": "United Arab Emirates",
+	"om": "Oman",
+	"in": "India",
+	"gulf": "Other Gulf country",
+	"other": "Other",
+}
+
+# spaces (incl. NBSP), dashes, dots, brackets and bidi marks that phones and copy-paste add
+_PHONE_JUNK = re.compile(r"[\s.\-\u2010-\u2015()\[\]{}\u200e\u200f\u202a-\u202e\u2066-\u2069]")
+# Mobile numbers of the countries we know: (country code, national number). ASCII digits only ([0-9], not
+# \d, which also matches fullwidth or Devanagari digits). A trunk 0 after the country code is dropped:
+# "+966 05XXXXXXXX" and "+971 050 XXX XXXX" are common ways to write it.
+_MOBILE = {
+	"sa": ("966", "5[0-9]{8}"),
+	"ae": ("971", "5[0-9]{8}"),
+	"om": ("968", "[79][0-9]{7}"),
+	"in": ("91", "[6-9][0-9]{9}"),
+}
+# any other number must come with its country code: E.164, 8 to 15 digits, never starting with 0
+_E164 = re.compile(r"[1-9][0-9]{7,14}")
 # A strict ASCII allowlist for one plain address (checked after lowercasing). IDN domains are
 # accepted in their punycode form (xn--...).
 _EMAIL = re.compile(
@@ -30,16 +49,39 @@ _USERS = re.compile(r"[0-9]{1,6}")
 DASH = "\u2013"  # en dash, for the email subject and ToDo summary
 
 
-def normalize_ksa_phone(raw) -> str | None:
-	"""Return a Saudi mobile number as +9665XXXXXXXX, or None.
+def normalize_phone(raw, country) -> str | None:
+	"""Return a mobile number as "+" and ASCII digits (E.164), or None.
 
-	Accepts Arabic-Indic/Persian digits, spaces, dashes and brackets, and the forms 05XXXXXXXX,
-	5XXXXXXXX, 9665XXXXXXXX, +9665XXXXXXXX (and 009665XXXXXXXX), each also with a 0 before
-	the 5 after the country code (+96605XXXXXXXX).
+	Arabic-Indic/Persian digits are converted; spaces, dashes, dots, brackets and bidi marks are removed;
+	a 00 prefix means "+". With a country code, the number must be E.164 (8-15 digits, first digit 1-9);
+	the four countries we know are checked against their mobile format. Without a country code, the
+	selected country's code is used: Saudi Arabia 05XXXXXXXX / 5XXXXXXXX / 9665XXXXXXXX, UAE 05XXXXXXXX,
+	Oman 7XXXXXXX / 9XXXXXXX, India 10 digits starting 6-9 (each may also start with the country code
+	without "+"). For "gulf", "other" or an unknown country a number without a country code is refused.
 	"""
 	value = _PHONE_JUNK.sub("", str(raw or "").translate(_DIGITS))
-	match = _KSA_MOBILE.fullmatch(value)
-	return f"+966{match.group(1)}" if match else None
+	if not re.fullmatch(r"\+?[0-9]+", value):
+		return None
+	if value.startswith("00"):
+		value = "+" + value[2:]
+	if value.startswith("+"):
+		digits = value[1:]
+		for code, national in _MOBILE.values():
+			if digits.startswith(code):
+				match = re.fullmatch(f"{code}0?({national})", digits)
+				return f"+{code}{match.group(1)}" if match else None
+		return value if _E164.fullmatch(digits) else None
+	if country not in _MOBILE:
+		return None
+	code, national = _MOBILE[country]
+	match = re.fullmatch(f"(?:{code})?0?({national})", value)
+	return f"+{code}{match.group(1)}" if match else None
+
+
+def normalize_ksa_phone(raw) -> str | None:
+	"""Return a Saudi mobile number as +9665XXXXXXXX, or None (any other number is None)."""
+	phone = normalize_phone(raw, "sa")
+	return phone if phone and phone.startswith("+9665") else None
 
 
 def _line(value, limit=MAX_NAME) -> str:
@@ -58,6 +100,12 @@ def _users(value, lang: str) -> int | None:
 	if not _USERS.fullmatch(value) or int(value) < 1:
 		_fail(lang, "users")
 	return int(value)
+
+
+def _zatca_answer(value) -> int | None:
+	"""The ZATCA radio is optional: "1" yes, "0" no, anything else (not picked) None."""
+	value = str(value if value is not None else "").strip()
+	return int(value) if value in ("0", "1") else None
 
 
 def _clean_email(raw, lang: str) -> str:
@@ -92,6 +140,7 @@ def submit_demo_request(
 	message=None,
 	lang="en",
 	website=None,
+	country=None,
 ) -> dict:
 	if str(website or "").strip():
 		return {"ok": True}  # honeypot: bots get the normal answer and nothing is stored
@@ -104,14 +153,16 @@ def submit_demo_request(
 		message=str(message or "").strip()[:MAX_MESSAGE],
 		lang=lang,
 		plan=plan if plan in PLAN_KEYS else None,
-		zatca_required=1 if cint(zatca_required) else 0,
+		zatca_required=_zatca_answer(zatca_required),
+		country=country if isinstance(country, str) and country in COUNTRIES else None,
 	)
-	for field in ("full_name", "company", "raw_phone"):
+	for field in ("full_name", "company", "raw_phone", "country"):
 		if not data[field]:
 			_fail(lang, "required")
 	if not str(email or "").strip():
 		_fail(lang, "required")
-	data.phone = normalize_ksa_phone(data.raw_phone)
+	data.country_label = COUNTRIES[data.country]
+	data.phone = normalize_phone(data.raw_phone, data.country)
 	if not data.phone:
 		_fail(lang, "phone")
 	data.email = _clean_email(email, lang)
@@ -182,14 +233,18 @@ def _existing_lead(email: str) -> str | None:
 	return None
 
 
+ZATCA_ANSWERS = {1: "Yes", 0: "No", None: "Not answered"}
+
+
 def _summary_lines(data) -> list[tuple[str, str]]:
 	return [
 		("Name", data.full_name),
 		("Company", data.company),
+		("Country", data.country_label),
 		("Mobile", data.phone),
 		("Email", data.email),
 		("Users", str(data.users) if data.users else "-"),
-		("ZATCA Phase 2 needed", "Yes" if data.zatca_required else "No"),
+		("ZATCA Phase 2 needed", ZATCA_ANSWERS[data.zatca_required]),
 		("Plan", data.plan or "-"),
 		("Language", data.lang),
 		("Message", data.message or "-"),
@@ -200,8 +255,23 @@ def _html(text: str) -> str:
 	return escape(text).replace("\r\n", "\n").replace("\n", "<br>")
 
 
+def _lines_html(lines) -> str:
+	return "<br>".join(f"<b>{escape(label)}:</b> {_html(value)}" for label, value in lines)
+
+
 def _summary_html(data) -> str:
-	return "<br>".join(f"<b>{escape(label)}:</b> {_html(value)}" for label, value in _summary_lines(data))
+	return _lines_html(_summary_lines(data))
+
+
+def _note_html(data) -> str:
+	"""The Lead's CRM Note: the answers that have no field of their own on the Lead form, then the message."""
+	note = "<p>" + _lines_html(
+		[("Country", data.country_label), ("ZATCA Phase 2 needed", ZATCA_ANSWERS[data.zatca_required])]
+	)
+	note += "</p>"
+	if data.message:
+		note += f"<p>{_html(data.message)}</p>"
+	return note
 
 
 def _create_lead(data) -> str:
@@ -214,16 +284,15 @@ def _create_lead(data) -> str:
 			"mobile_no": data.phone,
 			"source": "Website",
 			"kcx_users": data.users,
-			"kcx_zatca_required": data.zatca_required,
+			# tri-state answer, but a Check field: "not answered" is stored as 0 and spelt out in the note
+			"kcx_zatca_required": data.zatca_required or 0,
 			"kcx_plan": data.plan,
 			"kcx_language": data.lang,
+			"kcx_country": data.country,
 		}
 	)
-	if data.message:
-		# the Lead's Notes section (CRM Note), where sales read it
-		lead.append(
-			"notes", {"note": _html(data.message), "added_by": frappe.session.user, "added_on": now()}
-		)
+	# the Lead's Notes section (CRM Note), where sales read it
+	lead.append("notes", {"note": _note_html(data), "added_by": frappe.session.user, "added_on": now()})
 	lead.insert(ignore_permissions=True)
 	return lead.name
 
@@ -245,7 +314,7 @@ def _add_comment(lead_name: str, data) -> None:
 def _add_todo(lead_name: str, status: str, owner, data) -> None:
 	"""A closed Lead asked again: make sure someone follows up."""
 	allocated_to = owner if owner and frappe.db.get_value("User", owner, "enabled") else "Administrator"
-	summary = f"{data.company} {DASH} {data.full_name} {DASH} {data.phone}"
+	summary = f"{data.company} {DASH} {data.full_name} {DASH} {data.country_label} {DASH} {data.phone}"
 	frappe.get_doc(
 		{
 			"doctype": "ToDo",
@@ -271,11 +340,11 @@ def _notify(lead_name: str, data, status) -> None:
 		recipients = _recipients()
 		if not recipients:
 			return
-		subject = f"New demo request: {data.company}"
+		subject = f"New demo request: {data.company} {DASH} {data.country_label}"
 		if status is None:
-			intro = "New Lead"
+			intro = f"New Lead ({data.country_label})"
 		elif status in CLOSED_STATUSES:
-			subject = f"CLOSED Lead ({status}) {DASH} new request: {data.company}"
+			subject = f"CLOSED Lead ({status}) {DASH} new request: {data.company} {DASH} {data.country_label}"
 			intro = f"This Lead is closed ({status}); a ToDo was created to follow up. Lead"
 		else:
 			intro = f"Repeat request on an open Lead (status: {status})"
