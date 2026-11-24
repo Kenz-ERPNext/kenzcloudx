@@ -1,27 +1,37 @@
 {
 	"common": {
 		"brand": {
-			"name": "KENZ CLOUDX",
+			"name": "KenzCloudX",
 			"byline": "by Kenz Technology"
 		},
 		"nav": {
 			"home": "Home",
 			"erpnext": "ERPNext",
+			"compliance": "Compliance",
 			"zatca": "ZATCA",
+			"how": "How it works",
 			"plans": "Plans",
 			"about": "About",
 			"demo": "Request a demo"
 		},
 		"menu": "Menu",
+		"menu_open": "Open menu",
+		"menu_close": "Close menu",
 		"skip_to_content": "Skip to content",
 		"cta_demo": "Request a demo",
 		"cta_quote": "Request a quote",
 		"customer_login": "Customer login",
-		"lang_toggle": "العربية",
+		"language": "Language",
+		"lang_names": {
+			"en": "EN",
+			"ar": "عربي"
+		},
 		"whatsapp_label": "Chat on WhatsApp",
 		"footer": {
-			"tagline": "ERPNext hosting, ZATCA e-invoicing and support for businesses in Saudi Arabia.",
-			"pages_heading": "Pages",
+			"tagline": "ERPNext hosting, set-up and support for businesses in Saudi Arabia, the UAE, Oman, the wider Gulf and India.",
+			"ask": "Ask us a question",
+			"product_heading": "Product",
+			"company_heading": "Company",
 			"contact_heading": "Contact",
 			"legal_heading": "Legal",
 			"privacy": "Privacy policy",
@@ -30,7 +40,16 @@
 			"email_label": "Email",
 			"cr_label": "CR No.",
 			"vat_label": "VAT No.",
-			"copyright": "© Kenz Technology. All rights reserved."
+			"copyright": "© Kenz Technology. All rights reserved.",
+			"marquee": [
+				"Host",
+				"Migrate",
+				"Comply",
+				"Train",
+				"Support",
+				"Grow"
+			],
+			"marquee_label": "Host, migrate, comply, train, support, grow."
 		}
 	},
 	"home": {

@@ -2,27 +2,37 @@
 	"_review": "Arabic draft – needs native-speaker review",
 	"common": {
 		"brand": {
-			"name": "KENZ CLOUDX",
+			"name": "KenzCloudX",
 			"byline": "من كنز للتقنية"
 		},
 		"nav": {
 			"home": "الرئيسية",
 			"erpnext": "ERPNext",
+			"compliance": "الامتثال الضريبي",
 			"zatca": "الفوترة الإلكترونية",
+			"how": "كيف نعمل",
 			"plans": "الباقات",
 			"about": "من نحن",
 			"demo": "اطلب عرضًا تجريبيًا"
 		},
 		"menu": "القائمة",
+		"menu_open": "فتح القائمة",
+		"menu_close": "إغلاق القائمة",
 		"skip_to_content": "انتقل إلى المحتوى",
 		"cta_demo": "اطلب عرضًا تجريبيًا",
 		"cta_quote": "اطلب عرض سعر",
 		"customer_login": "دخول العملاء",
-		"lang_toggle": "English",
+		"language": "اللغة",
+		"lang_names": {
+			"en": "EN",
+			"ar": "عربي"
+		},
 		"whatsapp_label": "تواصل عبر واتساب",
 		"footer": {
-			"tagline": "استضافة ERPNext والفوترة الإلكترونية والدعم الفني للشركات في المملكة العربية السعودية.",
-			"pages_heading": "الصفحات",
+			"tagline": "استضافة ERPNext وتجهيزه ودعمه للشركات في المملكة العربية السعودية والإمارات وعُمان ودول الخليج والهند.",
+			"ask": "اسألنا ما تشاء",
+			"product_heading": "الخدمات",
+			"company_heading": "الشركة",
 			"contact_heading": "تواصل معنا",
 			"legal_heading": "الشؤون القانونية",
 			"privacy": "سياسة الخصوصية",
@@ -31,7 +41,16 @@
 			"email_label": "البريد الإلكتروني",
 			"cr_label": "رقم السجل التجاري",
 			"vat_label": "الرقم الضريبي",
-			"copyright": "© كنز للتقنية. جميع الحقوق محفوظة."
+			"copyright": "© كنز للتقنية. جميع الحقوق محفوظة.",
+			"marquee": [
+				"استضافة",
+				"ترحيل",
+				"امتثال",
+				"تدريب",
+				"دعم",
+				"نمو"
+			],
+			"marquee_label": "استضافة، ترحيل البيانات، امتثال ضريبي، تدريب، دعم، نمو."
 		}
 	},
 	"home": {
