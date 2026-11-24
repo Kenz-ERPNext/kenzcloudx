@@ -222,3 +222,18 @@ class TestInnerCss(FrappeTestCase):
 			os.path.exists(frappe.get_app_path("kenzcloudx", "public", "images", "zatca-invoice.svg")),
 			"the old navy/mint invoice illustration is no longer used",
 		)
+
+
+class TestArabicTerms(FrappeTestCase):
+	"""Fix wave: consistent Arabic terms (review of the redesign branch)."""
+
+	def test_terms(self):
+		raw = json.dumps(load_content("ar"), ensure_ascii=False)
+		for old in ("النامية", "أذونات النقل", "سندات النقل", "مذكرة التسليم"):
+			self.assertNotIn(old, raw, old)
+		self.assertIn("المتنامية", load_content("ar")["home"]["hero"]["tag"])
+		self.assertIn("المتنامية", load_content("ar")["plans"]["items"][1]["tagline"])
+		self.assertTrue(load_content("ar")["home"]["stats"]["live_sites_label"].startswith("نظامًا"))
+		self.assertGreaterEqual(raw.count("سند النقل الإلكتروني (e-way bill)"), 4)
+		self.assertIn("إشعار التسليم", raw)
+		self.assertEqual(load_content("ar")["_review"], "Arabic draft – needs native-speaker review")
