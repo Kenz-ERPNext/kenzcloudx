@@ -72,7 +72,9 @@ class TestPages(FrappeTestCase):
 			stylesheets = re.findall(r'<link[^>]+rel="stylesheet"[^>]*>', h)
 			self.assertEqual(len(stylesheets), 1, p)
 			self.assertIn('href="/assets/kenzcloudx/css/kenz.css', stylesheets[0])
-			self.assertNotIn("<script src=", h, p)
+			# redesign v2: main.js and the ribbon module are external, but only ever self-hosted
+			for src in re.findall(r'<script[^>]+src="([^"]+)"', h):
+				self.assertTrue(src.startswith("/assets/kenzcloudx/js/"), (p, src))
 			for code in ("en", "ar", "x-default"):
 				self.assertIn(f'hreflang="{code}"', h, p)
 			canonical = "https://kenzcloudx.com" + ("/ar" if lang == "ar" else "/")

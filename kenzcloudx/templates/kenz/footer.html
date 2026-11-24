@@ -1,64 +1,88 @@
+{#- Footer: "ask us" band (when an email is set), link columns, big marquee words, legal line.
+    settings values are stripped (blank -> None) in build_page_context; tel and wa_number are normalised there too.
+    Every contact item, and the Contact column itself, only renders when its value is set. -#}
 {%- set lp = "/ar" if lang == "ar" else "" -%}
+{%- set home = lp or "/" -%}
 {%- set f = common.footer -%}
-<footer class="site-footer">
-	<div class="container footer-grid">
-		<div class="footer-brand">
-			<a class="brand brand-on-dark" href="{{ (lp or '/')|e }}" aria-label="{{ common.brand.name|e }}, {{ common.brand.byline|e }}">
-				{% include "templates/kenz/logo_mark.html" %}
-				<span class="brand-text" dir="ltr">
-					<span class="brand-name">KENZ <span>CLOUDX</span></span>
-					<span class="brand-by">by Kenz Technology</span>
-				</span>
-			</a>
-			<p>{{ f.tagline|e }}</p>
+{%- set address = settings.office_address_ar if lang == "ar" else settings.office_address_en -%}
+<footer class="site-footer" data-pose="footer">
+	<div class="wrap">
+		{%- if settings.email %}
+		<div class="ask reveal">
+			<p>{{ f.ask|e }}</p>
+			<a href="mailto:{{ settings.email|e }}" dir="ltr">{{ settings.email|e }}</a>
 		</div>
-		<nav class="footer-col" aria-labelledby="footer-pages">
-			<h2 id="footer-pages">{{ f.pages_heading|e }}</h2>
-			<ul>
-				<li><a href="{{ (lp or '/')|e }}">{{ common.nav.home|e }}</a></li>
-				{%- for stem in ("erpnext", "zatca", "plans", "about", "demo") %}
-				<li><a href="{{ lp|e }}/{{ stem|e }}">{{ common.nav[stem]|e }}</a></li>
+		{%- endif %}
+		<div class="footer-cols">
+			<div class="footer-brand">
+				<a class="logo" href="{{ home|e }}" aria-label="{{ common.brand.name|e }}, {{ common.brand.byline|e }}">
+					{% include "templates/kenz/logo_mark.html" %}
+					<span class="logo-name" dir="ltr">KenzCloudX</span>
+				</a>
+				<p class="about">{{ f.tagline|e }}</p>
+			</div>
+			<nav class="footer-col" aria-labelledby="footer-product">
+				<h2 id="footer-product">{{ f.product_heading|e }}</h2>
+				<ul>
+					<li><a href="{{ lp|e }}/erpnext">{{ common.nav.erpnext|e }}</a></li>
+					<li><a href="{{ lp|e }}/zatca">{{ common.nav.zatca|e }}</a></li>
+					<li><a href="{{ lp|e }}/plans">{{ common.nav.plans|e }}</a></li>
+					<li><a href="{{ home|e }}#how">{{ common.nav.how|e }}</a></li>
+				</ul>
+			</nav>
+			<nav class="footer-col" aria-labelledby="footer-company">
+				<h2 id="footer-company">{{ f.company_heading|e }}</h2>
+				<ul>
+					<li><a href="{{ lp|e }}/about">{{ common.nav.about|e }}</a></li>
+					<li><a href="{{ lp|e }}/demo">{{ common.nav.demo|e }}</a></li>
+					<li><a href="/login">{{ common.customer_login|e }}</a></li>
+				</ul>
+			</nav>
+			{%- if tel or settings.email or wa_number or address %}
+			<div class="footer-col">
+				<h2 id="footer-contact">{{ f.contact_heading|e }}</h2>
+				<ul>
+					{%- if tel %}
+					<li><span class="footer-label">{{ f.phone_label|e }}</span> <a href="tel:{{ tel|e }}" dir="ltr">{{ settings.phone|e }}</a></li>
+					{%- endif %}
+					{%- if settings.email %}
+					<li><span class="footer-label">{{ f.email_label|e }}</span> <a href="mailto:{{ settings.email|e }}" dir="ltr">{{ settings.email|e }}</a></li>
+					{%- endif %}
+					{%- if wa_number %}
+					<li><a href="https://wa.me/{{ wa_number|e }}" target="_blank" rel="noopener">{{ common.whatsapp_label|e }}</a></li>
+					{%- endif %}
+					{%- if address %}
+					<li class="footer-address">{{ address|e }}</li>
+					{%- endif %}
+				</ul>
+			</div>
+			{%- endif %}
+			<nav class="footer-col" aria-labelledby="footer-legal">
+				<h2 id="footer-legal">{{ f.legal_heading|e }}</h2>
+				<ul>
+					<li><a href="{{ lp|e }}/privacy">{{ f.privacy|e }}</a></li>
+					<li><a href="{{ lp|e }}/terms">{{ f.terms|e }}</a></li>
+				</ul>
+			</nav>
+		</div>
+		<div class="marquee" aria-hidden="true">
+			<div class="marquee-track">
+				{%- for _ in range(2) %}
+				<div class="marquee-group">
+					{%- for word in f.marquee %}<span>{{ word|e }}</span><i></i>{% endfor %}
+				</div>
 				{%- endfor %}
-			</ul>
-		</nav>
-		{#- settings values are stripped (blank -> None) in build_page_context; tel and wa_number are normalised there too. -#}
-		{%- set address = settings.office_address_ar if lang == "ar" else settings.office_address_en %}
-		{%- if tel or settings.email or wa_number or address %}
-		<div class="footer-col">
-			<h2 id="footer-contact">{{ f.contact_heading|e }}</h2>
-			<ul>
-				{%- if tel %}
-				<li><span class="footer-label">{{ f.phone_label|e }}</span> <a href="tel:{{ tel|e }}" dir="ltr">{{ settings.phone|e }}</a></li>
-				{%- endif %}
-				{%- if settings.email %}
-				<li><span class="footer-label">{{ f.email_label|e }}</span> <a href="mailto:{{ settings.email|e }}" dir="ltr">{{ settings.email|e }}</a></li>
-				{%- endif %}
-				{%- if wa_number %}
-				<li><a href="https://wa.me/{{ wa_number|e }}" target="_blank" rel="noopener">{{ common.whatsapp_label|e }}</a></li>
-				{%- endif %}
-				{%- if address %}
-				<li class="footer-address">{{ address|e }}</li>
-				{%- endif %}
-			</ul>
+			</div>
 		</div>
-		{%- endif %}
-		<nav class="footer-col" aria-labelledby="footer-legal">
-			<h2 id="footer-legal">{{ f.legal_heading|e }}</h2>
-			<ul>
-				<li><a href="{{ lp|e }}/privacy">{{ f.privacy|e }}</a></li>
-				<li><a href="{{ lp|e }}/terms">{{ f.terms|e }}</a></li>
-			</ul>
-		</nav>
-	</div>
-	<div class="container">
+		<p class="visually-hidden">{{ f.marquee_label|e }}</p>
 		<div class="footer-bottom">
-		<p>{{ f.copyright|e }}</p>
-		{%- if settings.cr_number or settings.vat_number %}
-		<p class="footer-reg">
-			{%- if settings.cr_number %}<span>{{ f.cr_label|e }} <span dir="ltr">{{ settings.cr_number|e }}</span></span>{% endif %}
-			{%- if settings.vat_number %}<span>{{ f.vat_label|e }} <span dir="ltr">{{ settings.vat_number|e }}</span></span>{% endif %}
-		</p>
-		{%- endif %}
+			<p>{{ f.copyright|e }}</p>
+			{%- if settings.cr_number or settings.vat_number %}
+			<p class="footer-reg">
+				{%- if settings.cr_number %}<span>{{ f.cr_label|e }} <span dir="ltr">{{ settings.cr_number|e }}</span></span>{% endif %}
+				{%- if settings.vat_number %}<span>{{ f.vat_label|e }} <span dir="ltr">{{ settings.vat_number|e }}</span></span>{% endif %}
+			</p>
+			{%- endif %}
 		</div>
 	</div>
 </footer>

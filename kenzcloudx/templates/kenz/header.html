@@ -1,32 +1,48 @@
+{#- Floating frosted nav pill. Desktop: links in the middle, language switch + Request a demo on the end side.
+    Below 1100px the links move into .mobile-panel (opened by .menu-btn, see public/js/main.js).
+    "How it works" is an anchor on the home page and /#how (or /ar#how) everywhere else.
+    Compliance points at /zatca until the /compliance page exists. -#}
 {%- set lp = "/ar" if lang == "ar" else "" -%}
+{%- set home = lp or "/" -%}
+{%- set links = [
+	("erpnext", lp ~ "/erpnext"),
+	("compliance", lp ~ "/zatca"),
+	("how", "#how" if page_url == home else home ~ "#how"),
+	("plans", lp ~ "/plans"),
+	("about", lp ~ "/about"),
+] -%}
 <a class="skip-link" href="#main">{{ common.skip_to_content|e }}</a>
-<header class="site-header">
-	<div class="container header-inner">
-		<a class="brand" href="{{ (lp or '/')|e }}" aria-label="{{ common.brand.name|e }}, {{ common.brand.byline|e }}">
-			{% include "templates/kenz/logo_mark.html" %}
-			<span class="brand-text" dir="ltr">
-				<span class="brand-name">KENZ <span>CLOUDX</span></span>
-				<span class="brand-by">by Kenz Technology</span>
-			</span>
-		</a>
-		<div class="site-nav" id="site-nav">
-			<nav aria-label="{{ common.menu|e }}">
-				<ul class="nav-links">
-					{%- for stem in ("erpnext", "zatca", "plans", "about") %}
-					{%- set href = lp ~ "/" ~ stem %}
-					<li><a href="{{ href|e }}"{% if page_url == href %} aria-current="page"{% endif %}>{{ common.nav[stem]|e }}</a></li>
-					{%- endfor %}
-				</ul>
-			</nav>
-			<div class="nav-actions">
-				<a class="nav-login" href="/login">{{ common.customer_login|e }}</a>
-				<a class="btn btn-primary" href="{{ lp|e }}/demo">{{ common.cta_demo|e }}</a>
-			</div>
+<header class="nav" id="nav">
+	<a class="logo" href="{{ home|e }}" aria-label="{{ common.brand.name|e }}, {{ common.brand.byline|e }}">
+		{% include "templates/kenz/logo_mark.html" %}
+		<span class="logo-name" dir="ltr">KenzCloudX</span>
+	</a>
+	<nav class="nav-primary" aria-label="{{ common.menu|e }}">
+		<ul class="nav-links">
+			{%- for key, href in links %}
+			<li><a href="{{ href|e }}"{% if page_url == href %} aria-current="page"{% endif %}>{{ common.nav[key]|e }}</a></li>
+			{%- endfor %}
+		</ul>
+	</nav>
+	<div class="nav-right">
+		<a class="nav-login" href="/login">{{ common.customer_login|e }}</a>
+		<div class="lang" role="group" aria-label="{{ common.language|e }}">
+			{%- for code in ("en", "ar") %}
+			{%- if code == lang %}
+			<span class="is-current" lang="{{ code|e }}" aria-current="true">{{ common.lang_names[code]|e }}</span>
+			{%- else %}
+			<a href="{{ alt_url|e }}" hreflang="{{ code|e }}" lang="{{ code|e }}">{{ common.lang_names[code]|e }}</a>
+			{%- endif %}
+			{%- endfor %}
 		</div>
-		<a class="lang-toggle" href="{{ alt_url|e }}" hreflang="{{ alt_lang|e }}" lang="{{ alt_lang|e }}">{{ common.lang_toggle|e }}</a>
-		<button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
-			<svg viewBox="0 0 20 14" width="20" height="14" aria-hidden="true" focusable="false"><path d="M0 1h20M0 7h20M0 13h20" stroke="currentColor" stroke-width="2"/></svg>
-			<span class="visually-hidden">{{ common.menu|e }}</span>
-		</button>
+		<a class="btn btn-dark" href="{{ lp|e }}/demo">{{ common.cta_demo|e }}</a>
+		<button class="menu-btn" type="button" aria-expanded="false" aria-controls="mobile-panel" aria-label="{{ common.menu_open|e }}" data-label-open="{{ common.menu_open|e }}" data-label-close="{{ common.menu_close|e }}"><span></span></button>
+	</div>
+	<div class="mobile-panel" id="mobile-panel">
+		{%- for key, href in links %}
+		<a class="l" href="{{ href|e }}"{% if page_url == href %} aria-current="page"{% endif %}>{{ common.nav[key]|e }}</a>
+		{%- endfor %}
+		<a class="l l-small" href="/login">{{ common.customer_login|e }}</a>
+		<a class="btn btn-dark" href="{{ lp|e }}/demo">{{ common.cta_demo|e }}</a>
 	</div>
 </header>

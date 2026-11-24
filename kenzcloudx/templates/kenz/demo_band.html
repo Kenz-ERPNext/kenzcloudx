@@ -1,14 +1,21 @@
-{#- Navy "Request a demo" band. Uses t.demo_band when the page has one, else t.cta (Task 4 pages). -#}
+{#- Closing call to action on every page except /demo. Uses t.demo_band when the page has one, else t.cta.
+    data-pose="cta" steers the ribbon (public/js/ribbon.js). -#}
 {%- set lp = "/ar" if lang == "ar" else "" -%}
 {%- set band = t.demo_band or t.cta -%}
 {%- if band %}
-<section class="demo-band" aria-labelledby="demo-band-heading">
-	<div class="container demo-band-inner">
-		<div>
-			<h2 id="demo-band-heading">{{ band.heading|e }}</h2>
-			<p>{{ band.body|e }}</p>
+<section class="demo-band" aria-labelledby="demo-band-heading" data-pose="cta">
+	<div class="wrap cta veil reveal">
+		<h2 class="h2" id="demo-band-heading">{{ band.heading|e }}</h2>
+		<p class="lede">{{ band.body|e }}</p>
+		<div class="btn-row">
+			<a class="btn btn-dark" href="{{ lp|e }}/demo">{{ band.button|e }}</a>
+			{%- if wa_number %}
+			<a class="btn btn-ghost" href="https://wa.me/{{ wa_number|e }}" target="_blank" rel="noopener">
+				<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3.2 16.8 4.3 13A7 7 0 1 1 7 15.7z"/><path d="M7.6 7.2c0 2.6 2.5 5.2 5.2 5.2l.9-1.3-1.7-.8-.7.7c-.9-.4-1.7-1.2-2.1-2.1l.7-.7-.8-1.7z" fill="currentColor" stroke="none"/></svg>
+				{{ common.whatsapp_label|e }}
+			</a>
+			{%- endif %}
 		</div>
-		<a class="btn btn-light" href="{{ lp|e }}/demo">{{ band.button|e }}</a>
 	</div>
 </section>
 {%- endif %}

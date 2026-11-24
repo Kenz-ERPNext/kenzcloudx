@@ -2,13 +2,16 @@
 {#- Standalone document for every public KenzCloudX page. Never extends templates/web.html.
     Note: the website renderer overwrites context.canonical with its own URL, so the
     canonical link is taken from the hreflang entry for the current language.
-    The 404 context has an empty hreflang list, so it gets no canonical, hreflang or og:url. -#}
+    The 404 context has an empty hreflang list, so it gets no canonical, hreflang or og:url.
+    Everything is self-hosted under /assets/kenzcloudx (fonts, three.js r160 via the import map). -#}
 {%- set _canonical = dict(hreflang)[lang] if hreflang else None -%}
 {%- set _asset = "/assets/kenzcloudx" %}
+{%- set _v = (build_version or "") %}
+{%- set _home = "/ar" if lang == "ar" else "/" %}
 <html lang="{{ lang|e }}" dir="{{ dir|e }}">
 <head>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 	<title>{{ t.meta.title|e }}</title>
 	<meta name="description" content="{{ t.meta.description|e }}">
 	{%- if _canonical %}
@@ -29,14 +32,31 @@
 	<meta property="og:image:width" content="1200">
 	<meta property="og:image:height" content="630">
 	<meta name="twitter:card" content="summary_large_image">
-	<meta name="theme-color" content="#E3F3EF">
+	<meta name="theme-color" content="#F1F1F3">
 	<link rel="icon" href="{{ _asset|e }}/images/logo-mark.svg" type="image/svg+xml">
-	<link rel="preload" href="{{ _asset|e }}/fonts/{{ ('ibm-plex-sans-arabic-arabic-400-normal.woff2' if lang == 'ar' else 'ibm-plex-sans-latin-400-normal.woff2')|e }}" as="font" type="font/woff2" crossorigin>
-	<link rel="stylesheet" href="{{ _asset|e }}/css/kenz.css?v={{ (build_version or '')|e }}">
-	<script>document.documentElement.classList.add("js")</script>
+	<link rel="preload" href="{{ _asset|e }}/fonts/{{ ('ibm-plex-sans-arabic-arabic-400-normal.woff2' if lang == 'ar' else 'archivo-latin-wdth-normal.woff2')|e }}" as="font" type="font/woff2" crossorigin>
+	<link rel="stylesheet" href="{{ _asset|e }}/css/kenz.css?v={{ _v|e }}">
+	{#- js: enables reveals and the menu button. Safety net: if main.js or the ribbon module has not
+	    started after 4s (blocked, old browser, no WebGL), show everything and the CSS ribbon instead. -#}
+	<script>
+		(function (r) {
+			r.classList.add("js");
+			if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) r.classList.add("reduced");
+			setTimeout(function () {
+				if (!window.__kcxMain) r.classList.add("no-motion");
+				if (!window.__ribbonReady) r.classList.add("no-webgl");
+			}, 4000);
+		})(document.documentElement);
+	</script>
+	<script type="importmap">
+	{"imports": {"three": "{{ _asset|e }}/js/vendor/three-0.160.0/three.module.min.js", "three/addons/": "{{ _asset|e }}/js/vendor/three-0.160.0/addons/"}}
+	</script>
 	{%- block head_extra %}{% endblock %}
 </head>
-<body>
+<body class="{{ ('home-page' if page_url == _home else 'inner-page')|e }}">
+	<div class="bg-wash" aria-hidden="true"></div>
+	<canvas id="ribbon" aria-hidden="true"></canvas>
+	<div class="ribbon-fallback" aria-hidden="true"></div>
 	{% include "templates/kenz/header.html" %}
 	<main id="main">
 		{%- block body %}{% endblock %}
@@ -45,23 +65,8 @@
 	{% include "templates/kenz/footer.html" %}
 	{% include "templates/kenz/whatsapp.html" %}
 	{%- block scripts %}
-	<script>
-		(function () {
-			var b = document.querySelector(".nav-toggle"), h = document.querySelector(".site-header");
-			if (!b || !h) return;
-			function setOpen(open) {
-				h.classList.toggle("is-open", open);
-				b.setAttribute("aria-expanded", open ? "true" : "false");
-			}
-			b.addEventListener("click", function () { setOpen(!h.classList.contains("is-open")); });
-			document.addEventListener("keydown", function (e) {
-				if (e.key === "Escape" && h.classList.contains("is-open")) { setOpen(false); b.focus(); }
-			});
-			h.querySelector(".site-nav").addEventListener("click", function (e) {
-				if (e.target.closest("a")) setOpen(false);
-			});
-		})();
-	</script>
+	<script src="/assets/kenzcloudx/js/main.js?v={{ (build_version or '')|e }}" defer></script>
+	<script type="module" src="/assets/kenzcloudx/js/ribbon.js?v={{ (build_version or '')|e }}"></script>
 	{%- endblock %}
 </body>
 </html>
