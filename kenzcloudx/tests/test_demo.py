@@ -5,13 +5,14 @@ rate limit), 5 (bad plan in the URL).
 """
 
 import json
+import re
 from unittest.mock import patch
 
 import frappe
 from frappe.tests.utils import FrappeTestCase
 from frappe.utils import get_test_client
 
-from kenzcloudx.api.demo import normalize_ksa_phone, submit_demo_request
+from kenzcloudx.api.demo import COUNTRIES, normalize_ksa_phone, normalize_phone, submit_demo_request
 from kenzcloudx.tests.test_pages import html
 from kenzcloudx.website.context import load_content
 
@@ -31,6 +32,7 @@ def submit(**kw):
 		users=5,
 		zatca_required=1,
 		plan="business",
+		country="sa",
 		lang="en",
 	)
 	base.update(kw)
@@ -76,9 +78,12 @@ class TestDemoRequest(FrappeTestCase):
 		self.assertEqual(lead.kcx_zatca_required, 1)
 		self.assertEqual(lead.kcx_plan, "business")
 		self.assertEqual(lead.kcx_language, "en")
+		self.assertEqual(lead.kcx_country, "sa")
 		self.assertEqual(lead.status, "Lead")
 		self.assertEqual(len(lead.notes), 1)
 		self.assertIn("Two branches<br>Need POS", lead.notes[0].note)
+		self.assertIn("<b>Country:</b> Saudi Arabia", lead.notes[0].note)
+		self.assertIn("<b>ZATCA Phase 2 needed:</b> Yes", lead.notes[0].note)
 
 	def test_optional_fields_may_be_empty(self):
 		submit(email="min@x.sa", users=None, zatca_required=None, plan=None, message=None, lang=None)
@@ -87,7 +92,22 @@ class TestDemoRequest(FrappeTestCase):
 		self.assertEqual(lead.kcx_zatca_required, 0)
 		self.assertIsNone(lead.kcx_plan)
 		self.assertEqual(lead.kcx_language, "en")
-		self.assertEqual(len(lead.notes), 0)
+		# the summary note is always there; it records that the ZATCA question was not answered
+		self.assertEqual(len(lead.notes), 1)
+		self.assertIn("<b>ZATCA Phase 2 needed:</b> Not answered", lead.notes[0].note)
+
+	def test_zatca_answer_is_tri_state(self):
+		for email, value, stored, text in (
+			("z-yes@x.sa", "1", 1, "Yes"),
+			("z-no@x.sa", "0", 0, "No"),
+			("z-none@x.sa", None, 0, "Not answered"),
+			("z-blank@x.sa", "", 0, "Not answered"),
+			("z-junk@x.sa", "maybe", 0, "Not answered"),
+		):
+			submit(email=email, zatca_required=value)
+			lead = lead_for(email)
+			self.assertEqual(lead.kcx_zatca_required, stored, email)
+			self.assertIn(f"<b>ZATCA Phase 2 needed:</b> {text}<", lead.notes[0].note, email)
 
 	def test_form_strings_are_coerced(self):
 		# an HTML form posts every value as a string
@@ -160,6 +180,17 @@ class TestDemoRequest(FrappeTestCase):
 			(dict(users=0), "users"),
 			(dict(users="-3"), "users"),
 			(dict(users="abc"), "users"),
+			(dict(country=None), "required"),
+			(dict(country=""), "required"),
+			(dict(country="SA"), "required"),
+			(dict(country="xx"), "required"),
+			(dict(country="<script>"), "required"),
+			(dict(country=["sa"]), "required"),
+			(dict(country="other", phone="0551234567"), "phone"),
+			(dict(country="gulf", phone="33123456"), "phone"),
+			(dict(phone="+12"), "phone"),
+			(dict(phone="+1234567890123456"), "phone"),
+			(dict(phone="+0123456789"), "phone"),
 		)
 		before = frappe.db.count("Lead")
 		for kw, key in cases:
@@ -230,6 +261,113 @@ class TestDemoRequest(FrappeTestCase):
 		):
 			self.assertIsNone(normalize_ksa_phone(raw), raw)
 
+	def test_normalize_phone_by_country(self):
+		ok = (
+			# Saudi Arabia keeps the existing local handling
+			("sa", "0551234567", "+966551234567"),
+			("sa", "966551234567", "+966551234567"),
+			# India: +91 and 10 digits starting 6-9 (a trunk 0 is dropped)
+			("in", "98765 43210", "+919876543210"),
+			("in", "09876543210", "+919876543210"),
+			("in", "919876543210", "+919876543210"),
+			("in", "+91 98765-43210", "+919876543210"),
+			("in", "0091 (98765) 43210", "+919876543210"),
+			("in", "٩٨٧٦٥٤٣٢١٠", "+919876543210"),
+			# Oman: +968 and 8 digits starting 7 or 9
+			("om", "9123 4567", "+96891234567"),
+			("om", "7123.4567", "+96871234567"),
+			("om", "+968 9123 4567", "+96891234567"),
+			("om", "00968 7123 4567", "+96871234567"),
+			# UAE: +971 and 9 digits starting 5 (a trunk 0 is dropped)
+			("ae", "050 123 4567", "+971501234567"),
+			("ae", "50 123 4567", "+971501234567"),
+			("ae", "+971 50 123 4567", "+971501234567"),
+			("ae", "+971 050 123 4567", "+971501234567"),
+			# any country: a number with a country code (E.164)
+			("other", "+1 (415) 555-0134", "+14155550134"),
+			("other", "0044 20 7946 0958", "+442079460958"),
+			("gulf", "+973 3612 3456", "+97336123456"),
+			("gulf", "+974 5512 3456", "+97455123456"),
+			("sa", "+44 20 7946 0958", "+442079460958"),
+			("in", "+966 55 123 4567", "+966551234567"),
+			("other", "+۹۶۶۵۵۱۲۳۴۵۶۷", "+966551234567"),
+			("other", "+12345678", "+12345678"),
+			("other", "+123456789012345", "+123456789012345"),
+			# bidi marks that copy-paste adds are removed, as before
+			("other", "+44\u202e20\u200f7946 0958", "+442079460958"),
+		)
+		for country, raw, expected in ok:
+			self.assertEqual(normalize_phone(raw, country), expected, (country, raw))
+		bad = (
+			("other", "0551234567"),  # no country code for "Other"
+			("gulf", "36123456"),
+			("in", "55123456"),
+			("in", "5876543210"),  # Indian mobiles start 6-9
+			("in", "987654321"),
+			("in", "+91 5876543210"),
+			("om", "8123 4567"),
+			("om", "912345678"),
+			("om", "+968 8123 4567"),
+			("ae", "040 123 4567"),
+			("ae", "+971 4 123 4567"),
+			("ae", "0501234567 8"),
+			("sa", "+966 11 234 5678"),
+			("other", "+1234567"),  # too short
+			("other", "+1234567890123456"),  # too long
+			("other", "+0441234567"),  # country codes never start with 0
+			("other", "++441234567"),
+			("other", "+44 20 7946 0958 ext 2"),
+			("other", "+４４２０７９４６０９５８"),  # fullwidth  # noqa: RUF001
+			("in", "९८७६५४३२१०"),  # Devanagari digits are not converted
+			("other", "+44 20 7946 0958 #"),
+			("other", "tel:+442079460958"),
+			("sa", ""),
+			("sa", None),
+			(None, "0551234567"),
+			("xx", "0551234567"),
+		)
+		for country, raw in bad:
+			self.assertIsNone(normalize_phone(raw, country), (country, raw))
+		# whatever comes in, only "+" and ASCII digits ever come out
+		for country, raw, expected in ok:
+			self.assertRegex(normalize_phone(raw, country), r"^\+[1-9][0-9]{7,14}$")
+
+	def test_international_forms_create_leads(self):
+		for email, country, phone, stored in (
+			("in1@x.in", "in", "98765 43210", "+919876543210"),
+			("in2@x.in", "in", "+91 98765 43210", "+919876543210"),
+			("om1@x.om", "om", "9123 4567", "+96891234567"),
+			("om2@x.om", "om", "+968 9123 4567", "+96891234567"),
+			("ae1@x.ae", "ae", "050 123 4567", "+971501234567"),
+			("ae2@x.ae", "ae", "+971 50 123 4567", "+971501234567"),
+			("us1@x.com", "other", "+1 415 555 0134", "+14155550134"),
+			("bh1@x.bh", "gulf", "00973 3612 3456", "+97336123456"),
+			("ar1@x.in", "in", "+٩١ ٩٨٧٦٥ ٤٣٢١٠", "+919876543210"),
+		):
+			self.assertEqual(submit(email=email, country=country, phone=phone, lang="ar"), {"ok": True})
+			lead = lead_for(email)
+			self.assertEqual(lead.mobile_no, stored, email)
+			self.assertEqual(lead.kcx_country, country, email)
+			self.assertIn(f"<b>Country:</b> {COUNTRIES[country]}", lead.notes[0].note, email)
+
+	def test_country_options_match_content(self):
+		self.assertEqual(tuple(COUNTRIES), ("sa", "ae", "om", "in", "gulf", "other"))
+		meta = frappe.get_meta("Lead").get_field("kcx_country")
+		self.assertEqual(meta.fieldtype, "Select")
+		self.assertEqual([o for o in meta.options.split("\n") if o], list(COUNTRIES))
+		for lang in ("en", "ar"):
+			options = load_content(lang)["demo"]["form"]["countries"]
+			self.assertEqual([o["key"] for o in options], list(COUNTRIES), lang)
+			self.assertTrue(all(o["label"] for o in options), lang)
+		self.assertEqual(
+			[o["label"] for o in load_content("en")["demo"]["form"]["countries"]], list(COUNTRIES.values())
+		)
+
+	def test_phone_error_asks_for_country_code(self):
+		self.assertIn("country code", ERR_EN["phone"])
+		self.assertIn("رمز الدولة", ERR_AR["phone"])
+		self.assertNotIn("Saudi mobile", ERR_EN["phone"])
+
 
 class TestDemoNotification(FrappeTestCase):
 	def setUp(self):
@@ -251,10 +389,22 @@ class TestDemoNotification(FrappeTestCase):
 		sendmail.assert_called_once()
 		kw = sendmail.call_args.kwargs
 		self.assertEqual(kw["recipients"], ["sales@kenz.sa", "ops@kenz.sa"])
-		self.assertEqual(kw["subject"], "New demo request: Nesco <b>")
+		self.assertEqual(kw["subject"], "New demo request: Nesco <b> \u2013 Saudi Arabia")
 		self.assertTrue(kw["delayed"])
 		self.assertIn("Nesco &lt;b&gt;", kw["message"])
 		self.assertIn("+966551234567", kw["message"])
+		self.assertIn("<b>Country:</b> Saudi Arabia", kw["message"])
+		self.assertIn("<b>ZATCA Phase 2 needed:</b> Yes", kw["message"])
+
+	def test_email_names_the_country(self):
+		self.set_recipients("sales@kenz.sa")
+		with patch("frappe.sendmail") as sendmail:
+			submit(email="mail-om@x.om", country="om", phone="+968 9123 4567", zatca_required=None)
+		kw = sendmail.call_args.kwargs
+		self.assertEqual(kw["subject"], "New demo request: Nesco \u2013 Oman")
+		self.assertIn("New Lead (Oman)", kw["message"])
+		self.assertIn("<b>Country:</b> Oman", kw["message"])
+		self.assertIn("<b>ZATCA Phase 2 needed:</b> Not answered", kw["message"])
 
 	def test_email_for_duplicate_too(self):
 		self.set_recipients("sales@kenz.sa")
@@ -293,7 +443,8 @@ class TestDemoPage(FrappeTestCase):
 		self.assertEqual(code, 200)
 		self.assertNotIn("<script>alert(1)", h)
 		self.assertNotIn("alert(1)", h)
-		self.assertNotIn(" selected", h)
+		plan_select = h[h.index('id="df-plan"') : h.index("</select>", h.index('id="df-plan"'))]
+		self.assertNotIn(" selected", plan_select)
 
 	def test_demo_page_preselects_known_plan(self):
 		_, h = html("/ar/demo?plan=business")
@@ -325,6 +476,18 @@ class TestDemoPage(FrappeTestCase):
 			self.assertIn('name="zatca_required" value="0"', h)
 			self.assertIn("<fieldset", h)
 			self.assertIn('<select id="df-plan" name="plan"', h)
+			self.assertIn('<label for="df-country"', h)
+			self.assertIn('<select id="df-country" name="country" required', h)
+			country = h[h.index('id="df-country"') : h.index("</select>", h.index('id="df-country"'))]
+			self.assertEqual(
+				re.findall(r'<option value="([^"]*)"', country), ["", "sa", "ae", "om", "in", "gulf", "other"]
+			)
+			self.assertIn(f'<option value="" disabled selected>{form["country_placeholder"]}</option>', country)
+			self.assertNotIn('value="sa" selected', country)
+			for option in form["countries"]:
+				self.assertIn(f'>{option["label"]}</option>', country)
+			self.assertIn(f'placeholder="{form["phone_placeholder"]}"', h)
+			self.assertIn('data-msg-phone="', h)
 			self.assertIn('<option value="">', h)
 			self.assertIn(f'name="lang" value="{lang}"', h)
 			self.assertIn('aria-live="polite"', h)
@@ -464,8 +627,19 @@ class TestFixRound1(FrappeTestCase):
 		self.assertEqual(todos[0].status, "Open")
 		self.assertIn("+966551234567", todos[0].description)
 		self.assertIn("Ali Hassan", todos[0].description)
+		self.assertIn("Saudi Arabia", todos[0].description)
 		self.assertNotIn("<b>Nesco", todos[0].description)
 		self.assertIn("&lt;b&gt;Nesco", todos[0].description)
+
+	def test_closed_lead_todo_names_the_country_on_one_line(self):
+		lead = self._closed_lead("closed-in@x.in")
+		with patch("frappe.sendmail"):
+			submit(email="closed-in@x.in", country="in", phone="+91 98765 43210", company="A\nB <i>")
+		description = self._todos(lead)[0].description
+		self.assertIn("India", description)
+		self.assertIn("+919876543210", description)
+		self.assertIn("A B &lt;i&gt;", description)
+		self.assertNotIn("<i>", description)
 
 	def test_closed_lead_todo_goes_to_enabled_lead_owner(self):
 		owner = frappe.get_doc(
@@ -492,7 +666,7 @@ class TestFixRound1(FrappeTestCase):
 			with patch("frappe.sendmail") as sendmail:
 				submit(email="closed3@x.sa")
 			kw = sendmail.call_args.kwargs
-			self.assertEqual(kw["subject"], "CLOSED Lead (Converted) – new request: Nesco")  # noqa: RUF001
+			self.assertEqual(kw["subject"], "CLOSED Lead (Converted) – new request: Nesco – Saudi Arabia")  # noqa: RUF001
 			self.assertIn("closed", kw["message"])
 			self.assertIn("ToDo", kw["message"])
 		finally:
@@ -509,7 +683,7 @@ class TestFixRound1(FrappeTestCase):
 				submit(email="open1@x.sa")
 			self.assertEqual(self._todos(lead), [])
 			kw = sendmail.call_args.kwargs
-			self.assertEqual(kw["subject"], "New demo request: Nesco")
+			self.assertEqual(kw["subject"], "New demo request: Nesco \u2013 Saudi Arabia")
 			self.assertIn("Repeat request on an open Lead (status: Lead)", kw["message"])
 		finally:
 			frappe.db.set_single_value(SETTINGS, "notify_emails", old)
@@ -635,11 +809,12 @@ class TestDemoHTTP(FrappeTestCase):
 		payload = dict(
 			full_name="HTTP Test",
 			company="HTTP Co",
-			phone="0551234567",
+			phone="098765 43210",
 			email=self.EMAIL,
 			users="3",
 			zatca_required="1",
 			plan="starter",
+			country="in",
 			lang="en",
 			website="",
 		)
@@ -662,6 +837,8 @@ class TestDemoHTTP(FrappeTestCase):
 		lead = lead_for(self.EMAIL)
 		self.assertEqual(lead.owner, "Guest")
 		self.assertEqual(lead.kcx_plan, "starter")
+		self.assertEqual(lead.kcx_country, "in")
+		self.assertEqual(lead.mobile_no, "+919876543210")
 
 	def test_validation_error_message_reaches_client(self):
 		r = self.post(email="nope", lang="ar")

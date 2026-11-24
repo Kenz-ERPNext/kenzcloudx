@@ -21,13 +21,38 @@
 	}
 	function value(name) { return (form.elements[name].value || "").trim(); }
 
+	// mirror of kenzcloudx.api.demo.normalize_phone (the server decides; this only gives early feedback)
+	var COUNTRIES = ["sa", "ae", "om", "in", "gulf", "other"];
+	var MOBILE = {
+		sa: ["966", "5[0-9]{8}"],
+		ae: ["971", "5[0-9]{8}"],
+		om: ["968", "[79][0-9]{7}"],
+		"in": ["91", "[6-9][0-9]{9}"]
+	};
+	function phoneOk(v, country) {
+		v = ascii(v).replace(/[\s.\-\u2010-\u2015()\[\]{}\u200e\u200f\u202a-\u202e\u2066-\u2069]/g, "");
+		if (!/^\+?[0-9]+$/.test(v)) return false;
+		if (v.indexOf("00") === 0) v = "+" + v.slice(2);
+		var key, rule;
+		if (v.charAt(0) === "+") {
+			var digits = v.slice(1);
+			for (key in MOBILE) {
+				rule = MOBILE[key];
+				if (digits.indexOf(rule[0]) === 0) return new RegExp("^" + rule[0] + "0?" + rule[1] + "$").test(digits);
+			}
+			return /^[1-9][0-9]{7,14}$/.test(digits);
+		}
+		rule = MOBILE[country];
+		return !!rule && new RegExp("^(?:" + rule[0] + ")?0?" + rule[1] + "$").test(v);
+	}
+
 	var checks = {
 		full_name: function (v) { return v ? "" : msg.msgRequired; },
 		company: function (v) { return v ? "" : msg.msgRequired; },
+		country: function (v) { return COUNTRIES.indexOf(v) >= 0 ? "" : msg.msgRequired; },
 		phone: function (v) {
 			if (!v) return msg.msgRequired;
-			v = ascii(v).replace(/[\s\-\u2010-\u2015()\[\]{}\u200e\u200f\u202a-\u202e\u2066-\u2069]/g, "");
-			return /^(?:\+966|00966|966)?0?5[0-9]{8}$/.test(v) ? "" : msg.msgPhone;
+			return phoneOk(v, value("country")) ? "" : msg.msgPhone;
 		},
 		email: function (v) {
 			if (!v) return msg.msgRequired;
@@ -65,6 +90,12 @@
 		form.elements[name].addEventListener("blur", function () {
 			if (this.getAttribute("aria-invalid") === "true") setFieldError(name, checks[name](value(name)));
 		});
+	});
+
+	// the phone rules depend on the country: re-check a flagged phone number when the country changes
+	form.elements.country.addEventListener("change", function () {
+		if (this.getAttribute("aria-invalid") === "true") setFieldError("country", checks.country(value("country")));
+		if (form.elements.phone.getAttribute("aria-invalid") === "true") setFieldError("phone", checks.phone(value("phone")));
 	});
 
 	function setStatus(text, isError) {
