@@ -1,6 +1,6 @@
 /* KenzCloudX animated glass ribbon (original implementation), drawn on <canvas id="ribbon"> behind the page.
    Rounded glass tiles are stacked along a 3D Catmull-Rom curve. The curve blends between per-section
-   "poses" as the page scrolls ([data-pose="hero|benefits|erp|compliance|looks|how|plans|quotes|faq|cta|footer"]),
+   "poses" as the page scrolls ([data-pose="hero|benefits|erp|compliance|looks|how|plans|faq|cta|footer"]),
    and the tiles flow along it.
    - Inner pages (body.inner-page) use a calmer preset: fewer tiles, slower flow, the ribbon kept to the
      inline-end edge ("page" at the top, "page-body" further down); they need no data-pose markup.
@@ -40,7 +40,6 @@ const POSES = {
   looks:      [[-1.45, 0.45, -2.0], [-0.70, -0.05, 0.4], [0.05, -0.38, 1.0], [0.68, -0.10, 0.6], [1.05, -0.40, -0.2], [1.50, -0.70, -2.0]],
   how:        [[-1.40, 1.45, -2.0], [-0.92, 0.55, 0.0], [-0.35, -0.30, 0.9], [0.35, -0.72, 0.8], [0.95, -0.85, 0.0], [1.50, -0.80, -2.0]],
   plans:      [[1.45, 1.30, -2.0], [0.95, 0.75, -0.2], [0.88, 0.10, 0.6], [1.00, -0.50, 0.4], [1.12, -1.00, -0.4], [1.45, -1.50, -2.0]],
-  quotes:     [[-1.45, -0.10, -2.0], [-0.90, -0.55, 0.2], [-0.30, -0.95, 1.0], [0.40, -1.05, 0.6], [0.95, -0.95, -0.2], [1.50, -1.05, -2.0]],
   faq:        [[0.10, 1.50, -2.0], [0.55, 1.05, -0.2], [0.88, 0.55, 0.6], [1.00, -0.05, 0.6], [1.05, -0.60, -0.2], [1.40, -1.10, -2.0]],
   cta:        [[0.30, 1.50, -2.0], [0.70, 1.00, 0.0], [0.92, 0.40, 0.8], [1.00, -0.20, 0.5], [1.10, -0.75, -0.2], [1.45, -1.30, -2.0]],
   footer:     [[0.40, 1.50, -2.0], [0.75, 1.10, 0.0], [0.95, 0.60, 0.8], [1.05, 0.05, 0.5], [1.15, -0.50, -0.2], [1.45, -1.10, -2.0]],

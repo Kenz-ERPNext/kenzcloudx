@@ -33,7 +33,9 @@ class TestHomeContent(FrappeTestCase):
 		for lang in ("en", "ar"):
 			home = load_content(lang)["home"]
 			heads = [home["hero"]["h1"], home["demo_band"]["heading"]]
-			heads += [home[k]["heading"] for k in ("benefits", "erp", "compliance", "looks", "how", "plans", "quotes", "faq")]
+			heads += [
+				home[k]["heading"] for k in ("benefits", "erp", "compliance", "looks", "how", "plans", "faq")
+			]
 			heads.append(load_content(lang)["compliance"]["hero"]["h1"])
 			heads.append(load_content(lang)["compliance"]["same"]["heading"])
 			for hd in heads:
@@ -78,7 +80,6 @@ class TestHomePage(FrappeTestCase):
 				'data-pose="looks"',
 				'id="how"',
 				'data-pose="plans"',
-				'data-pose="quotes"',
 				'data-pose="faq"',
 				'<section class="demo-band"',
 				'<footer class="site-footer"',
@@ -101,7 +102,7 @@ class TestHomePage(FrappeTestCase):
 
 	def test_every_section_heading_has_an_accent_word(self):
 		_, h = html("/")
-		for pose in ("benefits", "erp", "compliance", "looks", "how", "plans", "quotes", "faq"):
+		for pose in ("benefits", "erp", "compliance", "looks", "how", "plans", "faq"):
 			sec = _section(h, f'data-pose="{pose}"')
 			self.assertIn('<span class="acc">', sec, pose)
 		band = _section(h, '<section class="demo-band"')
@@ -164,12 +165,12 @@ class TestHomePage(FrappeTestCase):
 		_, h = html("/")
 		self.assertEqual(_section(h, 'data-pose="plans"').count(">Request a quote<"), 3)
 
-	def test_testimonials_are_tagged_sample(self):
-		for p, word in (("/", "Sample"), ("/ar", "نموذج")):
+	def test_testimonials_removed_before_launch(self):
+		# the sample testimonials were removed for the launch (tests/test_launch.py checks the rest)
+		for p in ("/", "/ar"):
 			_, h = html(p)
-			quotes = _section(h, 'data-pose="quotes"')
-			self.assertEqual(quotes.count(f'<span class="sample">{word}</span>'), 3, p)
-			self.assertEqual(quotes.count("<blockquote"), 3, p)
+			self.assertNotIn('data-pose="quotes"', h, p)
+			self.assertNotIn("<blockquote", h, p)
 
 	def test_faq_uses_details(self):
 		for p, lang in (("/", "en"), ("/ar", "ar")):
@@ -193,7 +194,13 @@ class TestCountryTabs(FrappeTestCase):
 		panels while all 4 are shown); main.js adds role=tablist/tab/tabpanel and the aria-* on init."""
 		for p in TAB_PAGES:
 			_, h = html(p)
-			for attr in ('role="tablist"', 'role="tab"', 'role="tabpanel"', "aria-selected", 'aria-controls="saudi'):
+			for attr in (
+				'role="tablist"',
+				'role="tab"',
+				'role="tabpanel"',
+				"aria-selected",
+				'aria-controls="saudi',
+			):
 				self.assertNotIn(attr, h, (p, attr))
 			self.assertEqual(len(re.findall(r'<nav class="tabs reveal" aria-label="[^"]+"', h)), 1, p)
 			for cid in COUNTRY_IDS:
@@ -218,15 +225,30 @@ class TestCountryTabs(FrappeTestCase):
 		_, h = html("/compliance")
 		self.assertEqual(len(re.findall(r'class="tinv"[^>]*role="img"[^>]*aria-label="[^"]+"', h)), 4)
 		self.assertEqual(h.count('class="qr"'), 4)
-		self.assertGreaterEqual(h.count("<svg viewBox=\"0 0 21 21\""), 4)
+		self.assertGreaterEqual(h.count('<svg viewBox="0 0 21 21"'), 4)
 
 	def test_tab_script_is_shipped(self):
 		with open(os.path.join(APP, "public", "js", "main.js"), encoding="utf-8") as f:
 			js = f.read()
-		for needle in ("ArrowLeft", "ArrowRight", "Home", "End", "hashchange", "rtl", "aria-selected", "tabIndex"):
+		for needle in (
+			"ArrowLeft",
+			"ArrowRight",
+			"Home",
+			"End",
+			"hashchange",
+			"rtl",
+			"aria-selected",
+			"tabIndex",
+		):
 			self.assertIn(needle, js, needle)
 		# the tab semantics are added by the script, not sent in the HTML
-		for needle in ('"role", "tablist"', '"role", "tab"', '"role", "tabpanel"', '"aria-controls"', '"aria-labelledby"'):
+		for needle in (
+			'"role", "tablist"',
+			'"role", "tab"',
+			'"role", "tabpanel"',
+			'"aria-controls"',
+			'"aria-labelledby"',
+		):
 			self.assertIn(needle, js, needle)
 
 

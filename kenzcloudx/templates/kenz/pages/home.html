@@ -159,7 +159,7 @@
 			<span class="badge">{{ pt.badge|e }}</span>
 			{%- endif %}
 			<h3>{{ plan.name|e }}</h3>
-			<p class="for">{{ plan.tagline|replace("[PLACEHOLDER] ", "")|e }}</p>
+			<p class="for">{{ plan.tagline|e }}</p>
 			<div class="price-line"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="7.5"/><path d="M10 6v4l2.5 2"/></svg>{{ pt.price_line|e }}</div>
 			<ul class="checks">
 				{%- for feature in plan.features[:4] %}
@@ -171,21 +171,6 @@
 		{%- endfor %}
 	</div>
 	<p class="more-link reveal"><a class="link-accent" href="{{ lp|e }}/plans">{{ pt.more|e }}<svg class="icon-dir" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a></p>
-</section>
-
-<section class="section wrap" data-pose="quotes" aria-labelledby="quotes-heading">
-	<div class="head reveal">
-		<h2 class="h2" id="quotes-heading">{% call acc_heading(t.quotes.heading) %}{% endcall %}</h2>
-	</div>
-	<div class="grid-3">
-		{%- for q in t.quotes["items"] %}
-		<figure class="quote glass lift reveal" style="--d:{{ loop.index0|e }}">
-			<div class="quote-top"><span class="qmark" aria-hidden="true">{{ ('”' if lang == 'ar' else '“')|e }}</span><span class="sample">{{ t.quotes.sample|e }}</span></div>
-			<blockquote>{{ q.quote|e }}</blockquote>
-			<figcaption><span class="qav qa{{ loop.index|e }}" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" focusable="false"><circle cx="10" cy="7" r="3"/><path d="M4 17c.8-3 3.2-4.5 6-4.5s5.2 1.5 6 4.5"/></svg></span><span><b>{{ q.name|e }}</b><span>{{ q.role|e }}</span></span></figcaption>
-		</figure>
-		{%- endfor %}
-	</div>
 </section>
 
 <section class="section wrap" id="faq" data-pose="faq" aria-labelledby="faq-heading">
